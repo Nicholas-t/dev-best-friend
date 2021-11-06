@@ -1,0 +1,161 @@
+require('dotenv').config();
+var axios = require('axios')
+const querystring = require('querystring');
+const {
+    copySchema,
+    createMessage
+} = require('../packages/util')
+let db = null
+
+try{
+  const databaseHandler = require('../packages/db/db');
+  db = new databaseHandler();
+  const sqlConf = {
+    "host" : process.env.MY_SQL_HOST || "localhost",
+    "user" : process.env.MY_SQL_USER || "root",
+    "password" : process.env.MY_SQL_PWD || "1717",
+    connectTimeout: 30000
+  }
+  db.start(sqlConf)
+  console.log("SUCCESS CONNECT TO DB FROM /p for fetching project data")
+}catch(e){
+  console.log(`FAILED TO LOAD DB`)
+  console.log(e)
+  process.exit()
+}
+const dir = __dirname + '/../public/pages/client/'
+var express = require('express');
+const e = require('express');
+var router = express.Router()
+
+router.use('/', function (req, res, next){
+    let path = req.originalUrl.split("?")[0].split("/")
+    if (!req.user && !path.includes("login") && !path.includes("register")){
+        res.redirect('/finder')
+    } else {
+        if (!res.locals.project && path[2] !== ""){
+            db.getXbyY("project", "uid", path[2], (err, result) => {
+                if (result.length == 0){
+                    res.redirect("/error?error=internal_error")
+                } else {
+                    res.locals.project = result[0]
+                    next()
+                }
+            })
+        } else {
+            next()
+        }
+    }
+})
+
+
+router.get('/:project_uid', function (req, res){
+    res.redirect(`/p/${req.params.project_uid}/login`)
+})
+
+router.get('/:project_uid/login', function (req, res){
+    if (req.user){
+        res.redirect(`/p/${req.params.project_uid}/home?success=login`)
+    } else {
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        res.render(dir + 'login.html', toSend)
+    }
+})
+
+router.get('/:project_uid/home', function (req, res){
+    let toSend = copySchema(res.locals.project)
+    toSend = createMessage(req.query, toSend)
+    toSend.user_id = req.user.id
+    res.render(dir + 'home.html', toSend)
+})
+
+router.get('/:project_uid/register', function (req, res){
+    if (req.user){
+        res.redirect(`/p/${req.params.project_uid}/home`)
+    } else {
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        res.render(dir + 'register.html', toSend)
+    }
+})
+
+router.get('/:project_uid/admin', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        toSend.user_id = req.user.id
+        res.render(dir + 'adminViewPages.html', toSend)
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
+router.get('/:project_uid/admin/create', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        toSend.user_id = req.user.id
+        res.render(dir + 'adminCreatePage.html', toSend)
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
+router.get('/:project_uid/manage', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        toSend.user_id = req.user.id
+        res.render(dir + 'adminManageProject.html', toSend)
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
+router.get('/:project_uid/manage/plan/create', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        toSend.user_id = req.user.id
+        res.render(dir + 'adminManagePleanCreate.html', toSend)
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
+router.get('/:project_uid/admin/modify/:page_id', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        toSend.user_id = req.user.id
+        toSend.page_id = req.params.page_id
+        toSend.newly_created = req.query.created
+        res.render(dir + 'adminModifyPage.html', toSend)
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
+router.get('/:project_uid/:path', function (req, res){
+    db.getXbyY("page", "project_id", res.locals.project.uid, (err, result) => {
+        if (result.length == 0){
+            res.redirect("/error?error=page_not_found")
+        } else {
+            let toSend = copySchema(res.locals.project)
+            toSend = createMessage(req.query, toSend)
+            toSend.user_id = req.user.id
+            for (let i = 0; i < result.length ; i++){
+                if (result[i].path === req.params.path){
+                    toSend.page_id = result[i].id
+                    toSend.page_name = result[i].name
+                    toSend.page_path = result[i].path
+                    toSend.type = result[i].type
+                }
+            }
+            res.render(dir + 'content.html', toSend)
+        }
+    })
+})
+
+module.exports = router

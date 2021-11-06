@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Skydash Admin</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="/static/vendors/feather/feather.css">
+  <link rel="stylesheet" href="/static/vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="/static/vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="/static/css/vertical-layout-light/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="/static/images/favicon.png" />
+</head>
+
+<body>
+  <div class="container-scroller">
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <a class="navbar-brand brand-logo mr-5" href="/"><img src="/static/images/logo.svg" class="mr-2" alt="logo"/></a>
+        <a class="navbar-brand brand-logo-mini" href="/"><img src="/static/images/logo-mini.svg" alt="logo"/></a>
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="icon-menu"></span>
+        </button>
+        <ul class="navbar-nav navbar-nav-right" include-html="/static/pages/frame/navbar-right.html">
+          
+        </ul>
+        
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+          <span class="icon-menu"></span>
+        </button>
+      </div>
+    </nav>
+    <div class="container-fluid page-body-wrapper">
+      <nav class="sidebar sidebar-offcanvas">
+        <ul class="nav"  id="sidebar">
+
+        </ul>
+      </nav>
+      <div class="main-panel">
+        <div class="content-wrapper">
+            <!--Content here-->
+            <div class="row">
+              <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Plans<small>&nbsp;&nbsp;(Coming Soon)</small></h4>
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <thead>
+                            <tr>
+                              <th>
+                                Plan Name
+                              </th>
+                              <th>
+                                # Of users
+                              </th>
+                              <th>
+                                Price
+                              </th>
+                              <th>
+                                Refresh every
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                            <td>
+                              Default
+                            </td>
+                            <td id="n-user-on-plan">
+                              N/A
+                            </td>
+                            <td>
+                              Free
+                            </td>
+                            <td>
+                              1 Month
+                            </td>
+                          </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Users</h4>
+                  
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th class="pl-0  pb-2 border-bottom">ID</th>
+                            <th class="border-bottom pb-2">Email</th>
+                            <th class="border-bottom pb-2">Name</th>
+                            <th class="border-bottom pb-2">Plan</th>
+                            <th class="border-bottom pb-2">Time Joined</th>
+                          </tr>
+                        </thead>
+                        <tbody id="users-list">
+                          <tr>
+                            <td></td>
+                            <td></td>
+                            <td class="text-danger">No Users</td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                </div>
+              </div>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">New User Webhook</h4>
+                  <form method="POST" action="/db/dev/edit/new_user_webhook/<%=uid%>">
+                    <div class="form-group">
+                      <label>New User Webhook</label>
+                      <input type="url" placeholder="Endpoint (e.g. 435.23.xx.xx/new_user, xyz.com/add/user, etc)" value="<%=new_user_webhook%>"type="text" name="new_user_webhook" class="form-control" id="new_user_webhook" placeholder="">
+                    </div>
+                    <button type="submit" class="btn btn-info">Save</button>
+                    <div 
+                    onclick="(() => {fetch(`/dev/api/send-user-webhook-test`, {
+                        method: 'POST',
+                        mode: 'cors',
+                        cache: 'no-cache', 
+                        credentials: 'same-origin',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        redirect: 'follow',
+                        referrerPolicy: 'no-referrer',
+                        body: JSON.stringify({
+                            url : document.getElementById('new_user_webhook').value
+                        })
+                      }).then((data) => {
+                        return data.json()
+                      }).then((data) => {
+                        if (data.success){
+                          toastr.success('A test webhook has successfully triggered')
+                        } else {
+                          toastr.error('The test was unsuccessful')
+                        }
+                      }).catch((e) => {
+                        toastr.error('The test was unsuccessful')
+                      })
+                  })()"
+                    style="margin-left: 20px;" class="btn btn-warning">Send test</div>
+                  </form>
+                  
+                </div>
+              </div>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Danger Zone</h4>
+                  
+                  <button type="button" onclick="(() => {if (confirm('Are  you sure you want to delete <%=uid%> ? (This step cannot be undone)')){document.getElementById('delete-form').submit()}})()" id="delete-button" class="btn btn-danger">Delete Project</button>
+                  <form id="delete-form" method="POST" action="/db/dev/delete/project/<%=uid%>"></form>
+                </div>
+              </div>
+          </div>
+        </div>
+        </div>
+        <footer class="footer" include-html="/static/pages/frame/footer.html">
+        </footer>
+      </div>
+    </div>
+  </div>
+  
+  <script src="/static/pages/client/fillIconPage.js"></script>
+  <script src="/static/vendors/js/vendor.bundle.base.js"></script>
+  <script src="/static/js/off-canvas.js"></script>
+  <script src="/static/js/hoverable-collapse.js"></script>
+  <script src="/static/js/template.js"></script>
+  <script src="/static/js/settings.js"></script>
+  <script src="/static/js/todolist.js"></script>
+  <script src="/static/pages/client/refreshPath.js"></script>
+  <script>
+      //for refreshing path
+      const uid = "<%=uid%>"
+  </script>
+  
+  <script src="/static/js/includeHtml.js"></script>
+  <script src="/static/pages/client/isAdmin.js"></script>
+  <script>
+    const admin = isAdmin("<%=dev_id%>", "<%=user_id%>")
+  </script>
+  <script src="/static/pages/client/fillNav.js"></script>
+  <script src="/static/pages/client/fillUsersInProject.js"></script>
+  <script>
+    fillNav("<%=uid%>")
+    fillUsersInProject("<%=uid%>")
+  </script>
+
+  
+  <!--TOASTR-->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+  <script src="/static/js/createMessage.js"></script>
+  <script>
+    createMessage("<%=message%>", "<%=messageType%>")
+  </script>
+</body>
+
+</html>

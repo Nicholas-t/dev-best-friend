@@ -1,0 +1,186 @@
+User value:
+for backend dev people to be able to focus on backend and running purely API runned Applications
+
+User processes:
+IN ADMIN DEV VIEW:
+    - User can define multiple pages (API Playground, Setting, Pricing, documentation, etc)
+        These pages can be multiple types:
+        - url
+            - Can be used for custom external page like wordpress blog / custom pricing page
+        - MD file:
+            - Can be used for documentation / FAQ
+        - playground:
+            - In this page type, user can add inputs with different types:
+                - String
+                - Number
+                - Date Time
+                - color
+                - File:
+                    - csv
+                    - json
+                    - txt
+            - in the output section, it can be these types:
+                - File (CTA will be Download)
+                - JSON (A Json viewer on the right side / bottom side)
+                - Chart (Will need to create documentation for this so we receive JSON from the API with a specific format)
+    - User can define API endpoint:
+        - they also need to define the Input and the Output for these endpoints
+        - documentation will be automatically generated
+    - path : 
+        - /dev
+            - /dashboard
+                - /manage-projects
+                    - create, delete, modify
+                - /logs
+                - /users
+                    - /:user-id
+                        - /remove
+            - /api
+                - /create
+                - /<api_id>/edit
+                - /<api_id>/delete
+            - /<project_uid>/admin
+                - /create-page
+                - /
+            - /login
+            - /register
+
+In Client View:
+    - path :
+        - /app
+            - /<project_uid> (everything is under /<project_id>)
+                - /login
+                - /register
+                - /
+                    - details of the project creator
+                    - plan
+                    - credit
+                    - account management
+                        - change password
+                - /<user_defined_paths>
+
+not Rapid API, because Rapid API is from dev for dev, but this is from dev to consumers
+
+Business model:
+- $ per month from dev
+- ratio for each users subscribed
+
+DB Structure:
+
+Account Management
+
+- pw
+    - user_id
+    - type:
+        - dev, client
+    - hashed_pw
+
+    DEV
+
+    - dev
+        - id
+        - email
+        - name
+        - activated
+        - date_created
+        - plan
+        - credit
+    
+    CLIENT
+
+    - client
+        - id
+        - email
+        - name
+        - project_id
+        - plan_id
+        - refresh_at
+        - date_created
+    
+    - client_credit
+        - client_id
+        - plan_item_id
+        - credit
+
+    - log
+        - id
+        - client_id
+        - api_id
+        - project_id
+        - timestamp
+        - status
+        - input
+        - output
+
+DEV / ADMIN
+
+- api (API is defined in the admin level)
+    - id
+    - dev_id
+    - endpoint
+    - method
+        - get, post
+    - output_type :
+        - file, json, chart, table
+
+- project
+    - uid (will not be a hash, should be a user defined unique id e.g. plot-my-finance)
+    - dev_id
+    - date created
+    - name
+    - label
+    - icon
+    - new_user_webhook:
+        - if this is defined, the webhook will send:
+            - user_id
+            - name
+            - email
+            - timestamp
+
+    CLIENT's PLAN
+        - client_plan
+            - id
+            - project_id
+            - price
+            - label
+
+        - client_plan_item
+            - id
+            - plan_id (this will be the plan ID)
+            - description
+            - api_id (optional if exist)
+            - credit (if api_id is specified, then specify as well the credit)
+
+    - page (each page in a project)
+        - id
+        - project_id
+        - path
+        - name
+        - date_created
+        - type:
+            - playground, dashboard, external_url, documents (using markdown)
+        - external_url
+
+    - input
+        - page_id
+        - api_id
+        - name
+        - label
+        - type:
+            - string, number, datetime (will give timestamp to API), color, boolean, file-csv, file-json, file-txt
+
+    
+    - item
+        - id
+        - page_id
+        - api_id
+        - color
+        - name
+        - label
+        - icon
+        - width
+
+    - item_input
+        - item_id
+        - key
+        - value
