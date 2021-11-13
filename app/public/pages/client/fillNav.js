@@ -24,10 +24,25 @@ function fillNav(projectUid){
             <li class="nav-item">
                 <a class="nav-link" href="/dev/">
                     <i class="icon-cog menu-icon"></i>
-                    <span class="menu-title">Return to Dashboard</small></span>
+                    <span class="menu-title">Return to Dashboard</span>
                 </a>
                 <hr>
             </li>`
+    } else {
+        sideBar += `
+        <li class="nav-item">
+            <a class="nav-link">
+                <span class="menu-title"><u>User Area</u></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/p/${projectUid}/home">
+                <i class="icon-cog menu-icon"></i>
+                <span class="menu-title">My Space</span>
+            </a>
+            <hr>
+        </li>
+        `
     }
     document.getElementById("sidebar").innerHTML = sideBar
     fetch(`/db/dev/get/${projectUid}/page`).then((data) => {

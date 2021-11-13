@@ -6,7 +6,6 @@ function fillUsersInProject(projectUid){
         if (users.length !== 0) {
             document.getElementById("users-list").innerHTML = ''
         }
-        document.getElementById("n-user-on-plan").innerHTML = users.length
         for (let i = 0 ; i < users.length ; i ++){
             document.getElementById("users-list").innerHTML += `
             <tr>

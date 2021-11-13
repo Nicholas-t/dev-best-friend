@@ -13,7 +13,8 @@ const {
     itemLocationSchema,
     headersSchema,
     itemHeadersSchema,
-    clientPlanSchema
+    clientPlanSchema,
+    clientPlanItemSchema
   } = require('../packages/schema')
   
 const {
@@ -122,6 +123,102 @@ router.post('/dev/add/project', function (req, res){
     }
 })
 
+router.post('/dev/add/plan/:project_uid', function (req, res){
+    const plan = copySchema(clientPlanSchema)
+    plan.id = uuidv4()
+    plan.label = req.body.label
+    plan.price = req.body.price
+    plan.description = req.body.description
+    plan.project_id = req.params.project_uid
+    db.add("client_plan", plan, (err, result) => {
+        if (err){
+            console.error(err)
+            res.redirect('/error/500?error=internal_error')
+        } else {
+            res.redirect(`/p/${req.params.project_uid}/manage/modify/plan/${plan.id}?success=create_plan`)
+        }
+    })
+})
+
+router.post('/dev/add/plan/:project_uid/:plan_id/api', function (req, res){
+    db.remove("client_plan_item", "plan_id", req.params.plan_id, (err, result) => {
+        const api = Object.keys(req.body)
+        for (let i = 0 ; i < api.length ; i++){
+            if (api[i].includes("api")){
+                const n = api[i].replace("api-", "")
+                const clientPlanItem = copySchema(clientPlanItemSchema)
+                clientPlanItem.id = req.body[`id-${n}`]
+                    ? req.body[`id-${n}`]
+                    : uuidv4()
+                clientPlanItem.plan_id = req.params.plan_id
+                clientPlanItem.description = req.body[`description-${n}`]
+                clientPlanItem.credit = req.body[`limit-${n}`]
+                clientPlanItem.api_id = req.body[api[i]]
+                db.add("client_plan_item", clientPlanItem, (err, result) => {
+                    if (err){
+                        console.log(err)
+                        res.redirect('/error/500?error=internal_error')
+                    }
+                })
+            }
+        }
+        res.redirect(`/p/${req.params.project_uid}/manage?success=modify_plan`)
+    })
+})
+
+
+router.post('/dev/delete/plan/:project_uid/:plan_id', function (req, res){
+    db.remove("client_plan", "id", req.params.plan_id, (err, result) => {
+        if (err){
+            res.redirect(`/error/500?error=internal_error`)
+        } else {
+            res.redirect(`/p/${req.params.project_uid}/manage?success=delete_plan`)
+        }
+    })
+})
+
+router.get('/dev/get/plan/:project_uid', function (req, res){
+    db.getProjectPlan(req.params.project_uid, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
+router.get('/dev/get/plan/:project_uid/:plan_id', function (req, res){
+    db.getXbyY("client_plan", "id", req.params.plan_id, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
+router.get('/dev/get/plan/:project_uid/:plan_id/api', function (req, res){
+    db.getXbyY("client_plan_item", "plan_id", req.params.plan_id, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
 router.post('/dev/add/page/:project_uid', function (req, res){
     const page = copySchema(pageSchema)
     if (req.body.path == ""){
@@ -170,6 +267,18 @@ router.get('/dev/check/is-project-uid-available', function (req, res){
         })
     }
 })
+router.get('/dev/check-available-credit/:api_id/:user_id', function (req, res){
+    db.checkUserAvailableCredit( req.params.api_id, req.params.user_id, req.user.plan_id, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json(result)
+        }
+    })
+})
+
 
 router.get('/dev/check/is-page-path-available', function (req, res){
     if (whiteListedProjectPath.includes(req.query.uid)){
@@ -218,10 +327,25 @@ router.get('/dev/get/:project_uid/page', function (req, res){
 })
 
 
+router.post('/client/edit/plan', function (req, res){
+    let planId = JSON.parse(Object.keys(req.body)[0])
+    db.modify("client", planId, "id", req.user.id, (err, result) => {
+        if (err) {
+            res.json({
+                success : false
+            })
+        } else {
+            res.json({
+                success : true
+            })
+        }
+    })
+})
+
 router.post('/dev/edit/page/:project_uid/:page_id', function (req, res){
     db.modify("page", req.body, "id", req.body.id, (err, result) => {
         if (err) {
-            res.redirect("/error/500")
+            res.redirect("/error/500?error=internal_error")
         } else {
             res.redirect(`/p/${req.params.project_uid}/admin?success=modify_page_detail`)
         }
@@ -594,6 +718,20 @@ router.get('/dev/get/project/:project_uid/dashboard/log', function (req, res){
         }
     })
 })
+router.get('/dev/get/project/:project_uid/available-api', function (req, res){
+    db.getAvailableApiInProject(req.params.project_uid, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            //TODO to fetch unique api id in every plan
+            res.json({
+                available_api : result
+            })
+        }
+    })
+})
 
 router.post('/dev/delete/api/:api_id', function (req, res){
     db.remove("api", "id", req.params.api_id, (err, result) => {
@@ -671,6 +809,20 @@ router.get('/dev/get/users', function (req, res){
 
 router.get('/dev/get/users/log/:user_id', function (req, res){
     db.getXbyY("log", "client_id", req.params.user_id, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
+router.get('/dev/get/users/log/:user_id/:api_id', function (req, res){
+    db.getUserLog(req.params.user_id, req.params.api_id, (err, result) => {
         if (err){
             res.json({
                 error : err

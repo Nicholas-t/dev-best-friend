@@ -3,19 +3,15 @@ require('dotenv').config();
 const pageTypes = {
     playground : {
         label : "Playground",
-        icon : "",
         description : "A playground for your API with form like interface"
     }, dashboard : {
         label : "Dashboard",
-        icon : "",
         description : "Dashboard from your API's with a predefined parameter"
     }, external_url : {
         label : "External Link",
-        icon : "",
         description : "Redirect to a seperate link"
     }, docs : {
         label : "Documents",
-        icon : "",
         description : "You can have  documents in an markdown text-rich format"
     }
 }
@@ -1506,6 +1502,7 @@ const messages = {
         create_api : "API is succesfully created.",
         create_project : "Project is succesfully created.",
         create_page : "Page is succesfully created.",
+        create_plan : "Plan is succesfuly created.",
         modify_page_detail : "Page details are succesfully modified.",
         modify_playground_content : "Playground contents are succesfully modified.",
         modify_dashboard : "Dashboard are succesfully modified.",
@@ -1513,17 +1510,20 @@ const messages = {
         modify_page_url : "External URL is succesfully modified.",
         modify_page_webhook : "New user webhook is succesfully modified.",
         modify_page_doc : "Markdown is succesfully modified.",
+        modify_plan : "Plan is succesfully modified.",
         modify_api : "API is succesfully modified.",
         delete_api : "API is succesfully deleted.",
-        delete_page : "Page is succesfully deleted."
+        delete_page : "Page is succesfully deleted.",
+        delete_plan : "Plan is succesfully deleted."
     },
     info : {
-        logout : "Logged out"
+        logout : "Logged out",
+        choose_plan : "Choose a plan"
     }
 }
 
 const whiteListedProjectPath = [
-    "login", "home", "register", "admin", "manage"
+    "login", "home", "register", "admin", "manage", "choose-plan"
 ]
 
 module.exports = {

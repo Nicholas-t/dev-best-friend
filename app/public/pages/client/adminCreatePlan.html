@@ -5,13 +5,11 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Create new Project</title>
+  <title>(Admin) Create Plan</title>
   <!-- plugins:css -->
   <link rel="stylesheet" href="/static/vendors/feather/feather.css">
   <link rel="stylesheet" href="/static/vendors/ti-icons/css/themify-icons.css">
   <link rel="stylesheet" href="/static/vendors/css/vendor.bundle.base.css">
-  <link rel="stylesheet" href="/static/vendors/mdi/css/materialdesignicons.min.css">
-
   <!-- endinject -->
   <!-- Plugin css for this page -->
   <!-- End plugin css for this page -->
@@ -37,84 +35,79 @@
         </ul>
         
         <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-            <span class="icon-menu"></span>
-          </button>
+          <span class="icon-menu"></span>
+        </button>
       </div>
     </nav>
     <div class="container-fluid page-body-wrapper">
-      <nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <ul class="nav" include-html="/static/pages/frame/nav.html">
+      <nav class="sidebar sidebar-offcanvas">
+        <ul class="nav"  id="sidebar">
+
         </ul>
       </nav>
       <div class="main-panel">
         <div class="content-wrapper">
             <!--Content here-->
+            
             <div class="col-12 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Create new Project </h4>
-                    <form action="/db/dev/add/project" method="POST" class="forms-sample">
+                    <h4 class="card-title">Create new Plan </h4>
+                    <form action="/db/dev/add/plan/<%=uid%>" method="POST" class="forms-sample">
                         <div class="form-group">
-                          <label>Project UID &nbsp;&nbsp;&nbsp;&nbsp;<small>This will be part of the path (e.g. your project path would be /p/project_uid </small></label>
-                          <input readonly="readonly" type="text" name="uid" class="form-control" id="uid" placeholder="UID" required>
+                          <label>Plan Label</label>
+                          <input required type="text" name="label" class="form-control" id="label" placeholder="label">
                         </div>
 
                         <div class="form-group">
-                          <label>Name</label>
-                          <input onchange="refreshUid()" required type="text" name="name" class="form-control" id="name" placeholder="Name">
+                          <label>Price (€) &nbsp;&nbsp;&nbsp; <small>put 0 for freemium</small> </label>
+                          <input required type="number" name="price" class="form-control" id="price" placeholder="Price">
+                        </div>
+
+                        <div class="form-group">
+                          <label>Description &nbsp;&nbsp;&nbsp; <small>optional</small></label>
+                          <input type="text" name="description" class="form-control" id="description" placeholder="Description">
                         </div>
                         
-                        <div class="form-group">
-                          <label>Description</label>
-                          <div class="input-group">
-                            <textarea required class="form-control" name="description" id="description" rows="4"></textarea>
-                          </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-md-9">
-                                <label>Icon</label>
-                                <select onchange="changeIconPreview()" class="form-control" name="icon" id="icon">
-                                </select>
-                            </div>
-                            <div style="font-size: 40px;margin-top: 30px;" class="col-md-3" id="icon-preview">
-                                <i class="mdi mdi-access-point"></i>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>New User Webhook &nbsp;&nbsp;&nbsp;&nbsp;<small>https:// (Recommended)</small></label>
-                            <div class="input-group">
-                              <input id="new_user_webhook" name="new_user_webhook" type="url" class="form-control" placeholder="Endpoint (e.g. 435.23.xx.xx/new_user, xyz.com/add/user, etc)">
-                            </div>
-                        </div>
                         <button type="submit" class="btn btn-primary mr-2">Submit</button>
-                        <a href="/dev/api" class="btn btn-light">Cancel</a>
+                        <a href="/p/<%=uid%>/manage" class="btn btn-light">Cancel</a>
                     </form>
                   </div>
                 </div>
             </div>
         </div>
-        
         <footer class="footer" include-html="/static/pages/frame/footer.html">
         </footer>
       </div>
     </div>
   </div>
-  <script src="/static/vendors/chart.js/Chart.min.js"></script>
   <script src="/static/vendors/js/vendor.bundle.base.js"></script>
   <script src="/static/js/off-canvas.js"></script>
   <script src="/static/js/hoverable-collapse.js"></script>
   <script src="/static/js/template.js"></script>
   <script src="/static/js/settings.js"></script>
   <script src="/static/js/todolist.js"></script>
-  
   <script src="/static/js/includeHtml.js"></script>
-  <script src="/static/pages/dev/project/createProjectForm.js"></script>
 
   
-  <!--TOASTR-->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+    <script>
+        //for refreshing path
+        const uid = "<%=uid%>"
+    </script>
+
+    <script src="/static/pages/client/isAdmin.js"></script>
+    <script>
+        const admin = isAdmin("<%=dev_id%>", "<%=user_id%>")
+    </script>
+    <script src="/static/pages/client/fillNav.js"></script>
+    <script>
+        fillNav("<%=uid%>")
+    </script>
+
+  
+    <!--TOASTR-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
   <script src="/static/js/createMessage.js"></script>
   <script>
     createMessage("<%=message%>", "<%=messageType%>")

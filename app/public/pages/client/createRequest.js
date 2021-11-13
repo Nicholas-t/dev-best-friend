@@ -1,7 +1,6 @@
-function createRequest(method, endpoint, outputType, client_id, api_id, project_id, dev_id, idSelector, _params = null, log = true, _headers = null){
-    const params = !_params ? getParams() : _params
-    const headers = !_headers ? getHeaders() : _headers
-    let status = 0
+
+function _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, log, idSelector, outputType, dev_id){
+    let requestStatus = 0
     fetch(`/dev/api/create-request`, {
         method: 'POST',
         mode: 'cors',
@@ -16,7 +15,7 @@ function createRequest(method, endpoint, outputType, client_id, api_id, project_
             method, endpoint, params, client_id, api_id, project_id, headers
         })
     }).then((data) => {
-        status = data.status
+        requestStatus = data.status
         return data.json()
     }).then((data) => {
         if (outputType == "JSON"){
@@ -42,11 +41,32 @@ function createRequest(method, endpoint, outputType, client_id, api_id, project_
                 redirect: 'follow',
                 referrerPolicy: 'no-referrer', 
                 body: JSON.stringify({
-                    client_id, api_id, project_id, status, dev_id
+                    client_id, api_id, project_id, status : requestStatus, dev_id
                 })
             })
         }
     })
+}
+function createRequest(method, endpoint, outputType, client_id, api_id, project_id, dev_id, idSelector, _params = null, log = true, _headers = null){
+    const params = !_params ? getParams() : _params
+    const headers = !_headers ? getHeaders() : _headers
+    if(log && !admin){
+        fetch(`/db/dev/check-available-credit/${api_id}/${client_id}`).then((data) => {
+            return data.json()
+        }).then((response) => {
+            if (response.error){
+                createMessage(response.error, "error")
+            } else {
+                if (response.credit_used >= response.credit_available){
+                    createMessage("You have used all your credits", "error")
+                } else {
+                    _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, log, idSelector, outputType, dev_id)
+                }
+            }
+        })
+    } else {
+        _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, log, idSelector, outputType, dev_id)
+    }
 }
 
 function getParams(){

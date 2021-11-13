@@ -1,7 +1,7 @@
 let l = 1
 let k = 1
 let apiInputType = []
-let apiOptions // could be a string or list
+let apiOptions
 let widthOptions = [25, 50, 75, 100]
 
 function deleteDashboardItemInput(row, k){
@@ -273,97 +273,101 @@ function _addModifyForm(page, projectUid, pageId){
             <input type="hidden" name="type" value="${page.type}">
             <button type="submit" class="btn btn-primary mr-2">Save</button>
         </form>`
-    } else if (page.type === "playground"){
-        fetch("/constant/apiInputType").then((data) => {
-            return data.json()
-        }).then((data) => {
-            apiInputType = data.api_input_type
-            document.getElementById("modify-form").innerHTML = `
-            <form action="/db/dev/edit/page/${projectUid}/${pageId}/playground" method="POST" class="forms-sample">
-                <div id="playground-input">
-                </div>
-                <input type="hidden" name="type" value="${page.type}">
-                <div onclick="addNewInput()" class="btn btn-success mr-2">Add new input</div>
-                <hr>
-                <div id="playground-header">
-                <label>Headers &nbsp;&nbsp;&nbsp;&nbsp;<small>Add custom headers</small></label>
-                <!--Headers here-->
-                </div>
-                <div onclick="addNewHeader()" class="btn btn-success mr-2">Add new header</div>
-                <hr>
-                <button type="submit" class="btn btn-primary mr-2">Save</button>
-            </form>`
-            fetch("/db/dev/get/api").then((data) => {
-                return data.json()
-            }).then((response) => {
-                fetch(`/db/dev/get/page/${projectUid}/${pageId}/api`).then((data) => {
-                    return data.json()
-                }).then((api) => {
-                    let apiCurrent = ""
-                    if (api.result.length !== 0){
-                        apiCurrent = api.result[0].api_id
-                    }
-                    apiOptions = ["<option value=''>Select an API</option>"]
-                    for (let i = 0 ; i < response.result.length ; i ++){
-                        apiOptions.push(`<option ${apiCurrent === response.result[i].id ? "selected" : ""} value="${response.result[i].id}">${response.result[i].name} (${response.result[i].endpoint})</option>`)
-                    }
-                    document.getElementById("playground-input").innerHTML += `
-                    <div class="form-group">
-                        <label>API &nbsp;&nbsp;&nbsp;&nbsp;<small>that will be used by the playground</small></label>
-                        <select name="api" id="api" class="form-control">
-                            ${apiOptions.join("")}
-                        </select>
-                    </div>`
-                    fetch(`/db/dev/get/page/${projectUid}/${pageId}/input`).then((data) => {
-                        return data.json()
-                    }).then((data) => {
-                        const result = data.result
-                        for (let i = 0 ; i < result.length ; i++){
-                            addNewInput(result[i])
-                        }
-                        if (result.length == 0){
-                            addNewInput()
-                        }
-                    })
-                    fetch(`/db/dev/get/page/${projectUid}/${pageId}/headers`).then((data) => {
-                        return data.json()
-                    }).then((data) => {
-                        const result = data.result
-                        for (let i = 0 ; i < result.length ; i++){
-                            addNewHeader(result[i])
-                        }
-                        if (result.length == 0){
-                            addNewHeader()
-                        }
-                    })
-                })
-            })
-        })
-    }else if (page.type === "dashboard"){
-        fetch("/db/dev/get/api").then((data) => {
+    } else {
+        fetch(`/db/dev/get/project/${projectUid}/available-api`).then((data) => {
             return data.json()
         }).then((response) => {
-            apiOptions = response.result
-            document.getElementById("modify-form").innerHTML = `
-            <form action="/db/dev/edit/page/${projectUid}/${pageId}/dashboard-item" method="POST" class="forms-sample">
-                <label>Dashboad Item &nbsp;&nbsp;&nbsp;&nbsp;<small>Each dashboard item to be shown in the page and their input</small></label>
-                <div id="dashboard-item-container">
-                </div>
-                <input type="hidden" name="type" value="${page.type}">
-                <button type="submit" class="btn btn-primary mr-2">Save</button>
-                <div onclick="addNewItem()" class="btn btn-success mr-2">Add new item</div>
-            </form>`
-            fetch(`/db/dev/get/page/${projectUid}/${pageId}/dashboard-item`).then((data) => {
-                return data.json()
-            }).then((response) => {
-                if (response.result.length != 0) {
-                    for (let i = 0 ; i < response.result.length ; i++){
-                        addNewItem(response.result[i])
+            apiOptions = response.available_api
+            console.log(apiOptions)
+            if (page.type === "playground"){
+                if (apiOptions.length == 0){
+                    createMessage("No API has been assigned to any available plans", "warning")
+                } 
+                fetch("/constant/apiInputType").then((data) => {
+                    return data.json()
+                }).then((data) => {
+                    apiInputType = data.api_input_type
+                    document.getElementById("modify-form").innerHTML = `
+                    <form action="/db/dev/edit/page/${projectUid}/${pageId}/playground" method="POST" class="forms-sample">
+                        <div id="playground-input">
+                        </div>
+                        <input type="hidden" name="type" value="${page.type}">
+                        <div onclick="addNewInput()" class="btn btn-success mr-2">Add new input</div>
+                        <hr>
+                        <div id="playground-header">
+                        <label>Headers &nbsp;&nbsp;&nbsp;&nbsp;<small>Add custom headers</small></label>
+                        <!--Headers here-->
+                        </div>
+                        <div onclick="addNewHeader()" class="btn btn-success mr-2">Add new header</div>
+                        <hr>
+                        <button type="submit" class="btn btn-primary mr-2">Save</button>
+                    </form>`
+                    fetch(`/db/dev/get/page/${projectUid}/${pageId}/api`).then((data) => {
+                        return data.json()
+                    }).then((api) => {
+                        let apiCurrent = ""
+                        if (api.result.length !== 0){
+                            apiCurrent = api.result[0].api_id
+                        }
+                        let apiOptionsHtml = ["<option value=''>Select an API</option>"]
+                        for (let i = 0 ; i < apiOptions.length ; i ++){
+                            apiOptionsHtml.push(`<option ${apiCurrent === apiOptions[i].id ? "selected" : ""} 
+                            value="${apiOptions[i].id}">${apiOptions[i].name} (${apiOptions[i].endpoint})
+                            </option>`)
+                        }
+                        document.getElementById("playground-input").innerHTML += `
+                        <div class="form-group">
+                            <label>API &nbsp;&nbsp;&nbsp;&nbsp;<small>that will be used by the playground</small></label>
+                            <select name="api" id="api" class="form-control">
+                                ${apiOptionsHtml.join("")}
+                            </select>
+                        </div>`
+                        fetch(`/db/dev/get/page/${projectUid}/${pageId}/input`).then((data) => {
+                            return data.json()
+                        }).then((data) => {
+                            const result = data.result
+                            for (let i = 0 ; i < result.length ; i++){
+                                addNewInput(result[i])
+                            }
+                            if (result.length == 0){
+                                addNewInput()
+                            }
+                        })
+                        fetch(`/db/dev/get/page/${projectUid}/${pageId}/headers`).then((data) => {
+                            return data.json()
+                        }).then((data) => {
+                            const result = data.result
+                            for (let i = 0 ; i < result.length ; i++){
+                                addNewHeader(result[i])
+                            }
+                            if (result.length == 0){
+                                addNewHeader()
+                            }
+                        })
+                    })
+                })
+            }else if (page.type === "dashboard"){
+                document.getElementById("modify-form").innerHTML = `
+                <form action="/db/dev/edit/page/${projectUid}/${pageId}/dashboard-item" method="POST" class="forms-sample">
+                    <label>Dashboad Item &nbsp;&nbsp;&nbsp;&nbsp;<small>Each dashboard item to be shown in the page and their input</small></label>
+                    <div id="dashboard-item-container">
+                    </div>
+                    <input type="hidden" name="type" value="${page.type}">
+                    <button type="submit" class="btn btn-primary mr-2">Save</button>
+                    <div onclick="addNewItem()" class="btn btn-success mr-2">Add new item</div>
+                </form>`
+                fetch(`/db/dev/get/page/${projectUid}/${pageId}/dashboard-item`).then((data) => {
+                    return data.json()
+                }).then((response) => {
+                    if (response.result.length != 0) {
+                        for (let i = 0 ; i < response.result.length ; i++){
+                            addNewItem(response.result[i])
+                        }
+                    } else {
+                        addNewItem()
                     }
-                } else {
-                    addNewItem()
-                }
-            })
+                })
+            }
         })
     }
 }

@@ -173,6 +173,67 @@ class databaseHandler {
         this.con.query(query, cb);
     }
 
+    getProjectPlan(projectId, cb){
+        let query = `SELECT * FROM client_plan WHERE project_id='${projectId}' ORDER BY price ASC;`
+        this.con.query(query, cb);
+    }
+    
+    getUserLog(clientId, apiId, cb){
+        let query = `SELECT * FROM log WHERE client_id='${clientId}' AND api_id='${apiId}';`
+        this.con.query(query, cb);
+    }
+
+    getAvailableApiInProject(projectUid, cb){
+        let query = `SELECT 
+            DISTINCT client_plan_item.api_id
+            FROM client_plan
+            LEFT JOIN client_plan_item ON client_plan.id = client_plan_item.plan_id
+            WHERE client_plan.project_id = '${projectUid}';`
+        this.con.query(query, (err, result) => {
+            let queryApiId = []
+            let queryApiIdString = ''
+            for (let i = 0 ; i < result.length ; i++){
+                queryApiId.push(`'${result[i].api_id}'`)
+            }
+            queryApiIdString = queryApiId.join(", ")
+            query = `SELECT *
+                FROM api
+                WHERE api.id IN (${queryApiIdString});`
+            this.con.query(query, cb);
+        })
+    }
+
+    checkUserAvailableCredit(apiId, userId, planId, cb){
+        let query = `SELECT *
+            FROM client_plan_item
+            WHERE client_plan_item.plan_id = '${planId}'
+            AND client_plan_item.api_id = '${apiId}';`
+        const out = {}
+        this.con.query(query, (err, apiPlanItem) => {
+            if (err){
+                cb(err, null)
+            } else {
+                if (apiPlanItem.length == 0){
+                    out.error = "No credit for this API"
+                    cb(err, out)
+                } else {
+                    out.credit_available = apiPlanItem[0].credit
+                    query = `SELECT *
+                        FROM log
+                        WHERE log.api_id = '${apiId}'
+                        AND log.client_id = '${userId}';`
+                    this.con.query(query, (err, logItems) => {
+                        if (err){
+                            cb(err, null)
+                        } else {
+                            out.credit_used = logItems.length
+                            cb(err, out)
+                        }
+                    })
+                }
+            }
+        })
+    }
     getUserByEmail(email, cb){
         let query = `SELECT dev.id, dev.email, dev.name, pw.hashed_password, pw.type
             FROM dev
@@ -182,7 +243,7 @@ class databaseHandler {
             if (err){
                 cb( err, []) 
             } else {
-                let query = `SELECT client.id, client.project_id, client.email, client.name, pw.hashed_password, pw.type
+                let query = `SELECT client.id, client.project_id, client.plan_id, client.email, client.name, pw.hashed_password, pw.type
                     FROM client
                     INNER JOIN pw ON pw.user_id = client.id
                     WHERE client.email = '${email}';`
@@ -207,7 +268,7 @@ class databaseHandler {
             if (err){
                 cb(err, {})
             } else {
-                let query = `SELECT client.id, client.project_id, client.email, client.name, pw.hashed_password, pw.type
+                let query = `SELECT client.id, client.plan_id, client.project_id, client.email, client.name, pw.hashed_password, pw.type
                     FROM client
                     INNER JOIN pw ON pw.user_id = client.id
                     WHERE client.id = '${id}';`

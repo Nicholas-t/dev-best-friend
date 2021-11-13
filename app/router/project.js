@@ -31,17 +31,31 @@ var router = express.Router()
 router.use('/', function (req, res, next){
     let path = req.originalUrl.split("?")[0].split("/")
     if (!req.user && !path.includes("login") && !path.includes("register")){
-        res.redirect('/finder')
+        if (path[2] !== "" && path[2]){
+            res.redirect(`/p/${path[2]}/login`)
+        } else {
+            res.redirect('/finder')
+        }
     } else {
         if (!res.locals.project && path[2] !== ""){
-            db.getXbyY("project", "uid", path[2], (err, result) => {
-                if (result.length == 0){
-                    res.redirect("/error?error=internal_error")
-                } else {
-                    res.locals.project = result[0]
-                    next()
+            let toChoosePlan = false
+            if (req.user) {
+                if (req.user.type == "client"){
+                    toChoosePlan = req.user.plan_id == "" && path[3] !== "choose-plan"
                 }
-            })
+            }
+            if (toChoosePlan) {
+                res.redirect(`/p/${path[2]}/choose-plan?info=choose_plan`)
+            } else {
+                db.getXbyY("project", "uid", path[2], (err, result) => {
+                    if (result.length == 0){
+                        res.redirect("/error?error=internal_error")
+                    } else {
+                        res.locals.project = result[0]
+                        next()
+                    }
+                })
+            }
         } else {
             next()
         }
@@ -50,7 +64,17 @@ router.use('/', function (req, res, next){
 
 
 router.get('/:project_uid', function (req, res){
-    res.redirect(`/p/${req.params.project_uid}/login`)
+    if (req.user){
+        db.getXbyY("page", "project_id", req.params.project_uid, (err, result) => {
+            if (result.length == 0) {
+                res.redirect(`/error/500?error=internal_error`)
+            } else {
+                res.redirect(`/p/${req.params.project_uid}/home`)
+            }
+        })
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/login`)
+    }
 })
 
 router.get('/:project_uid/login', function (req, res){
@@ -63,10 +87,21 @@ router.get('/:project_uid/login', function (req, res){
     }
 })
 
+router.get('/:project_uid/choose-plan', function (req, res){
+    let toSend = copySchema(res.locals.project)
+    toSend = createMessage(req.query, toSend)
+    toSend.user_id = req.user.id
+    res.render(dir + 'choosePlan.html', toSend)
+})
+
+
 router.get('/:project_uid/home', function (req, res){
     let toSend = copySchema(res.locals.project)
     toSend = createMessage(req.query, toSend)
     toSend.user_id = req.user.id
+    toSend.user_plan_id = req.user.plan_id
+    toSend.user_email = req.user.email
+    toSend.user_name = req.user.name
     res.render(dir + 'home.html', toSend)
 })
 
@@ -108,6 +143,38 @@ router.get('/:project_uid/manage', function (req, res){
         toSend = createMessage(req.query, toSend)
         toSend.user_id = req.user.id
         res.render(dir + 'adminManageProject.html', toSend)
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
+router.get('/:project_uid/manage/create/plans', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        toSend.user_id = req.user.id
+        res.render(dir + 'adminCreatePlan.html', toSend)
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
+router.get('/:project_uid/manage/modify/plan/:plan_id', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        toSend.user_id = req.user.id
+        db.getXbyY("client_plan", "id", req.params.plan_id, (err, result) => {
+            if (err || result.length == 0){
+                res.redirect("/error/500")
+            } else {
+                toSend.plan_id = req.params.plan_id
+                toSend.plan_label = result[0].label
+                toSend.plan_price = result[0].price
+                toSend.plan_description = result[0].description
+                res.render(dir + 'adminModifyPlan.html', toSend)
+            }
+        })
     } else {
         res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
     }

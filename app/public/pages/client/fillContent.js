@@ -114,7 +114,6 @@ function fillContent(type, projectUid, pageId, userId, devId){
                 fetch(`/db/dev/get/page/${projectUid}/${pageId}/headers`).then((data) => {
                     return data.json()
                 }).then((headersData) => {
-                    console.log(headersData)
                     let apiId = apiData.result[0].api_id
                     let headerForm = ``
                     let inputForm = ``

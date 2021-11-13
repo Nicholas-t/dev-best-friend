@@ -5,7 +5,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>(Admin) Create Page</title>
+  <title>(Admin) Modify Plan</title>
   <!-- plugins:css -->
   <link rel="stylesheet" href="/static/vendors/feather/feather.css">
   <link rel="stylesheet" href="/static/vendors/ti-icons/css/themify-icons.css">
@@ -52,43 +52,56 @@
             <div class="col-12 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Create new Page </h4>
-                    <form action="/db/dev/add/page/<%=uid%>" method="POST" class="forms-sample">
+                    <h4 class="card-title">Modify plan</h4>
+                    <form action="/db/dev/add/plan/<%=uid%>" method="POST" class="forms-sample">
                         <div class="form-group">
-                          <label>Page Path &nbsp;&nbsp;&nbsp;&nbsp;<small>This will be part of the path (e.g. your page path would be /p/<%=uid%>/<strong id="new_path">path</strong> </small></label>
-                          <input readonly="readonly" type="text" name="path" class="form-control" id="path" placeholder="Path" required>
+                          <label>Plan Label</label>
+                          <input required type="text" name="label" class="form-control" id="label" value="<%=plan_label%>" placeholder="label"> 
                         </div>
+                        <input type="hidden" name="id" class="form-control" id="plan_id" value="<%=plan_id%>"> 
 
                         <div class="form-group">
-                          <label>Name</label>
-                          <input onchange="refreshPath()" required type="text" name="name" class="form-control" id="name" placeholder="Name">
+                          <label>Price (€) &nbsp;&nbsp;&nbsp; <small>put 0 for freemium</small></label>
+                          <input required type="number" name="price" class="form-control" id="price" value="<%=plan_price%>" placeholder="Price">
                         </div>
                         
-                          <div class="form-group">
-                            <label>Type</label>
-                            <select class="form-control" name="type" id="type">
-                            </select>
-                          </div>
-                      
-                          <div class="form-group">
-                            <div class="row">
-                              <div class="col-md-9">
-                                <label>Icon</label>
-                                <select onchange="changeIconPreview()" class="form-control" name="icon" id="icon-list">
-                                </select>
-                              </div>
-                              <div style="font-size: 40px;margin-top: 20px;" class="col-md-3" id="icon-preview">
-                                  <i class="icon-play menu-icon"></i>
-                              </div>
-                            </div>
-                          </div>
-                    
+                        <div class="form-group">
+                          <label>Description &nbsp;&nbsp;&nbsp; <small>optional</small></label>
+                          <input type="text" name="description" class="form-control" id="description" value="<%=plan_description%>"placeholder="Description">
+                        </div>
+
                         <button type="submit" class="btn btn-primary mr-2">Submit</button>
-                        <a href="/p/<%=uid%>/admin" class="btn btn-light">Cancel</a>
+                        <a href="/p/<%=uid%>/manage" class="btn btn-light">Cancel</a>
                     </form>
                   </div>
                 </div>
             </div>
+            
+              <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                    <div class="card">
+                      <form action="/db/dev/add/plan/<%=uid%>/<%=plan_id%>/api" method="POST">
+                        <div class="card-body" id="modify-form">
+
+                        </div>
+                        <button type="submit" style="margin-left: 10px;margin-bottom: 10px;" class="btn btn-primary mr-2">Submit</button>
+                        <div onclick="addItemPlan()" style="margin-left: 10px;margin-bottom: 10px;" class="btn btn-success mr-2">Add new item</div>
+                      </form>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Danger zone</h4>
+                  <form action="/db/dev/delete/plan/<%=uid%>/<%=plan_id%>" method="POST" class="forms-sample">
+                      <button type="submit" class="btn btn-danger mr-2">Delete plan</button>
+                  </form>
+                </div>
+              </div>
+          </div>
         </div>
         <footer class="footer" include-html="/static/pages/frame/footer.html">
         </footer>
@@ -101,22 +114,12 @@
   <script src="/static/js/template.js"></script>
   <script src="/static/js/settings.js"></script>
   <script src="/static/js/todolist.js"></script>
-  <script src="/static/js/includeHtml.js"></script>
-
-  
-    <script src="/static/pages/client/refreshPath.js"></script>
-    <script>
-        //for refreshing path
-        const uid = "<%=uid%>"
-    </script>
-
-
-    <script src="/static/pages/client/fillIconPage.js"></script>
-    <script>
-      fillIconPage("<%=icon%>")
-    </script>
-
-    <script src="/static/pages/client/fillPageType.js"></script>
+  <script src="/static/js/includeHtml.js"></script>  
+  <script>
+    const planId = "<%=plan_id%>"
+    const uid = "<%=uid%>"
+  </script>
+  <script src="/static/pages/client/fillPlanForm.js"></script>
 
     <script src="/static/pages/client/isAdmin.js"></script>
     <script>
@@ -131,10 +134,10 @@
     <!--TOASTR-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
-    <script src="/static/js/createMessage.js"></script>
-    <script>
-      createMessage("<%=message%>", "<%=messageType%>")
-    </script>
+  <script src="/static/js/createMessage.js"></script>
+  <script>
+    createMessage("<%=message%>", "<%=messageType%>")
+  </script>
 </body>
 
 </html>

@@ -89,6 +89,7 @@
  var clientPlanSchema = {
     id : "",
     project_id : "",
+    description : "",
     price: 0,
     label : ""
  }

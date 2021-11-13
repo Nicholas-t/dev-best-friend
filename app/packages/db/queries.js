@@ -97,6 +97,7 @@ var createClientPlanTable = `
 CREATE TABLE IF NOT EXISTS client_plan (
     id  varchar(100) NOT NULL PRIMARY KEY UNIQUE,
     project_id  varchar(100) NOT NULL,
+    description  varchar(150) NOT NULL,
     price int(11) NOT NULL,
     label  varchar(100) NOT NULL
 )`;
