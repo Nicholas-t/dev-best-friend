@@ -41,7 +41,7 @@
   */
  var clientCreditSchema = {
      client_id : "",
-     plan_item_id : "",
+     api_id : "",
      credit: 0
  }
  

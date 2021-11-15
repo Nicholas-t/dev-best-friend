@@ -57,7 +57,7 @@ function createRequest(method, endpoint, outputType, client_id, api_id, project_
             if (response.error){
                 createMessage(response.error, "error")
             } else {
-                if (response.credit_used >= response.credit_available){
+                if (response.credit_available <= 0){
                     createMessage("You have used all your credits", "error")
                 } else {
                     _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, log, idSelector, outputType, dev_id)

@@ -183,6 +183,14 @@ class databaseHandler {
         this.con.query(query, cb);
     }
 
+    decrementCreditUser(clientId, apiId, cb){
+        let query = `UPDATE client_credit
+        SET credit = credit - 1
+        WHERE client_id = '${clientId}'
+        AND api_id = '${apiId}';`
+        this.con.query(query, cb);
+    }
+
     getAvailableApiInProject(projectUid, cb){
         let query = `SELECT 
             DISTINCT client_plan_item.api_id
@@ -205,31 +213,20 @@ class databaseHandler {
 
     checkUserAvailableCredit(apiId, userId, planId, cb){
         let query = `SELECT *
-            FROM client_plan_item
-            WHERE client_plan_item.plan_id = '${planId}'
-            AND client_plan_item.api_id = '${apiId}';`
-        const out = {}
-        this.con.query(query, (err, apiPlanItem) => {
+            FROM client_credit
+            WHERE client_credit.client_id = '${userId}'
+            AND client_credit.api_id = '${apiId}';`
+        this.con.query(query, (err, clientCreditItem) => {
             if (err){
                 cb(err, null)
             } else {
-                if (apiPlanItem.length == 0){
+                let out = {}
+                if (clientCreditItem.length == 0){
                     out.error = "No credit for this API"
                     cb(err, out)
                 } else {
-                    out.credit_available = apiPlanItem[0].credit
-                    query = `SELECT *
-                        FROM log
-                        WHERE log.api_id = '${apiId}'
-                        AND log.client_id = '${userId}';`
-                    this.con.query(query, (err, logItems) => {
-                        if (err){
-                            cb(err, null)
-                        } else {
-                            out.credit_used = logItems.length
-                            cb(err, out)
-                        }
-                    })
+                    out.credit_available = clientCreditItem[0].credit
+                    cb(err, out)
                 }
             }
         })

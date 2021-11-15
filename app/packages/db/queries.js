@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS client (
  */
 var createClientCreditTable = `
 CREATE TABLE IF NOT EXISTS client_credit (
-    client_id  varchar(100) NOT NULL PRIMARY KEY,
-    plan_item_id  varchar(100) NOT NULL,
+    client_id  varchar(100) NOT NULL,
+    api_id  varchar(100) NOT NULL,
     credit int(11) NOT NULL
 )`;
 
@@ -129,6 +129,42 @@ CREATE TABLE IF NOT EXISTS page (
     time_created int(11) NOT NULL,
     type varchar(100) NOT NULL,
     external_url varchar(100)
+)`;
+
+
+/**
+ * Store data of the client's batch processes
+ */
+ var createBatchProcessTable = `
+CREATE TABLE IF NOT EXISTS batch_process (
+    id  varchar(100) NOT NULL PRIMARY KEY UNIQUE,
+    page_id  varchar(100) NOT NULL,
+    client_id  varchar(100) NOT NULL,
+    project_id  varchar(100) NOT NULL,
+    max_row  int(11) NOT NULL,
+    status  int(3) NOT NULL
+)`;
+
+ /**
+  * Store data of the batch page
+  */
+  var createBatchInputTable = `
+  CREATE TABLE IF NOT EXISTS batch_input (
+     page_id  varchar(100) NOT NULL,
+     in_file  int(3) NOT NULL,
+     key  varchar(100) NOT NULL,
+     label  varchar(100) NOT NULL
+ )`;
+
+ /**
+  * Store data of the batch page
+  */
+ var createBatchHeaderTable = `
+ CREATE TABLE IF NOT EXISTS batch_header (
+    page_id  varchar(100) NOT NULL,
+    in_file  int(3) NOT NULL,
+    key  varchar(100) NOT NULL,
+    label  varchar(100) NOT NULL
 )`;
 
 /**

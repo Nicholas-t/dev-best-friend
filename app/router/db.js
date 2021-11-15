@@ -14,7 +14,8 @@ const {
     headersSchema,
     itemHeadersSchema,
     clientPlanSchema,
-    clientPlanItemSchema
+    clientPlanItemSchema,
+    clientCreditSchema
   } = require('../packages/schema')
   
 const {
@@ -90,10 +91,17 @@ router.post('/dev/add/log', function (req, res){
         log.project_id = input.project_id
         log.timestamp = Math.round(Number(new Date) / 1000)
         log.status = input.status
-        db.add("log", log, (err, result) => {
-            res.json({
-                error : err
+        if (input.client_id && (log.status == 200 || log.status == 300)){
+            db.decrementCreditUser(input.client_id, input.api_id, (err, result) => {
+                if (err){
+                    console.error(err)
+                }
             })
+        }
+        db.add("log", log, (err, result) => {
+            if (err){
+                console.error(err)
+            }
         })
     } catch (e){
         console.error(e)
@@ -335,8 +343,27 @@ router.post('/client/edit/plan', function (req, res){
                 success : false
             })
         } else {
-            res.json({
-                success : true
+            db.getXbyY("client_plan_item", "plan_id", planId.plan_id, (err, result) => {
+                if (err){
+                    res.json({
+                        success : false
+                    })
+                } else {
+                    for (let i = 0 ; i < result.length ; i++){
+                        const clientCredit = copySchema(clientCreditSchema)
+                        clientCredit.client_id = req.user.id
+                        clientCredit.api_id = result[i].api_id
+                        clientCredit.credit = result[i].credit
+                        db.add("client_credit", clientCredit, (err, result) => {
+                            if (err){
+                                console.log(err)
+                            }
+                        })
+                    }
+                    res.json({
+                        success : true
+                    })
+                }
             })
         }
     })
@@ -823,6 +850,20 @@ router.get('/dev/get/users/log/:user_id', function (req, res){
 
 router.get('/dev/get/users/log/:user_id/:api_id', function (req, res){
     db.getUserLog(req.params.user_id, req.params.api_id, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
+router.get('/dev/get/users/credit', function (req, res){
+    db.getXbyY("client_credit", "client_id", req.user.id, (err, result) => {
         if (err){
             res.json({
                 error : err

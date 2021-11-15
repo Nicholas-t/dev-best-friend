@@ -4,6 +4,9 @@ const pageTypes = {
     playground : {
         label : "Playground",
         description : "A playground for your API with form like interface"
+    }, batch : {
+        label : "Batch",
+        description : "Allow your users to upload csv and call your API in batch"
     }, dashboard : {
         label : "Dashboard",
         description : "Dashboard from your API's with a predefined parameter"
@@ -1526,6 +1529,19 @@ const whiteListedProjectPath = [
     "login", "home", "register", "admin", "manage", "choose-plan"
 ]
 
+const batchStatus = {
+    1 : {
+        key : "in_progress",
+        label : "In Progress ...."
+    }, 2 : {
+        key : "completed",
+        label : "Completed"
+    }, 3 : {
+        key : "error",
+        label : "Error"
+    }
+}
+
 module.exports = {
     pageTypes,
 	userTypes,
@@ -1535,5 +1551,6 @@ module.exports = {
     iconList,
     iconPage,
     messages,
-    whiteListedProjectPath
+    whiteListedProjectPath,
+    batchStatus
 }
