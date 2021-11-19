@@ -79,10 +79,12 @@
     const userId = "<%=user_id%>"
     const admin = isAdmin(devId, userId)
   </script>
+  <script src="/static/pages/client/processFile.js"></script>
   <script src="/static/pages/client/fillContent.js"></script>
   <script>
     const pagePath = "<%=page_path%>"
     const pageId = "<%=page_id%>"
+    const pageIcon = "<%=page_icon%>"
     let itemLocations = []
     fillContent("<%=type%>", "<%=uid%>", "<%=page_id%>", "<%=user_id%>", "<%=dev_id%>")
   </script>

@@ -1498,6 +1498,8 @@ const messages = {
         delete_api : "Sorry, something went wrong when deleting the API.",
         delete_project : "Sorry, something went wrong when deleting the Project.",
         delete_page : "Sorry, something went wrong when deleting the Page.",
+        size_too_big : "The file you uploaded is too large (4 MB Max.)",
+        create_batch : "Unable to upload batch, please contact the developer."
     },
     success : {
         login : "Log in succesful. Welcome back.",
@@ -1517,7 +1519,9 @@ const messages = {
         modify_api : "API is succesfully modified.",
         delete_api : "API is succesfully deleted.",
         delete_page : "Page is succesfully deleted.",
-        delete_plan : "Plan is succesfully deleted."
+        delete_plan : "Plan is succesfully deleted.",
+        create_batch : "Batch uploaded succesfully.",
+        modify_batch : "Batch modified succesfully."
     },
     info : {
         logout : "Logged out",
@@ -1530,15 +1534,27 @@ const whiteListedProjectPath = [
 ]
 
 const batchStatus = {
-    1 : {
-        key : "in_progress",
-        label : "In Progress ...."
+    0 : {
+        key : "unprocessed",
+        label : "Unprocessed",
+        button_type : "Unprocessed",
+        button_type : "info"
+    }, 1 : {
+        key : "processed",
+        label : "Processed",
+        button_type : "warning"
     }, 2 : {
         key : "completed",
-        label : "Completed"
+        label : "Completed",
+        button_type : "success"
     }, 3 : {
         key : "error",
-        label : "Error"
+        label : "Error",
+        button_type : "danger"
+    }, 4 : {
+        key : "terminated",
+        label : "Terminated",
+        button_type : "warning"
     }
 }
 

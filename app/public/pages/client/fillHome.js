@@ -13,6 +13,7 @@ function fillHome(uid, planId, userId){
         for (let i = 0 ; i < data.result.length ; i++){
             clientCreditData[data.result[i].api_id] = data.result[i].credit
         }
+        console.log(clientCreditData)
         fetch(`/db/dev/get/plan/${uid}/${planId}/api`).then((data) => {
             return data.json()
         }).then((data) => {
@@ -34,7 +35,9 @@ function fillHome(uid, planId, userId){
                         aria-valuenow="${width}" 
                         aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <p class="mb-0">${(clientCreditData[planApi.api_id])} Credits</p>
+                        <p class="mb-0">${clientCreditData[planApi.api_id]
+                        ? clientCreditData[planApi.api_id]
+                        : 0} Credits</p>
                     </div>
                     <hr>
                     `

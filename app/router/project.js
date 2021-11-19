@@ -3,8 +3,12 @@ var axios = require('axios')
 const querystring = require('querystring');
 const {
     copySchema,
-    createMessage
+    createMessage,
+    getCurrentTime
 } = require('../packages/util')
+
+const { v4: uuidv4 } = require('uuid');
+
 let db = null
 
 try{
@@ -26,6 +30,7 @@ try{
 const dir = __dirname + '/../public/pages/client/'
 var express = require('express');
 const e = require('express');
+const { batchProcessSchema } = require('../packages/schema');
 var router = express.Router()
 
 router.use('/', function (req, res, next){
@@ -218,11 +223,45 @@ router.get('/:project_uid/:path', function (req, res){
                     toSend.page_name = result[i].name
                     toSend.page_path = result[i].path
                     toSend.type = result[i].type
+                    toSend.page_icon = result[i].icon
                 }
             }
             res.render(dir + 'content.html', toSend)
         }
     })
+})
+
+router.post('/:project_uid/:path/:page_id/batch', function (req, res){
+    let file = req.files.file;
+    if (file.size > 4000000){
+        res.redirect(`/p/${req.params.project_uid}/${req.params.path}?error=size_too_big`)
+    } else {
+        const processId = uuidv4()
+        file.mv('./batch/uploads/' + processId + '.csv', () => {
+            const batchProcess = copySchema(batchProcessSchema)
+            batchProcess.id = processId
+            batchProcess.page_id = req.params.page_id
+            batchProcess.client_id = req.user.id
+            batchProcess.time_created = getCurrentTime()
+            db.add("batch_process", batchProcess, (err, result) => {
+                if(err){
+                    res.redirect(`/p/${req.params.project_uid}/${req.params.path}?error=create_batch`)
+                } else {
+                    res.redirect(`/p/${req.params.project_uid}/${req.params.path}/batch/${processId}?success=create_batch`)
+                }
+            })
+        });
+    }
+})
+
+router.get('/:project_uid/:path/batch/:process_id', function (req, res){
+    let toSend = copySchema(res.locals.project)
+    toSend = createMessage(req.query, toSend)
+    toSend.user_id = req.user.id
+    toSend.page_id = req.params.page_id
+    toSend.page_path = req.params.path
+    toSend.process_id = req.params.process_id
+    res.render(dir + 'batchView.html', toSend)
 })
 
 module.exports = router

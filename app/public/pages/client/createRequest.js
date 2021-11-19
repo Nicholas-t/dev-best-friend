@@ -1,5 +1,6 @@
 
-function _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, log, idSelector, outputType, dev_id){
+function _createRequest(method, endpoint, params, client_id, api_id,
+     project_id, headers, log, idSelector, outputType, dev_id, cb){
     let requestStatus = 0
     fetch(`/dev/api/create-request`, {
         method: 'POST',
@@ -18,16 +19,18 @@ function _createRequest(method, endpoint, params, client_id, api_id, project_id,
         requestStatus = data.status
         return data.json()
     }).then((data) => {
-        if (outputType == "JSON"){
-            document.getElementById(`${idSelector}`).innerHTML = `<textarea disabled id="${idSelector}-content" class="form-control" rows="20"></textarea>`
-            document.getElementById(`${idSelector}-content`).value = JSON.stringify(data, null, 4)
-        } else if (outputType == "Table") {
-            document.getElementById(`${idSelector}`).innerHTML = createTable(data)
-        } else if (outputType == "Chart") {
-            document.getElementById(`${idSelector}`).innerHTML = `
-            <canvas id="${idSelector}-chart"></canvas>
-            `
-            createChart(data, `${idSelector}-chart`)
+        if (idSelector){
+            if (outputType == "JSON"){
+                document.getElementById(`${idSelector}`).innerHTML = `<textarea disabled id="${idSelector}-content" class="form-control" rows="20"></textarea>`
+                document.getElementById(`${idSelector}-content`).value = JSON.stringify(data, null, 4)
+            } else if (outputType == "Table") {
+                document.getElementById(`${idSelector}`).innerHTML = createTable(data)
+            } else if (outputType == "Chart") {
+                document.getElementById(`${idSelector}`).innerHTML = `
+                <canvas id="${idSelector}-chart"></canvas>
+                `
+                createChart(data, `${idSelector}-chart`)
+            }
         }
         if (log){
             fetch(`/db/dev/add/log`, {
@@ -45,9 +48,14 @@ function _createRequest(method, endpoint, params, client_id, api_id, project_id,
                 })
             })
         }
+        cb(data, null)
+    }).catch((e)=>{
+        console.log(e)
+        cb(null, e)
     })
 }
-function createRequest(method, endpoint, outputType, client_id, api_id, project_id, dev_id, idSelector, _params = null, log = true, _headers = null){
+function createRequest(method, endpoint, outputType, client_id, api_id, project_id, dev_id, 
+    idSelector = null, _params = null, log = true, _headers = null, cb = () => {}){
     const params = !_params ? getParams() : _params
     const headers = !_headers ? getHeaders() : _headers
     if(log && !admin){
@@ -56,16 +64,17 @@ function createRequest(method, endpoint, outputType, client_id, api_id, project_
         }).then((response) => {
             if (response.error){
                 createMessage(response.error, "error")
+                cb(null, "Insufficient Credit")
             } else {
                 if (response.credit_available <= 0){
                     createMessage("You have used all your credits", "error")
                 } else {
-                    _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, log, idSelector, outputType, dev_id)
+                    _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, log, idSelector, outputType, dev_id, cb)
                 }
             }
         })
     } else {
-        _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, log, idSelector, outputType, dev_id)
+        _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, log, idSelector, outputType, dev_id, cb)
     }
 }
 

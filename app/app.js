@@ -4,6 +4,7 @@ var express = require('express');
 var bodyparser = require('body-parser');
 const passport = require('passport');
 const session =  require('express-session');
+const fileUpload = require('express-fileupload');
 var axios = require('axios');
 var bcrypt = require('bcrypt');
 
@@ -19,6 +20,10 @@ const mail = new mailHandler();
 var app = express()
 app.engine('html', require('ejs').renderFile);
 const urlencodedParser = bodyparser.urlencoded({ extended: true })
+
+app.use(fileUpload({
+  createParentPath: true
+}));
 
 app.use('/static', express.static(__dirname + '/public'));
 app.use(urlencodedParser)

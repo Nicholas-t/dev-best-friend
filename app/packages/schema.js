@@ -196,6 +196,57 @@ var playgroundSchema = {
     location_y : 0
 }
 
+
+
+/**
+ * Store data of the batch pages configuration
+ */
+ var batchConfigSchema = {
+    id : "",
+    page_id: "",
+    api_id: "",
+    layout : 0,
+    heading: "",
+    subheading: "",
+    check_credit_before_run : false
+}
+
+/**
+ * Store data of the client's batch processes
+ */
+ var batchProcessSchema = {
+    id : "",
+    page_id: "",
+    client_id: "",
+    time_created : 0,
+    time_finished : 0,
+    status : 0
+}
+
+
+ /**
+  * Store data of the batch page
+  */
+  var batchInputSchema = {
+     page_id: "",
+     default_value: "",
+     key_item: "",
+     label : ""
+}
+
+
+
+ /**
+  * Store data of the batch page
+  */
+ var batchHeaderSchema = {
+    page_id: "",
+    default_value: "",
+    key_item: "",
+    label : ""
+}
+
+
  module.exports= {
     userPwSchema,
     devSchema,
@@ -213,5 +264,9 @@ var playgroundSchema = {
     dashboardItemSchema,
     itemInputSchema,
     itemHeadersSchema,
-    itemLocationSchema
+    itemLocationSchema,
+    batchConfigSchema,
+    batchProcessSchema,
+    batchInputSchema,
+    batchHeaderSchema
  }

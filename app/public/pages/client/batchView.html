@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Batch <%=process_id%></title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="/static/vendors/feather/feather.css">
+  <link rel="stylesheet" href="/static/vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="/static/vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <link rel="stylesheet" href="/static/vendors/mdi/css/materialdesignicons.min.css">
+  <!-- Plugin css for this page -->
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="/static/css/vertical-layout-light/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="/static/images/favicon.png" />
+  <style>
+    #loader-container{
+      width:100%;
+      height:100%;
+      left: 0px;
+      top: 0px;
+      position : fixed;
+      background-color: aliceblue;
+    }
+    .loader {
+      border: 16px solid #f3f3f3; /* Light grey */
+      border-top: 16px solid #3498db; /* Blue */
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      animation: spin 2s linear infinite;
+      position: fixed;
+      top: 45%;
+      left: 50%;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-scroller">
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <a class="navbar-brand brand-logo mr-5" href="/"><img src="/static/images/logo-white.png" class="mr-2" alt="logo"/></a>
+        <a class="navbar-brand brand-logo-mini" href="/"><img src="/static/images/logo-white.png" alt="logo"/></a>
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="icon-menu"></span>
+        </button>
+        <ul class="navbar-nav navbar-nav-right" include-html="/static/pages/frame/navbar-right.html">
+          
+        </ul>
+        
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+          <span class="icon-menu"></span>
+        </button>
+      </div>
+    </nav>
+    <div class="container-fluid page-body-wrapper">
+      <nav class="sidebar sidebar-offcanvas">
+        <ul class="nav"  id="sidebar">
+
+        </ul>
+      </nav>
+      <div class="main-panel">
+        <div class="content-wrapper">
+            <!--Content here-->
+            
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Batch Processes </h4>
+                  
+                  <small>ID : <%=process_id%> &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;<i id="batch_status"></i></small> <br> <br>
+                  <div class="row">
+                    <button id="process_content_button" onclick="processContent()" style="margin-left: 20px;" class="btn btn-primary">Process Batch</button>
+                    <button id="download_content_button" onclick="downloadContent()" style="margin-left: 20px;" disabled class="btn btn-success">Download Result</button>
+                    <a href="/p/<%=uid%>/<%=page_path%>" style="margin-left: 20px;" class="btn btn-info">Upload new batch</a>
+                  </div> <br> <br>
+                  <div class="table-responsive" id="uploaded_content">
+                    <table class="table table-hover">
+                      <thead id="uploaded_content_header">
+                      </thead>
+                      <tbody id="uploaded_content_rows">
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+        
+        <div style="display:none;" id="loader-container">
+          <div class="loader"></div>
+        </div>
+        <footer class="footer" include-html="/static/pages/frame/footer.html">
+        </footer>
+      </div>
+    </div>
+  </div>
+  <script src="/static/vendors/js/vendor.bundle.base.js"></script>
+  <script src="/static/js/off-canvas.js"></script>
+  <script src="/static/js/hoverable-collapse.js"></script>
+  <script src="/static/js/template.js"></script>
+  <script src="/static/js/settings.js"></script>
+  <script src="/static/js/todolist.js"></script>
+  <script src="/static/js/includeHtml.js"></script>
+
+  <script src="/static/pages/client/createRequest.js"></script>
+  
+    <script>
+        //for refreshing path
+        const uid = "<%=uid%>"
+        const userId = "<%=user_id%>"
+        const devId = "<%=dev_id%>"
+        let processId = "<%=process_id%>"
+    </script>
+    <script src="/static/pages/client/isAdmin.js"></script>
+    <script>
+        const admin = isAdmin("<%=dev_id%>", "<%=user_id%>")
+    </script>
+    <script src="/static/pages/client/fillNav.js"></script>
+    <script>
+        fillNav("<%=uid%>")
+    </script>
+
+    <script src="/static/pages/client/fillBatchContent.js"></script>
+    <script>
+        fillBatchContent()
+    </script>
+    <!--TOASTR-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+  <script src="/static/js/createMessage.js"></script>
+  <script>
+    createMessage("<%=message%>", "<%=messageType%>")
+  </script>
+</body>
+
+</html>

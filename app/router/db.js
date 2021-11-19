@@ -1,6 +1,7 @@
 require('dotenv').config();
 var axios = require('axios')
 const querystring = require('querystring');
+var path = require('path');
 
 const {
     apiSchema,
@@ -15,19 +16,26 @@ const {
     itemHeadersSchema,
     clientPlanSchema,
     clientPlanItemSchema,
-    clientCreditSchema
+    clientCreditSchema,
+    batchConfigSchema,
+    batchInputSchema,
+    batchHeaderSchema
   } = require('../packages/schema')
   
 const {
     encrypt,
     decrypt,
     copySchema,
-    getCurrentTime
+    getCurrentTime,
+    delay
 } = require('../packages/util')
 
 const fs = require("fs")
 const { v4: uuidv4 } = require('uuid');
 const mdDir = __dirname + `/../public/pages/client/md/`
+const resultBatchDir = __dirname + `/../batch/result/`
+const batchHandler = require('../packages/batchHandler/batchHandler')
+const bh = new batchHandler()
 
 let db = null
 
@@ -198,6 +206,122 @@ router.get('/dev/get/plan/:project_uid', function (req, res){
         }
     })
 })
+
+router.get('/dev/get/process/:page_id', function (req, res){
+    db.getAllProcessesOfPage(req.params.page_id, req.user.id, (err, result) => {
+        res.json(result)
+    })
+})
+
+router.get('/dev/get/batch/:process_id/config', function (req, res){
+    db.getBatchProcessDetail(req.params.process_id, (err, result)=>{
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
+router.get('/dev/get/batch/:process_id/content', function (req, res){
+    bh.readUploadedBatchAsJson(req.params.process_id, (result) => {
+        res.json({
+            result
+        })
+    })
+})
+
+router.post('/dev/modify/batch/:process_id/status/:new_status', function (req, res){
+    const modifyProcess = {
+        status : req.params.new_status
+    }
+    if (req.params.new_status == 2){
+        modifyProcess.time_finished = getCurrentTime()
+    }
+    db.modify("batch_process", modifyProcess, "id", req.params.process_id, (err, result) => {
+        if (err){
+            console.log(err)
+        }
+    })
+})
+
+router.get('/dev/get/batch/:process_id', function (req, res){
+    db.getXbyY("batch_process", "id", req.params.process_id, (err, result)=>{
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
+router.post('/dev/process/batch/:process_id', function (req, res){
+    bh.readUploadedBatchAsJson(req.params.process_id, (uploadedData) => {
+        db.getBatchProcessDetail(req.params.process_id, (err, batchDetail)=>{
+            db.getXbyY("api", "id", batchDetail.api_id, async (err, result) => {
+                const apiDetail = result[0]
+                for(let i = 0 ; i < uploadedData.length ; i++){
+                    let curParams = {}
+                    let curHeader = {}
+                    for (let j = 0 ; j < batchDetail.input.length ; j++){
+                        const keyItem = batchDetail.input[j].key_item
+                        curParams[`${keyItem}`] = uploadedData[i][keyItem] 
+                            ? uploadedData[i][keyItem]
+                            : batchDetail.input[j].default_value
+                    }
+                    for (let j = 0 ; j < batchDetail.header.length ; j++){
+                        const keyItem = batchDetail.header[j].key_item
+                        curHeader[`${keyItem}`] = uploadedData[i][keyItem] 
+                            ? uploadedData[i][keyItem]
+                            : batchDetail.header[j].default_value
+                    }
+                    await delay(3000)
+                    let newRow = {}
+                    if (apiDetail.method === "POST") {
+                        newRow = await axios({
+                            method: apiDetail.method,
+                            url: apiDetail.endpoint,
+                            data: curParams,
+                            headers: curHeader
+                        }).then((response) => {
+                            return response.data
+                        })
+                    } else if (apiDetail.method === "GET"){
+                        newRow = await axios({
+                            method: apiDetail.method,
+                            url: apiDetail.endpoint,
+                            params: curParams,
+                            headers: curHeader
+                        }).then((response) => {
+                            return response.data
+                        })
+                    }
+                    await db.decrementCreditUser(req.user.id, apiDetail.id, () => {})
+                    bh.addResultBatch(req.params.process_id, newRow, (err) => {
+                        if (err){
+                            console.log(err)
+                            res.json({success:false})
+                        }
+                    })
+                }
+                res.json({success:true})
+            })
+        })
+    })
+})
+
+router.get('/dev/get/batch/:process_id/download', function (req, res){
+    res.sendFile(path.resolve(`${resultBatchDir}${req.params.process_id}.csv`))
+})
+
 
 router.get('/dev/get/plan/:project_uid/:plan_id', function (req, res){
     db.getXbyY("client_plan", "id", req.params.plan_id, (err, result) => {
@@ -431,6 +555,49 @@ router.post('/dev/edit/page/:project_uid/:page_id/playground', function (req, re
     })
 })
 
+
+router.post('/dev/edit/page/:project_uid/:page_id/batch', function (req, res){
+    db.remove("batch_config", "page_id", req.params.page_id, (err, result) => {
+        const batchConfig = copySchema(batchConfigSchema)
+        batchConfig.id = uuidv4()
+        batchConfig.page_id = req.params.page_id
+        batchConfig.api_id = req.body.api
+        batchConfig.heading = req.body.heading
+        batchConfig.subheading = req.body.subheading
+        batchConfig.check_credit_before_run = req.body.check_credit_before_run === 'on'
+            ? true
+            : false
+        db.add("batch_config", batchConfig, (err, result) => {
+            db.remove("batch_input", "page_id", req.params.page_id, (err, result) => {
+                db.remove("batch_header", "page_id", req.params.page_id, (err, result) => {
+                    let keys = Object.keys(req.body)
+                    for (let i = 0 ; i < keys.length ; i++){
+                        if (keys[i].includes("key-")){
+                            const type = keys[i].includes("input-")
+                                ? "input"
+                                : "header"
+                            const itemSchema = keys[i].includes("input-")
+                                ? batchInputSchema
+                                : batchHeaderSchema
+                            const n = keys[i].replace(`key-${type}-`, "")
+                            itemSchema.page_id = req.params.page_id
+                            itemSchema.default_value = req.body[`default-value-${type}-${n}`]
+                            itemSchema.key_item = req.body[`key-${type}-${n}`]
+                            itemSchema.label = req.body[`label-${type}-${n}`]
+                            db.add(`batch_${type}`, itemSchema, (err, result) => {
+                                if(err){
+                                    console.log(err)
+                                }
+                            })
+                        }
+                    }
+                    res.redirect(`/p/${req.params.project_uid}/admin?success=modify_batch`)
+                })
+            })
+        })
+    })
+})
+
 router.post('/dev/edit/page/:project_uid/:page_id/dashboard-item', function (req, res){
     const dashboardItemId = {}
     const itemInputKeys = []
@@ -628,6 +795,53 @@ router.get('/dev/get/page/:project_uid/:page_id/api', function (req, res){
         })
     }
 })
+
+router.get('/dev/get/page/:project_uid/:page_id/batch-config', function (req, res){
+    try {
+        db.getXbyY("batch_config", "page_id", req.params.page_id, (err, result) => {
+            res.json({
+                result
+            })
+        })
+    } catch (e) {
+        console.error(e)
+        res.json({
+            error: e
+        })
+    }
+})
+
+router.get('/dev/get/page/:project_uid/:page_id/batch-input', function (req, res){
+    try {
+        db.getXbyY("batch_input", "page_id", req.params.page_id, (err, result) => {
+            res.json({
+                result
+            })
+        })
+    } catch (e) {
+        console.error(e)
+        res.json({
+            error: e
+        })
+    }
+})
+
+router.get('/dev/get/page/:project_uid/:page_id/batch-header', function (req, res){
+    try {
+        db.getXbyY("batch_header", "page_id", req.params.page_id, (err, result) => {
+            res.json({
+                result
+            })
+        })
+    } catch (e) {
+        console.error(e)
+        res.json({
+            error: e
+        })
+    }
+})
+
+
 
 router.get('/dev/get/page/:project_uid/:page_id/dashboard-item', function (req, res){
     try {

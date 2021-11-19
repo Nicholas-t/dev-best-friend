@@ -238,14 +238,77 @@ function addNewHeader(header){
     }
 }
 
+function addBatchItem(type, batchItem){
+    let d = `
+    <div id="batch-${type}-${l}">
+        <div class="row">
+            <div class="form-group col-6">
+                <label>Key &nbsp;&nbsp;&nbsp; <small>(Column to add in the csv)</small></label>
+                <input ${batchItem ? `value="${batchItem.key_item}"`: ""} required type="text" class="form-control" id="key-${type}-${l}" name="key-${type}-${l}" placeholder="Key">
+            </div>
+            <div class="form-group col-6">
+                <label>Label &nbsp;&nbsp;&nbsp; <small>(Short description of the column)</small></label>
+                <input ${batchItem ? `value="${batchItem.label}"`: ""} required type="text" class="form-control" id="label-${type}-${l}" name="label-${type}-${l}" placeholder="Label">
+            </div>
+            <div class="form-group col-6">
+                <label>Default value &nbsp;&nbsp;&nbsp; <small>(Optional)</small></label>
+                <input ${batchItem ? `value="${batchItem.default_value}"`: ""} type="text" class="form-control" id="default-value-${type}-${l}" name="default-value-${type}-${l}" placeholder="Default Value">
+            </div>
+            <div class="form-group col-3">
+                <a onclick="removeBatchItem('${type}', ${l})" style="margin-top:30px;" class="btn btn-danger mr-2">Remove</a>
+            </div>
+        </div>
+    </div>
+    `
+    l += 1
+    let items = document.querySelectorAll(`div[id^="batch-${type}-"]`)
+    if (!items.length) {
+        document.getElementById(`batch-${type}`).innerHTML += d;
+    } else {
+        items[items.length-1].insertAdjacentHTML("afterend",d);
+    }
+}
+
+function addBatchConfig(batchConfig){
+    let apiListForm = `<option value=''>Select an API</option>`
+    for (let i = 0 ; i < apiOptions.length ; i++){
+        apiListForm += `<option ${
+            batchConfig 
+            ? batchConfig.api_id === apiOptions[i].id
+                ? "selected" : ""
+            : ""
+        } value="${apiOptions[i].id}">${apiOptions[i].name} (${apiOptions[i].endpoint})</option>`
+    }
+    document.getElementById(`batch-config`).innerHTML += `
+    <div class="row">
+        <div class="form-group col-12">
+            <label>API</label>
+            <select class="form-control" id="api" name="api">${apiListForm}</select>
+        </div>
+        <div class="form-group col-6">
+            <label>Heading</label>
+            <input ${batchConfig ? `value="${batchConfig.heading}"`: ""} required type="text" class="form-control" id="heading" name="heading" placeholder="Heading">
+        </div>
+        <div class="form-group col-6">
+            <label>Sub-heading</label>
+            <input ${batchConfig ? `value="${batchConfig.subheading}"`: ""} type="text" class="form-control" id="subheading" name="subheading" placeholder="Sub-heading">
+        </div>
+    </div>
+    `
+}
 
 function removeInput(n){
     document.getElementById(`input-${n}`).remove()
 }
 
+function removeBatchItem(type, n){
+    document.getElementById(`batch-${type}-${n}`).remove()
+}
+
 function removeHeader(n){
     document.getElementById(`header-${n}`).remove()
 }
+
 
 function _addModifyForm(page, projectUid, pageId){
     if (page.type === "docs"){
@@ -278,7 +341,6 @@ function _addModifyForm(page, projectUid, pageId){
             return data.json()
         }).then((response) => {
             apiOptions = response.available_api
-            console.log(apiOptions)
             if (page.type === "playground"){
                 if (apiOptions.length == 0){
                     createMessage("No API has been assigned to any available plans", "warning")
@@ -346,7 +408,7 @@ function _addModifyForm(page, projectUid, pageId){
                         })
                     })
                 })
-            }else if (page.type === "dashboard"){
+            } else if (page.type === "dashboard"){
                 document.getElementById("modify-form").innerHTML = `
                 <form action="/db/dev/edit/page/${projectUid}/${pageId}/dashboard-item" method="POST" class="forms-sample">
                     <label>Dashboad Item &nbsp;&nbsp;&nbsp;&nbsp;<small>Each dashboard item to be shown in the page and their input</small></label>
@@ -367,7 +429,52 @@ function _addModifyForm(page, projectUid, pageId){
                         addNewItem()
                     }
                 })
-            }
+            } else if (page.type === "batch"){
+                document.getElementById("modify-form").innerHTML = `
+                <form action="/db/dev/edit/page/${projectUid}/${pageId}/batch" method="POST" class="forms-sample">
+                    <label>Batch API &nbsp;&nbsp;&nbsp;&nbsp;<small>Pick an API</small></label>
+                    <div id="batch-config">
+                    </div>
+                    <hr>
+                    <label>API Inputs &nbsp;&nbsp;&nbsp;&nbsp;<small>expected inputs as columns in the csv</small></label>
+                    <div id="batch-input">
+                    <!--Input here-->
+                    </div>
+                    <div onclick="addBatchItem('input')" class="btn btn-success mr-2">Add new input</div>
+                    <hr>
+                    <div id="batch-header">
+                    <label>Headers &nbsp;&nbsp;&nbsp;&nbsp;<small>expected headers as columns in the csv</small></label>
+                    <!--Headers here-->
+                    </div>
+                    <div onclick="addBatchItem('header')" class="btn btn-success mr-2">Add new header</div>
+                    <hr>
+                    <input type="hidden" name="type" value="${page.type}">
+                    <button type="submit" class="btn btn-primary mr-2">Save</button>
+                </form>`
+                fetch(`/db/dev/get/page/${projectUid}/${pageId}/batch-config`).then((data) => {
+                    return data.json()
+                }).then((response) => {
+                    if (response.result.length != 0){
+                        addBatchConfig(response.result[0])
+                    } else {
+                        addBatchConfig()
+                    }
+                    fetch(`/db/dev/get/page/${projectUid}/${pageId}/batch-input`).then((data) => {
+                        return data.json()
+                    }).then((response) => {
+                        response.result.forEach((element) => {
+                            addBatchItem("input", element)
+                        })
+                    })
+                    fetch(`/db/dev/get/page/${projectUid}/${pageId}/batch-header`).then((data) => {
+                        return data.json()
+                    }).then((response) => {
+                        response.result.forEach((element) => {
+                            addBatchItem("header", element)
+                        })
+                    })
+                })
+            } 
         })
     }
 }

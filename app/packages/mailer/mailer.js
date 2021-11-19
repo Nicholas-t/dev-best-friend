@@ -7,7 +7,7 @@ class mailHandler {
 	 * @constructor
 	 */
 	constructor() {
-        this.Description = 'email Handler for DBF including managing questions, etc';
+        this.description = 'email Handler for DBF including managing questions, etc';
         this.con = null;
         this.recepients = [
             'nicholasbudiharsa@gmail.com'

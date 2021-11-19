@@ -54,11 +54,15 @@ function createMessage(query, originalSend = {}){
     }
     return originalSend
 }
+
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+
 module.exports = {
     encrypt,
     decrypt,
 	convertDate,
     copySchema,
     getCurrentTime,
-    createMessage
+    createMessage,
+    delay
 }

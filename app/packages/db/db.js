@@ -17,7 +17,11 @@ var {
     createItemInputTable,
     createItemLocationTable,
     createHeadersTable,
-    createItemHeadersTable
+    createItemHeadersTable,
+    createBatchConfigTable,
+    createBatchProcessTable,
+    createBatchInputTable,
+    createBatchHeaderTable
 } = require('./queries.js');
 
 class databaseHandler {
@@ -65,6 +69,10 @@ class databaseHandler {
         this.createTable(createPlaygroundTable, "playground");
         this.createTable(createDashboardItemTable, "dashboard_item");
         this.createTable(createItemLocationTable, "item_location");
+        this.createTable(createBatchConfigTable, "batch_config");
+        this.createTable(createBatchProcessTable, "batch_process");
+        this.createTable(createBatchInputTable, "batch_input");
+        this.createTable(createBatchHeaderTable, "batch_header");
         return true
     }
 
@@ -231,6 +239,7 @@ class databaseHandler {
             }
         })
     }
+
     getUserByEmail(email, cb){
         let query = `SELECT dev.id, dev.email, dev.name, pw.hashed_password, pw.type
             FROM dev
@@ -281,6 +290,43 @@ class databaseHandler {
                         }
                     }
                 });
+            }
+        });
+    }
+
+    getAllProcessesOfPage(pageId, userId, cb){
+        let query = `SELECT * FROM batch_process
+        WHERE page_id = '${pageId}' AND client_id = '${userId}';`
+        this.con.query(query, cb);
+    }
+
+    getBatchProcessDetail(processId, cb){
+        let query = `SELECT 
+        batch_process.id as process_id, 
+        batch_config.api_id as api_id, 
+        batch_config.page_id as page_id, 
+        batch_config.check_credit_before_run as check_credit_before_run
+            FROM batch_process
+            INNER JOIN batch_config ON batch_config.page_id = batch_process.page_id
+            WHERE batch_process.id = '${processId}';`
+        this.con.query(query, (err, _batchConfig) => {
+            if (err){
+                cb(err, {})
+            } else {
+                const batchConfig = _batchConfig[0]
+                let query = `SELECT *
+                FROM batch_input
+                WHERE batch_input.page_id = '${batchConfig.page_id}';`
+                this.con.query(query, (err, batchInput) => {
+                    batchConfig.input = batchInput
+                    let query = `SELECT *
+                    FROM batch_header
+                    WHERE batch_header.page_id = '${batchConfig.page_id}';`
+                    this.con.query(query, (err, batchHeader) => {
+                        batchConfig.header = batchHeader
+                        cb(err, batchConfig)
+                    })
+                })
             }
         });
     }
@@ -374,6 +420,8 @@ class databaseHandler {
         var valuesList = []
         for (let i = 0 ; i < values.length ; i++){
             if (typeof(values[i]) == 'number'){
+                valuesList.push(`${values[i]}`)
+            } else if (typeof(values[i]) == 'boolean'){
                 valuesList.push(`${values[i]}`)
             } else if (typeof(values[i]) == 'string'){
                 valuesList.push(`'${values[i].replace("'", "\"")}'`)

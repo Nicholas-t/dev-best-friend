@@ -131,42 +131,6 @@ CREATE TABLE IF NOT EXISTS page (
     external_url varchar(100)
 )`;
 
-
-/**
- * Store data of the client's batch processes
- */
- var createBatchProcessTable = `
-CREATE TABLE IF NOT EXISTS batch_process (
-    id  varchar(100) NOT NULL PRIMARY KEY UNIQUE,
-    page_id  varchar(100) NOT NULL,
-    client_id  varchar(100) NOT NULL,
-    project_id  varchar(100) NOT NULL,
-    max_row  int(11) NOT NULL,
-    status  int(3) NOT NULL
-)`;
-
- /**
-  * Store data of the batch page
-  */
-  var createBatchInputTable = `
-  CREATE TABLE IF NOT EXISTS batch_input (
-     page_id  varchar(100) NOT NULL,
-     in_file  int(3) NOT NULL,
-     key  varchar(100) NOT NULL,
-     label  varchar(100) NOT NULL
- )`;
-
- /**
-  * Store data of the batch page
-  */
- var createBatchHeaderTable = `
- CREATE TABLE IF NOT EXISTS batch_header (
-    page_id  varchar(100) NOT NULL,
-    in_file  int(3) NOT NULL,
-    key  varchar(100) NOT NULL,
-    label  varchar(100) NOT NULL
-)`;
-
 /**
  * Store data of inputs in playground pages
  */
@@ -250,6 +214,57 @@ CREATE TABLE IF NOT EXISTS batch_process (
      value  varchar(100) NOT NULL
  )`;
 
+
+
+/**
+ * Store data of the batch pages configuration
+ */
+ var createBatchConfigTable = `
+CREATE TABLE IF NOT EXISTS batch_config (
+    id  varchar(100) NOT NULL PRIMARY KEY UNIQUE,
+    page_id  varchar(100) NOT NULL,
+    api_id  varchar(100) NOT NULL,
+    layout  int(3) NOT NULL,
+    heading  varchar(100) NOT NULL,
+    subheading  varchar(100) NOT NULL,
+    check_credit_before_run BOOLEAN NOT NULL
+)`;
+
+/**
+ * Store data of the client's batch processes
+ */
+ var createBatchProcessTable = `
+CREATE TABLE IF NOT EXISTS batch_process (
+    id  varchar(100) NOT NULL PRIMARY KEY UNIQUE,
+    page_id  varchar(100) NOT NULL,
+    client_id  varchar(100) NOT NULL,
+    time_created int(11) NOT NULL,
+    time_finished int(11) NOT NULL,
+    status  int(3) NOT NULL
+)`;
+
+ /**
+  * Store data of the batch page
+  */
+  var createBatchInputTable = `
+  CREATE TABLE IF NOT EXISTS batch_input (
+     page_id  varchar(100) NOT NULL,
+     default_value  varchar(100) NOT NULL,
+     key_item  varchar(100) NOT NULL,
+     label  varchar(100) NOT NULL
+ )`;
+
+ /**
+  * Store data of the batch page
+  */
+ var createBatchHeaderTable = `
+ CREATE TABLE IF NOT EXISTS batch_header (
+    page_id  varchar(100) NOT NULL,
+    default_value  varchar(100) NOT NULL,
+    key_item  varchar(100) NOT NULL,
+    label  varchar(100) NOT NULL
+)`;
+
 module.exports = {
     createUserPwTable,
     createDevTable,
@@ -267,5 +282,9 @@ module.exports = {
     createItemLocationTable,
     createDashboardItemTable,
     createItemInputTable,
-    createItemHeadersTable
+    createItemHeadersTable,
+    createBatchConfigTable,
+    createBatchProcessTable,
+    createBatchInputTable,
+    createBatchHeaderTable
 }

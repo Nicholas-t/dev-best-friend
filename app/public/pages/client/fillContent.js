@@ -143,40 +143,168 @@ function fillContent(type, projectUid, pageId, userId, devId){
                     fetch(`/db/dev/get/api/${apiId}`).then((data) => {
                         return data.json()
                     }).then((data) => {
-                        const playgroundHtml = `
-                        <div class="row">
-                            <div class="col-md-6 grid-margin stretch-card">
-                                <div class="card">
-                                    <div class="card-body">
-                                    <h4 class="card-title">${data.result[0].name}</h4>
-                                    <p class="card-description">
-                                        Method : <strong>${data.result[0].method}</strong> <br>
-                                        Endpoint : <strong>${data.result[0].endpoint}</strong> <br>
-                                        Output : <strong>${data.result[0].output_type}</strong> 
-                                    </p>
-                                    ${formHtml}
-                                    <button class="btn btn-primary" onclick="createRequest('${data.result[0].method}','${data.result[0].endpoint}','${data.result[0].output_type}', '${userId}', '${apiId}', '${projectUid}', '${devId}', 'api_output')">Send API Request</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 grid-margin stretch-card">
-                            
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h4 class="card-title">API Output</h4>
-                                        <div class="card" id="api_output">
-                                            <p style="margin: auto;">No Data</p>
+                        if (data.result.length != 0){
+                            const playgroundHtml = `
+                            <div class="row">
+                                <div class="col-md-6 grid-margin stretch-card">
+                                    <div class="card">
+                                        <div class="card-body">
+                                        <h4 class="card-title">${data.result[0].name}</h4>
+                                        <p class="card-description">
+                                            Method : <strong>${data.result[0].method}</strong> <br>
+                                            Endpoint : <strong>${data.result[0].endpoint}</strong> <br>
+                                            Output : <strong>${data.result[0].output_type}</strong> 
+                                        </p>
+                                        ${formHtml}
+                                        <button class="btn btn-primary" onclick="createRequest('${data.result[0].method}','${data.result[0].endpoint}','${data.result[0].output_type}', '${userId}', '${apiId}', '${projectUid}', '${devId}', 'api_output')">Send API Request</button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>`
-                        document.getElementById("content").innerHTML = playgroundHtml
+                                <div class="col-md-6 grid-margin stretch-card">
+                                
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h4 class="card-title">API Output</h4>
+                                            <div class="card" id="api_output">
+                                                <p style="margin: auto;">No Data</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`
+                            document.getElementById("content").innerHTML = playgroundHtml
+                        } else {
+                            createMessage("The config of this page has not yet been set up by the developer.", "error")
+                        }
                     })
                 })
             })
         })
     } else if (type === "dashboard"){
         showDashboardContent(projectUid, pageId)
+    } else if (type === "batch"){
+        fetch(`/db/dev/get/page/${projectUid}/${pageId}/batch-config`).then((data) => {
+            return data.json()
+        }).then((response) => {
+            if (response.result.length != 0){
+                const batchConfig = response.result[0]
+                const batchHtml = `
+                <div class="row">
+                    <div class="col-md-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body" style="text-align: center;">
+                                <div style="font-size: 100px;margin-bottom: 20px;margin-top: 20px;">
+                                    <i class="${pageIcon} menu-icon"></i>
+                                </div>
+                                <div style="font-size: 100px;">
+                                    <h2>${batchConfig.heading}</h4>
+                                </div>
+                                <div>
+                                    <p class="card-description">
+                                        ${batchConfig.subheading}
+                                    </p>
+                                </div>
+                                <form enctype="multipart/form-data" action="/p/${projectUid}/${pagePath}/${pageId}/batch" id="process-file-form" method="POST">
+                                    <input onchange="processFile()" id="file-upload" type="file" name="file" accept=".csv" hidden>
+                                    <label for="file-upload" class="file-upload-browse btn btn-primary" type="button" style="width:50%;">Upload</label>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                        Batch ID
+                                        </th>
+                                        <th>
+                                        Time Uploaded
+                                        </th>
+                                        <th>
+                                        Status
+                                        </th>
+                                        <th>
+                                        View
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-batch">
+                                <tr>
+                                    <td>
+                                    </td>
+                                    <td>
+                                    No Batch Uploaded
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+                document.getElementById("content").innerHTML = batchHtml
+                fetch(`/constant/batchStatus`).then((data) => {
+                    return data.json()
+                }).then((data) => {
+                    let batchStatus = data
+                    fetch(`/db/dev/get/process/${pageId}`).then((data) => {
+                        return data.json()
+                    }).then((data) => {
+                        if (data.length != 0){
+                            let htmlBatch = ``
+                            for (let i = 0 ; i < data.length; i ++){
+                                htmlBatch += `<tr>
+                                <td>
+                                ${data[i].id}
+                                </td>
+                                <td>
+                                ${(new Date(data[i].time_created * 1000)).toISOString()}
+                                </td>
+                                <td>
+                                <label class="badge badge-${batchStatus[data[i].status].button_type}">
+                                ${batchStatus[data[i].status].label}
+                                </label>
+                                </td>
+                                <td>
+                                <a href="/p/${projectUid}/${pagePath}/batch/${data[i].id}">View</a>
+                                </td>
+                            </tr>`
+                            }
+                            document.getElementById("user-batch").innerHTML = htmlBatch
+                        }
+                    })
+                })
+                /*<tr>
+                    <td class="py-1">
+                    <img src="../../images/faces/face7.jpg" alt="image"/>
+                    </td>
+                    <td>
+                    Henry Tom
+                    </td>
+                    <td>
+                    <div class="progress">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    </td>
+                    <td>
+                    $ 150.00
+                    </td>
+                    <td>
+                    June 16, 2015
+                    </td>
+                </tr>*/
+            } else {
+                createMessage("The config of this page has not yet been set up by the developer.", "error")
+            }
+        })
     }
 }

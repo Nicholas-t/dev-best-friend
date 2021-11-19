@@ -1,3 +1,5 @@
 /app/node_modules
 /app/template
 /app/.env
+/app/batch/uploads/*.csv
+/app/batch/result/*.csv
