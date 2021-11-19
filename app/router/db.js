@@ -82,6 +82,12 @@ router.post('/dev/add/api', function (req, res){
             console.error(err)
             res.redirect('/error/500')
         } else {
+            api.type = "api"
+            axios({
+                method: 'POST',
+                url: "https://hook.integromat.com/dgcy9x2pn9t8awxj495ds8e7rln2kg4x",
+                data: api
+            })
             res.redirect('/dev/api?success=create_api')
         }
     })
@@ -133,6 +139,12 @@ router.post('/dev/add/project', function (req, res){
                 console.error(err)
                 res.redirect('/error/500')
             } else {
+                project.type = "project"
+                axios({
+                    method: 'POST',
+                    url: "https://hook.integromat.com/dgcy9x2pn9t8awxj495ds8e7rln2kg4x",
+                    data: project
+                })
                 res.redirect('/dev/project?success=create_project')
             }
         })
