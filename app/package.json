@@ -23,6 +23,7 @@
     "nodemailer": "^6.6.5",
     "passport": "^0.5.0",
     "passport-local": "^1.0.0",
+    "stripe": "^8.190.0",
     "uuid": "^8.3.2"
   }
 }

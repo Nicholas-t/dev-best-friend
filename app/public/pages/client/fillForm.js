@@ -340,7 +340,12 @@ function _addModifyForm(page, projectUid, pageId){
         fetch(`/db/dev/get/project/${projectUid}/available-api`).then((data) => {
             return data.json()
         }).then((response) => {
-            apiOptions = response.available_api
+            if (response.available_api){
+                apiOptions =  response.available_api
+            } else {
+                createMessage("No API has been assigned to any available plans", "warning")
+                apiOptions = []
+            }
             if (page.type === "playground"){
                 if (apiOptions.length == 0){
                     createMessage("No API has been assigned to any available plans", "warning")

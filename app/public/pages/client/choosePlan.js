@@ -56,10 +56,20 @@ function choosePlan(planId, planPrice){
             if (response.success) {
                 window.location = `/p/${uid}`
             } else {
-                alert("Unsuccesful")
+                createMessage("Unsuccesful to subscribe to the plan", "error")
             }
         })
     } else {
-        alert(`Paid plans are currently unavailable, please click the free plans for now.`)
+        fetch(`/payment/${uid}/plan/${planId}`, {
+            method: 'POST'
+        }).then((data) => {
+            return data.json()
+        }).then((response) => {
+            if (response.error) {
+                createMessage(response.error, "error")
+            } else if (response.url){
+                window.location = response.url
+            }
+        })
     }
 }

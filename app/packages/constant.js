@@ -1521,11 +1521,13 @@ const messages = {
         delete_page : "Page is succesfully deleted.",
         delete_plan : "Plan is succesfully deleted.",
         create_batch : "Batch uploaded succesfully.",
-        modify_batch : "Batch modified succesfully."
+        modify_batch : "Batch modified succesfully.",
+        plan_selected : "Succesfully subscribed to the plan."
     },
     info : {
         logout : "Logged out",
-        choose_plan : "Choose a plan"
+        choose_plan : "Choose a plan",
+        no_plan_selected : "No plan has been selected."
     }
 }
 
