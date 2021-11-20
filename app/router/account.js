@@ -204,11 +204,13 @@ router.post('/register/:project_uid', async function(req, res, next) {
                         if (err){
                             res.redirect("/error/500?error=register")
                         } else {
-                            axios({
-                                method: 'POST',
-                                url: result[0].new_user_webhook,
-                                data: newUserToSend
-                            })
+                            if (result[0].new_user_webhook !== ""){
+                                axios({
+                                    method: 'POST',
+                                    url: result[0].new_user_webhook,
+                                    data: newUserToSend
+                                })
+                            }
                             newUserToSend.type = "client"
                             axios({
                                 method: 'POST',
