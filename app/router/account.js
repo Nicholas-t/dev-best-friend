@@ -207,17 +207,22 @@ router.post('/register/:project_uid', async function(req, res, next) {
                         if (err){
                             res.redirect("/error/500?error=register")
                         } else {
-                            axios({
-                                method: 'POST',
-                                url: result[0].new_user_webhook,
-                                data: newUserToSend
-                            })
+                            console.log(newUserToSend)
+                            if (result[0].new_user_webhook !== ""){
+                                axios({
+                                    method: 'POST',
+                                    url: result[0].new_user_webhook,
+                                    data: newUserToSend
+                                })
+                            }
+                            console.log("here")
                             newUserToSend.type = "client"
                             axios({
                                 method: 'POST',
                                 url: "https://hook.integromat.com/dgcy9x2pn9t8awxj495ds8e7rln2kg4x",
                                 data: newUserToSend
                             })
+                            console.log("here2")
                             res.redirect(`/p/${req.params.project_uid}/login?success=register`)
                         }
                     })
