@@ -22,7 +22,9 @@ var {
     createBatchProcessTable,
     createBatchInputTable,
     createBatchHeaderTable,
-    createPlanPriceStripeTable
+    createPlanPriceStripeTable,
+    createCheckoutStripeTable,
+    createUserSubscriptionStripeTable
 } = require('./queries.js');
 
 class databaseHandler {
@@ -75,6 +77,8 @@ class databaseHandler {
         this.createTable(createBatchInputTable, "batch_input");
         this.createTable(createBatchHeaderTable, "batch_header");
         this.createTable(createPlanPriceStripeTable, "plan_price_stripe");
+        this.createTable(createCheckoutStripeTable, "checkout_stripe");
+        this.createTable(createUserSubscriptionStripeTable, "user_subscription_stripe");
         return true
     }
 
@@ -190,6 +194,12 @@ class databaseHandler {
     
     getUserLog(clientId, apiId, cb){
         let query = `SELECT * FROM log WHERE client_id='${clientId}' AND api_id='${apiId}';`
+        this.con.query(query, cb);
+    }
+
+    getCheckout(currentTime, userId, cb){
+        let query = `SELECT * FROM checkout_stripe
+         WHERE user_id='${userId}' AND time_created=${currentTime};`
         this.con.query(query, cb);
     }
 

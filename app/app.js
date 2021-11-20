@@ -18,6 +18,9 @@ const mail = new mailHandler();
 
 
 var app = express()
+
+
+
 app.engine('html', require('ejs').renderFile);
 const urlencodedParser = bodyparser.urlencoded({ extended: true })
 
@@ -35,8 +38,16 @@ app.use(session({
   resave : false,
   saveUninitialized : false
 }))
+
+
 app.use(passport.initialize())
 app.use(passport.session())
+
+
+app.use((req, res, next) => {
+  console.log(`[${(new Date()).toISOString()}] ${req.path}  ${req.user ? `(${req.user.name} - ${req.user.type})` : ""}`)
+  next()
+})
 
 app.use('/error', require("./router/error"))
 app.use('/dev', require("./router/dev"))

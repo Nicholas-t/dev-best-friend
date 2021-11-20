@@ -1,5 +1,5 @@
-const { planPriceStripeSchema } = require('../schema');
-const { copySchema } = require('../util');
+const { planPriceStripeSchema, checkoutStripeSchema, userSubscriptionStripeSchema } = require('../schema');
+const { copySchema, getCurrentTime } = require('../util');
 
 require('dotenv').config();
 
@@ -86,7 +86,7 @@ class stripeHandler {
         }
     }
 
-    createCheckoutSession(projectUid, planId, cb) {
+    createCheckoutSession(projectUid, planId, userId, cb) {
         db.getXbyY("plan_price_stripe", "plan_id", planId, async (err, result) => {
             if (err){
                 cb(err, null)
@@ -95,6 +95,7 @@ class stripeHandler {
                     cb("Plan not found", null)
                 } else {
                     const planPriceStripe = result[0]
+                    let currentTime = getCurrentTime()
                     const session = await stripe.checkout.sessions.create({
                         payment_method_types : ['card'],
                         mode : 'subscription',
@@ -104,13 +105,54 @@ class stripeHandler {
                                 quantity : 1
                             }
                         ],
-                        success_url : `${process.env.DOMAIN}/payment/${projectUid}/plan/${planId}/success`,
+                        success_url : `${process.env.DOMAIN}/payment/${projectUid}/plan/${planId}/${currentTime}/success`,
                         cancel_url : `${process.env.DOMAIN}/p/${projectUid}/choose-plan?info=no_plan_selected`
                     })
-                    cb(null, session)
+                    const checkoutStripe = copySchema(checkoutStripeSchema);
+                    checkoutStripe.time_created = currentTime
+                    checkoutStripe.session_id = session.id
+                    checkoutStripe.user_id = userId
+                    db.add("checkout_stripe",checkoutStripe, (err, result) => {
+                        if (err){
+                            cb(err, null)
+                        } else {
+                            cb(null, session)
+                        }
+                    } )
                 }
             }
         })
+    }
+
+    async handleCheckoutSession(sessionId, userId, cb){
+        try {
+            const session = await stripe.checkout.sessions.retrieve(
+                sessionId
+            );
+            if(session.payment_status == 'paid'){
+                const userSubscriptionStripe = copySchema(userSubscriptionStripeSchema)
+                userSubscriptionStripe.user_id = userId
+                userSubscriptionStripe.subscription_id = session.subscription
+                db.add("user_subscription_stripe", userSubscriptionStripe, (err, result) => {
+                    if (err){
+                        console.log(err)
+                        cb(false)
+                    } else {
+                        cb(true)
+                    }
+                })
+            } else {
+                console.log("UNPAID")
+                cb(false)
+            }
+        } catch (e) {
+            console.log(e)
+            cb(false)
+        }
+    }
+
+    async userUnsubscribe(userId, cb){
+        // TODO
     }
 }
 

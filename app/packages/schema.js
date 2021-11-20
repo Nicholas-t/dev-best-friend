@@ -254,6 +254,22 @@ var planPriceStripeSchema = {
     price_stripe_id: ""
 }
 
+/**
+ * Store data of the checkout sessions of stripe
+ */
+ var checkoutStripeSchema = {
+    time_created: 0,
+    user_id: "",
+    session_id: ""
+}
+/**
+ * Store data of the batch page
+ */
+ var userSubscriptionStripeSchema = {
+    user_id: "",
+    subscription_id: ""
+}
+
 
  module.exports= {
     userPwSchema,
@@ -277,5 +293,7 @@ var planPriceStripeSchema = {
     batchProcessSchema,
     batchInputSchema,
     batchHeaderSchema,
-    planPriceStripeSchema
+    planPriceStripeSchema,
+    checkoutStripeSchema,
+    userSubscriptionStripeSchema
  }
