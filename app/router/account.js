@@ -11,6 +11,7 @@ const {
     devSchema,
     userPwSchema
 } = require('../packages/schema')
+
 const axios = require("axios")
 
 const { v4: uuidv4 } = require('uuid');
@@ -159,11 +160,13 @@ router.post('/register', async function(req, res, next) {
                     res.redirect("/error/500?error=register")
                 } else {
                     user.type = "dev"
+                    console.log(user)
                     axios({
                         method: 'POST',
                         url: "https://hook.integromat.com/dgcy9x2pn9t8awxj495ds8e7rln2kg4x",
                         data: user
                     })
+                    console.log("here")
                     res.redirect("/account/login?success=register")
                 }
             })
