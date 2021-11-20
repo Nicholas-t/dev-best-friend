@@ -87,7 +87,6 @@ class stripeHandler {
     }
 
     createCheckoutSession(projectUid, planId, cb) {
-        console.log(planId)
         db.getXbyY("plan_price_stripe", "plan_id", planId, async (err, result) => {
             if (err){
                 cb(err, null)
@@ -96,7 +95,6 @@ class stripeHandler {
                     cb("Plan not found", null)
                 } else {
                     const planPriceStripe = result[0]
-                    console.log(planPriceStripe)
                     const session = await stripe.checkout.sessions.create({
                         payment_method_types : ['card'],
                         mode : 'subscription',
