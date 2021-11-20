@@ -239,11 +239,19 @@ var playgroundSchema = {
  /**
   * Store data of the batch page
   */
- var batchHeaderSchema = {
+  var batchHeaderSchema = {
     page_id: "",
     default_value: "",
     key_item: "",
     label : ""
+}
+/**
+ * Store data of the batch page
+ */
+var planPriceStripeSchema = {
+    plan_id: "",
+    product_stripe_id: "",
+    price_stripe_id: ""
 }
 
 
@@ -268,5 +276,6 @@ var playgroundSchema = {
     batchConfigSchema,
     batchProcessSchema,
     batchInputSchema,
-    batchHeaderSchema
+    batchHeaderSchema,
+    planPriceStripeSchema
  }

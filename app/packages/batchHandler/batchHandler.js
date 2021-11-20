@@ -1,6 +1,5 @@
 require('dotenv').config();
 const csv = require("csvtojson");
-const { response } = require('express');
 const fs = require("fs");
 const converter = require('json-2-csv');
 
@@ -23,8 +22,8 @@ try{
   process.exit()
 }
 
-uploadDirectory = './batch/uploads/';
-resultDirectory = './batch/result/';
+const uploadDirectory = './batch/uploads/';
+const resultDirectory = './batch/result/';
 
 
 class batchHandler {

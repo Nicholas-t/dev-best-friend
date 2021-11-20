@@ -21,7 +21,8 @@ var {
     createBatchConfigTable,
     createBatchProcessTable,
     createBatchInputTable,
-    createBatchHeaderTable
+    createBatchHeaderTable,
+    createPlanPriceStripeTable
 } = require('./queries.js');
 
 class databaseHandler {
@@ -73,6 +74,7 @@ class databaseHandler {
         this.createTable(createBatchProcessTable, "batch_process");
         this.createTable(createBatchInputTable, "batch_input");
         this.createTable(createBatchHeaderTable, "batch_header");
+        this.createTable(createPlanPriceStripeTable, "plan_price_stripe");
         return true
     }
 

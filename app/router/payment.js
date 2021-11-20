@@ -1,9 +1,9 @@
 require('dotenv').config();
 
 var express = require('express')
-var axios = require('axios')
-var axios = require('axios')
-var stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY)
+const stripeHandler = require('../packages/stripeHandler/stripeHandler')
+
+const stripe = new stripeHandler()
 
 const {
     copySchema,
@@ -42,42 +42,15 @@ router.use('/', function (req, res, next){
 })
 
 router.post(`/:project_uid/plan/:plan_id`, function (req, res, next) {
-    db.getXbyY("client_plan", "id", req.params.plan_id, async (err, result) => {
+    stripe.createCheckoutSession(req.params.project_uid, req.params.plan_id, (err, session) => {
         if (err){
             res.json({
                 error : err
             })
         } else {
-            //http://127.0.0.1:7000/p/faruse/choose-plan?info=choose_plan
-            if (result.length == 0){
-                res.json({
-                    error : "Plan not found"
-                })
-            } else {
-                const planDetail = result[0]
-                const session = await stripe.checkout.sessions.create({
-                    payment_method_types : ['card'],
-                    mode : 'payment',
-                    line_items : [
-                        {
-                            price_data : {
-                                currency : 'eur',
-                                product_data : {
-                                    name : `${req.params.project_uid} - ${planDetail.label} Plan - 1 month`
-                                },
-                                unit_amount : planDetail.price * 100
-                            },
-                            quantity : 1
-                        }
-                    ],
-                    success_url : `${process.env.DOMAIN}/payment/${req.params.project_uid}/plan/${req.params.plan_id}/success`,
-                    cancel_url : `${process.env.DOMAIN}/p/${req.params.project_uid}/choose-plan?info=no_plan_selected`
-                })
-                res.json({
-                    result,
-                    url : session.url
-                })
-            }
+            res.json({
+                url : session.url
+            })
         }
     })
 })

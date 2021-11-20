@@ -23,8 +23,6 @@ const {
   } = require('../packages/schema')
   
 const {
-    encrypt,
-    decrypt,
     copySchema,
     getCurrentTime,
     delay
@@ -36,6 +34,10 @@ const mdDir = __dirname + `/../public/pages/client/md/`
 const resultBatchDir = __dirname + `/../batch/result/`
 const batchHandler = require('../packages/batchHandler/batchHandler')
 const bh = new batchHandler()
+
+const stripeHandler = require('../packages/stripeHandler/stripeHandler')
+
+const stripe = new stripeHandler()
 
 let db = null
 
@@ -163,7 +165,36 @@ router.post('/dev/add/plan/:project_uid', function (req, res){
             console.error(err)
             res.redirect('/error/500?error=internal_error')
         } else {
-            res.redirect(`/p/${req.params.project_uid}/manage/modify/plan/${plan.id}?success=create_plan`)
+            stripe.addPlanAsStripeProduct(plan, (err) => {
+                if (err) {
+                    res.redirect('/error/500?error=internal_error')
+                } else {
+                    res.redirect(`/p/${req.params.project_uid}/manage/modify/plan/${plan.id}?success=create_plan`)
+                }
+            })
+        }
+    })
+})
+
+router.post('/dev/edit/plan/:project_uid', function (req, res){
+    const plan = copySchema(clientPlanSchema)
+    plan.id = req.body.id
+    plan.label = req.body.label
+    plan.price = req.body.price
+    plan.description = req.body.description
+    plan.project_id = req.params.project_uid
+    db.modify("client_plan", plan, "id", plan.id, (err, result) => {
+        if (err){
+            console.error(err)
+            res.redirect('/error/500?error=internal_error')
+        } else {
+            stripe.modifyPlan(plan, (err) => {
+                if (err) {
+                    res.redirect('/error/500?error=internal_error')
+                } else {
+                    res.redirect(`/p/${req.params.project_uid}/manage?success=modify_plan`)
+                }
+            })
         }
     })
 })

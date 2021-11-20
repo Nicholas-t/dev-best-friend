@@ -257,13 +257,25 @@ CREATE TABLE IF NOT EXISTS batch_process (
  /**
   * Store data of the batch page
   */
- var createBatchHeaderTable = `
- CREATE TABLE IF NOT EXISTS batch_header (
-    page_id  varchar(100) NOT NULL,
-    default_value  varchar(100) NOT NULL,
-    key_item  varchar(100) NOT NULL,
-    label  varchar(100) NOT NULL
+  var createBatchHeaderTable = `
+  CREATE TABLE IF NOT EXISTS batch_header (
+     page_id  varchar(100) NOT NULL,
+     default_value  varchar(100) NOT NULL,
+     key_item  varchar(100) NOT NULL,
+     label  varchar(100) NOT NULL
+ )`;
+
+/**
+ * Store data of the plans (product in stripe) and stripe ID
+ */
+var createPlanPriceStripeTable = `
+CREATE TABLE IF NOT EXISTS plan_price_stripe (
+    plan_id  varchar(100) NOT NULL,
+    product_stripe_id  varchar(100) NOT NULL,
+    price_stripe_id  varchar(100) NOT NULL
 )`;
+
+
 
 module.exports = {
     createUserPwTable,
@@ -286,5 +298,6 @@ module.exports = {
     createBatchConfigTable,
     createBatchProcessTable,
     createBatchInputTable,
-    createBatchHeaderTable
+    createBatchHeaderTable,
+    createPlanPriceStripeTable
 }
