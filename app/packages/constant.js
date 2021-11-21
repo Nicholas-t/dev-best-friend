@@ -1499,7 +1499,8 @@ const messages = {
         delete_project : "Sorry, something went wrong when deleting the Project.",
         delete_page : "Sorry, something went wrong when deleting the Page.",
         size_too_big : "The file you uploaded is too large (4 MB Max.)",
-        create_batch : "Unable to upload batch, please contact the developer."
+        create_batch : "Unable to upload batch, please contact the developer.",
+        not_activated : "Sorry, your account has not yet been activated. Please wait while our team activates your profile."
     },
     success : {
         login : "Log in succesful. Welcome back.",
@@ -1522,7 +1523,8 @@ const messages = {
         delete_plan : "Plan is succesfully deleted.",
         create_batch : "Batch uploaded succesfully.",
         modify_batch : "Batch modified succesfully.",
-        plan_selected : "Succesfully subscribed to the plan."
+        plan_selected : "Succesfully subscribed to the plan.",
+        activate : "Account is succesfully activated."
     },
     info : {
         logout : "Logged out",

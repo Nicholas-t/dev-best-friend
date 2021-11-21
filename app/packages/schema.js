@@ -28,6 +28,7 @@
      id : "",
      email : "",
      name : "",
+     activated : 0,
      project_id : "",
      plan_id : "",
      refresh_at : 0,

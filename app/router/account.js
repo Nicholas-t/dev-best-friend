@@ -63,6 +63,21 @@ router.get('/login', function (req, res) {
     const toSend = createMessage(req.query)
     res.render(dir + 'login.html', toSend)
 })
+router.get('/activate/:user_type/:user_id', function (req, res) {
+    if (req.params.user_type == "dev" || req.params.user_type == "client"){
+        db.modify(req.params.user_type, {
+            activated : 1
+        }, "id", req.params.user_id, (err, result) => {
+            if (err){
+                res.redirect("/finder?error=internal_error")
+            } else {
+                res.redirect("/finder?success=activate")
+            }
+        })
+    } else {
+        res.redirect("/finder?error=internal_error")
+    }
+})
 
 router.post('/login', function(req, res, next) {
     passport.authenticate('local', function(err, users, info) {
@@ -75,17 +90,21 @@ router.post('/login', function(req, res, next) {
         for (let i = 0 ; i < users.length ; i++){
             const user = users[i]
             if (user.type === "dev") {
-                return req.login(user, loginErr => {
-                    if (loginErr) {
-                        return next(loginErr);
-                    } else {
-                        db.modify("dev", {
-                            last_sign_in : getCurrentTime()
-                        }, "id", user.id, () => {
-                            res.redirect(`/dev?success=login`)
-                        })
-                    }
-                }); 
+                if (user.activated !== 0){
+                    return req.login(user, loginErr => {
+                        if (loginErr) {
+                            return next(loginErr);
+                        } else {
+                            db.modify("dev", {
+                                last_sign_in : getCurrentTime()
+                            }, "id", user.id, () => {
+                                res.redirect(`/dev?success=login`)
+                            })
+                        }
+                    }); 
+                } else {
+                    return res.redirect(`/account/login/?error=not_activated`)
+                }
             }
         }
         if (users.length != 0) {
@@ -107,17 +126,21 @@ router.post('/login/:project_uid', function(req, res, next) {
         for(let i = 0; i < users.length ;i++){
             const user = users[i]
             if ( user.type === "client" && user.project_id === req.params.project_uid) {
-                return req.login(user, loginErr => {
-                    if (loginErr) {
-                        return next(loginErr);
-                    } else {
-                        return db.modify("client", {
-                            last_sign_in : getCurrentTime()
-                        }, "id", user.id, () => {
-                            return res.redirect(`/p/${req.params.project_uid}/home?success=login`)
-                        })
-                    }
-                }); 
+                if (user.activated !== 0){
+                    return req.login(user, loginErr => {
+                        if (loginErr) {
+                            return next(loginErr);
+                        } else {
+                            return db.modify("client", {
+                                last_sign_in : getCurrentTime()
+                            }, "id", user.id, () => {
+                                return res.redirect(`/p/${req.params.project_uid}/home?success=login`)
+                            })
+                        }
+                    }); 
+                } else {
+                    return res.redirect(`/p/${req.params.project_uid}/login?error=not_activated`)
+                }
             }
         }
         if (users.length != 0) {

@@ -253,7 +253,7 @@ class databaseHandler {
     }
 
     getUserByEmail(email, cb){
-        let query = `SELECT dev.id, dev.email, dev.name, pw.hashed_password, pw.type
+        let query = `SELECT dev.id, dev.email, dev.name, dev.activated, pw.hashed_password, pw.type
             FROM dev
             INNER JOIN pw ON pw.user_id = dev.id
             WHERE dev.email = '${email}';`
@@ -261,7 +261,7 @@ class databaseHandler {
             if (err){
                 cb( err, []) 
             } else {
-                let query = `SELECT client.id, client.project_id, client.plan_id, client.email, client.name, pw.hashed_password, pw.type
+                let query = `SELECT client.id, client.project_id, client.activated, client.plan_id, client.email, client.name, pw.hashed_password, pw.type
                     FROM client
                     INNER JOIN pw ON pw.user_id = client.id
                     WHERE client.email = '${email}';`

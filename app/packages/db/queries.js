@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS client (
     id  varchar(100) NOT NULL PRIMARY KEY UNIQUE,
     email  varchar(50) NOT NULL,
     name  varchar(100) NOT NULL,
+    activated  int(11) NOT NULL,
     project_id  varchar(100) NOT NULL,
     plan_id  varchar(100) NOT NULL,
     refresh_at  int(11) NOT NULL,
