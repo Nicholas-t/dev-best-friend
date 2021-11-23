@@ -347,9 +347,6 @@ function _addModifyForm(page, projectUid, pageId){
                 apiOptions = []
             }
             if (page.type === "playground"){
-                if (apiOptions.length == 0){
-                    createMessage("No API has been assigned to any available plans", "warning")
-                } 
                 fetch("/constant/apiInputType").then((data) => {
                     return data.json()
                 }).then((data) => {
