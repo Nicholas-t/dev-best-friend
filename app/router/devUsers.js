@@ -14,4 +14,10 @@ router.get('/', function (req, res){
     res.render(__dirname + '/../public/pages/dev/users/users.html', toSend)
 })
 
+router.get('/view/:user_id', function (req, res){
+    const toSend = createMessage(req.query)
+    toSend.client_id = req.params.user_id
+    res.render(__dirname + '/../public/pages/dev/users/viewUsers.html', toSend)
+})
+
 module.exports = router

@@ -28,6 +28,10 @@ function fillUsers(){
                 <td class="pl-0">
                     ${(new Date(users[i].client_time_created * 1000)).toISOString()}
                 </td>
+                <td class="pl-0">
+                    <a href="/dev/users/view/${users[i].client_id}">
+                    View</a>
+                </td>
             </tr>`
         }
     })

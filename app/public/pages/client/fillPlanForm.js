@@ -53,10 +53,12 @@ fetch("/db/dev/get/api").then((data) => {
     return data.json()
 }).then((response) => {
     apiList = response.result
+    if (apiList.length == 0){
+        createMessage("No API has been defined. Please define your API in the 'My API' section", "error")
+    }
     fetch(`/db/dev/get/plan/${uid}/${planId}/api`).then((data) => {
         return data.json()
     }).then((response) => {
-        console.log(response.result)
         if (response.result.length) {
             for (let i = 0 ; i < response.result.length ; i++){
                 addItemPlan(response.result[i])

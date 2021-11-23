@@ -50,76 +50,83 @@
         <div class="content-wrapper">
             <!--Content here-->
             <div class="row">
-                <div class="col-7 grid-margin stretch-card">
+                <div class="col-5 grid-margin stretch-card">
                     <div class="card">
                       <div class="card-body">
-                        <h4 id="api_name" class="card-title"></h4>
-                        <p id="api_id" class="card-description">
-                            ID: <%=api_id%>
+                        <p id="client_id" class="card-description">
+                            ID: <%=client_id%>
                         </p>
-                        <form action="/db/dev/edit/api/<%=api_id%>" method="POST" class="forms-sample">
+                        <p id="project" class="card-description">
+                            
+                        </p>
+                        <form class="forms-sample">
                             <div class="form-group">
                               <label>Name</label>
-                              <input required type="text" name="name" class="form-control" id="name" value="" placeholder="Name">
+                              <input readonly="readonly" required type="text" name="name" class="form-control" id="name">
                             </div>
                             
                             <div class="form-group">
-                              <label>Endpoint &nbsp;&nbsp;&nbsp;&nbsp;<small>https:// (Recommended)</small></label>
-                              <div class="input-group">
-                                <input required id="endpoint" name="endpoint" type="url" class="form-control" value="" placeholder="Endpoint (e.g. 435.23.xx.xx/search, xyz.com/history, etc)">
-                              </div>
+                                <label>Email</label>
+                                <div class="input-group">
+                                  <input  readonly="readonly" required id="email" name="email" type="email" class="form-control">
+                                </div>
                             </div>
                             <div class="form-group">
-                              <label>Method</label>
-                                <select class="form-control" name="method" id="method">
-                                  <option>GET</option>
-                                  <option>POST</option>
-                                </select>
-                              </div>
-                            <div class="form-group">
-                                <label>Output Type</label>
-                                <select class="form-control" name="output_type" id="output_type">
-                                    <option>JSON</option>
-                                    <option>Chart</option>
-                                    <option>Table</option>
-                                </select>
+                                <label>Plan</label>
+                                <div class="input-group">
+                                    <input  readonly="readonly" required id="plan" name="plan" type="text" class="form-control">
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary mr-2">Submit</button>
-                            <a onclick="window.scrollTo({ top: document.body.scrollHeight * 0.8, behavior: 'smooth' })" class="btn btn-warning mr-2">Test</a>
-                            <a href="/dev/api" class="btn btn-light">Cancel</a>
+                            <div class="form-group">
+                                <label>Time Created</label>
+                                <div class="input-group">
+                                    <input  readonly="readonly" required id="time_created" name="time_created" type="text" class="form-control" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Seen</label>
+                                <div class="input-group">
+                                    <input  readonly="readonly" required id="last_seen" name="last_seen" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Activated</label>
+                                <div class="input-group">
+                                    <input  readonly="readonly" required id="activated" name="activated" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <a href="/dev/users" class="btn btn-warning">Back</a>
                         </form>
                       </div>
                     </div>
                 </div>
-                <div class="col-5 grid-margin stretch-card">
+                <div class="col-7 grid-margin stretch-card">
                     <div class="card">
                       <div class="card-body">
+                        <h4 class="card-title">Available Credits</h4>
+                        <div id="available-credit">
+
+                        </div>
+                        <br>
                         <h4 class="card-title">Log</h4>
                         <div class="table-responsive">
                           <table class="table table-hover">
                               <thead>
                                 <tr>
+                                  <th>Endpoint</th>
                                   <th>Time</th>
                                   <th>Status</th>
                                 </tr>
                               </thead>
-                              <tbody>
+                              <tbody id="log-list">
                                 <tr>
+                                  <td></td>
                                   <td class="text-danger">No Logs</td>
                                   <td></td>
                                 </tr>
                               </tbody>
                           </table>
                       </div>
-                      </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                      <div class="card-body" include-html="/static/pages/dev/api/testing-area.html">
-                          
                       </div>
                     </div>
                 </div>
@@ -142,16 +149,11 @@
   <script src="/static/js/includeHtml.js"></script>
   <script src="/static/js/tableHandler.js"></script>
   <script src="/static/js/chartHandler.js"></script>
-
-  
-  <script src="/static/pages/dev/api/testingArea.js"></script>
-  <script src="/static/pages/dev/api/viewArea.js"></script>
+  <script src="/static/pages/dev/users/viewUser.js"></script>
   <script>
-      let api_id = "<%=api_id%>"
-      fillApiField(api_id)
+    const userId = "<%=client_id%>"
+    viewUser(userId)
   </script>
-
-  
   <!--TOASTR-->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>

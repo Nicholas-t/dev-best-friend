@@ -225,6 +225,16 @@ router.post('/dev/add/plan/:project_uid/:plan_id/api', function (req, res){
     })
 })
 
+router.post('/dev/add/credit/:user_id/:api_id/:n', function (req, res){
+    db.incrementCreditUser(req.params.user_id, req.params.api_id, req.params.n, (err, result) => {
+        if (err) {
+            res.redirect(`/dev/users/view/${req.params.user_id}?error=increment_user_credit`)
+        } else {
+            res.redirect(`/dev/users/view/${req.params.user_id}?success=increment_user_credit`)
+        }
+    })
+})
+
 
 router.post('/dev/delete/plan/:project_uid/:plan_id', function (req, res){
     db.remove("client_plan", "id", req.params.plan_id, (err, result) => {
@@ -1091,6 +1101,20 @@ router.get('/dev/get/users', function (req, res){
     })
 })
 
+router.get('/dev/get/users/view/:user_id', function (req, res){
+    db.getXbyY("client", "id", req.params.user_id, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
 router.get('/dev/get/users/log/:user_id', function (req, res){
     db.getXbyY("log", "client_id", req.params.user_id, (err, result) => {
         if (err){
@@ -1121,6 +1145,20 @@ router.get('/dev/get/users/log/:user_id/:api_id', function (req, res){
 
 router.get('/dev/get/users/credit', function (req, res){
     db.getXbyY("client_credit", "client_id", req.user.id, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
+router.get('/dev/get/users/credit/:user_id', function (req, res){
+    db.getXbyY("client_credit", "client_id", req.params.user_id, (err, result) => {
         if (err){
             res.json({
                 error : err

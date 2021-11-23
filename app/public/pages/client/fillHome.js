@@ -13,7 +13,6 @@ function fillHome(uid, planId, userId){
         for (let i = 0 ; i < data.result.length ; i++){
             clientCreditData[data.result[i].api_id] = data.result[i].credit
         }
-        console.log(clientCreditData)
         fetch(`/db/dev/get/plan/${uid}/${planId}/api`).then((data) => {
             return data.json()
         }).then((data) => {

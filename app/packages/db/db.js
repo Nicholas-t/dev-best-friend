@@ -211,6 +211,14 @@ class databaseHandler {
         this.con.query(query, cb);
     }
 
+    incrementCreditUser(clientId, apiId, n, cb){
+        let query = `UPDATE client_credit
+        SET credit = credit + ${n}
+        WHERE client_id = '${clientId}'
+        AND api_id = '${apiId}';`
+        this.con.query(query, cb);
+    }
+
     getAvailableApiInProject(projectUid, cb){
         let query = `SELECT 
             DISTINCT client_plan_item.api_id
