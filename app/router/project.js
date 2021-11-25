@@ -246,7 +246,7 @@ router.post('/:project_uid/admin/modify/:page_id/batch-sample', function (req, r
             res.redirect(`/p/${req.params.project_uid}/admin/modify/${req.params.page_id}?error=size_too_big`)
         } else {
             file.mv('./batch/sample/' + req.params.page_id + '.csv', () => {
-                res.redirect(`/p/${req.params.project_uid}/admin/modify/${req.params.page_id}`)
+                res.redirect(`/p/${req.params.project_uid}/admin/modify/${req.params.page_id}?success=sample_upload`)
             });
         }
     } else {
@@ -257,7 +257,7 @@ router.post('/:project_uid/admin/modify/:page_id/batch-sample', function (req, r
 router.get('/:project_uid/admin/modify/:page_id/batch-sample/remove', function (req, res){
     if (res.locals.project.dev_id == req.user.id){
         fs.unlinkSync('./batch/sample/' + req.params.page_id + '.csv')
-        res.redirect(`/p/${req.params.project_uid}/admin/modify/${req.params.page_id}`)
+        res.redirect(`/p/${req.params.project_uid}/admin/modify/${req.params.page_id}?success=sample_remove`)
     } else {
         res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
     }

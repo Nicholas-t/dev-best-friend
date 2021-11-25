@@ -1530,7 +1530,9 @@ const messages = {
         increment_user_credit : "Credits succesfully added for this user",
         resend_activation : "A new activation link has been sent to your email. If you have not received it, please contact our team",
         reset_password : "A reset password link has been sent to your email. If you have not received it, please contact our team",
-        reset_password_done : "Succesfully changed the password."
+        reset_password_done : "Succesfully changed the password.",
+        sample_upload : "Succesfully uploaded a sample file",
+        sample_remove : "Sample file removed"
     },
     info : {
         logout : "Logged out",
