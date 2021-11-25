@@ -4,7 +4,9 @@ const querystring = require('querystring');
 const {
     copySchema,
     createMessage,
-    getCurrentTime
+    getCurrentTime,
+    encrypt,
+    decrypt
 } = require('../packages/util')
 
 const { v4: uuidv4 } = require('uuid');
@@ -35,7 +37,8 @@ var router = express.Router()
 
 router.use('/', function (req, res, next){
     let path = req.originalUrl.split("?")[0].split("/")
-    if (!req.user && !path.includes("login") && !path.includes("register")){
+    if (!req.user && !path.includes("login") && !path.includes("register")
+     && !path.includes("forgot-password") && !path.includes("reset-password")){
         if (path[2] !== "" && path[2]){
             res.redirect(`/p/${path[2]}/login`)
         } else {
@@ -89,6 +92,34 @@ router.get('/:project_uid/login', function (req, res){
         let toSend = copySchema(res.locals.project)
         toSend = createMessage(req.query, toSend)
         res.render(dir + 'login.html', toSend)
+    }
+})
+
+
+router.get('/:project_uid/forgot-password', function (req, res){
+    if (req.user){
+        res.redirect(`/p/${req.params.project_uid}/home`)
+    } else {
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        res.render(dir + 'forgotPassword.html', toSend)
+    }
+})
+
+router.get('/:project_uid/reset-password/:token', function (req, res){
+    try {
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        const timestamp = Number(decrypt(req.params.token).split("|||||||")[1])
+        if ((Math.round(Number(new Date()) / 1000)) - timestamp < 3600) {
+            toSend.token = req.params.token
+            res.render(dir + 'resetPassword.html', toSend)
+        } else {
+            res.redirect(`/p/${req.params.project_uid}/login?error=token_expired`)    
+        }
+    } catch (e) {
+        console.log(e)
+        res.redirect(`/p/${req.params.project_uid}/login?error=internal_error`)
     }
 })
 

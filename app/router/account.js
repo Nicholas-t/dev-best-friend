@@ -3,7 +3,9 @@ require('dotenv').config();
 const {
     copySchema,
     getCurrentTime,
-    createMessage
+    createMessage,
+    encrypt,
+    decrypt
 } = require('../packages/util')
 
 const {
@@ -46,8 +48,10 @@ initializePassport(
   (id, cb) => db.getUserById(id, cb)
 )
 
+const mailHandler = require('../packages/mailer/mailer');
+const mail = new mailHandler();
+
 var express = require('express');
-const e = require('express');
 var router = express.Router()
 
 const dir = __dirname + '/../public/pages/'
@@ -59,10 +63,133 @@ router.use('/login', function (req, res, next) {
         next()
     }
 })
+
 router.get('/login', function (req, res) {
     const toSend = createMessage(req.query)
     res.render(dir + 'login.html', toSend)
 })
+
+router.get('/forgot-password', function (req, res) {
+    const toSend = createMessage(req.query)
+    res.render(dir + 'forgotPassword.html', toSend)
+})
+
+router.get('/reset-password/:token', function (req, res) {
+    try {
+        const toSend = createMessage(req.query)
+        const timestamp = Number(decrypt(req.params.token).split("|||||||")[1])
+        if ((Math.round(Number(new Date()) / 1000)) - timestamp < 3600) {
+            toSend.token = req.params.token
+            res.render(dir + 'resetPassword.html', toSend)
+        } else {
+            res.redirect("/account/login?error=token_expired")    
+        }
+    } catch (e) {
+        console.log(e)
+        res.redirect("/account/login?error=internal_error")   
+    }
+})
+
+router.get('/resend-activation', function (req, res) {
+    const toSend = createMessage(req.query)
+    res.render(dir + 'resendActivation.html', toSend)
+})
+
+
+router.post('/resend-activation', function (req, res) {
+    db.getXbyY("dev", "email", req.body.email, (err, result) => {
+        if (err){
+            res.redirect("/account/login?error=internal_error")
+        } else if (result.length == 0){
+            res.redirect("/account/login?error=user_not_found")
+        } else {
+            const user = result[0]
+            mail.sendMail(user.email, "resend_activation_link_dev", {
+                email : user.email,
+                id : user.id,
+                name : user.name,
+                domain : process.env.DOMAIN
+            })
+            res.redirect("/account/login?success=resend_activation")
+        }
+    })
+})
+
+
+
+router.post('/reset-password', function (req, res) {
+    try {
+        const token = decrypt(req.body.token)
+        const timestamp = Number(token.split("|||||||")[1])
+        if ((Math.round(Number(new Date()) / 1000)) - timestamp < 3600) {
+            let email = token.split("|||||||")[0]
+            db.getXbyY("dev", "email", email, async (err, result) => {
+                if (err){
+                    res.redirect("/account/login?error=internal_error")
+                } else if (result.length == 0) {
+                    res.redirect("/account/login?error=user_not_found")
+                } else {
+                    const dev = result[0]
+                    const newPassword = await bcrypt.hash(req.body.new_password, 10)
+                    db.modify("pw", {
+                        hashed_password : newPassword
+                    }, "user_id", dev.id, (err, result) => {
+                        if (err){
+                            res.redirect("/account/login?error=internal_error")
+                        } else {
+                            res.redirect("/account/login?success=reset_password_done")  
+                        }
+                    })
+                }
+            })
+        } else {
+            res.redirect("/account/login?error=token_expired")
+        }
+    } catch (e) {
+        console.log(e)
+        res.redirect("/account/login?error=internal_error")
+    }
+})
+
+
+router.post('/reset-password/:project_id', function (req, res) {
+    try {
+        const token = decrypt(req.body.token)
+        const timestamp = Number(token.split("|||||||")[1])
+        if ((Math.round(Number(new Date()) / 1000)) - timestamp < 3600) {
+            let email = token.split("|||||||")[0]
+            db.getXbyY("client", "email", email, async (err, result) => {
+                if (err){
+                    res.redirect(`/p/${req.params.project_id}/login?error=internal_error`)    
+                } else if (result.length == 0) {
+                    res.redirect(`/p/${req.params.project_id}/login?error=user_not_found`)      
+                } else {
+                    for (let i = 0 ; i < result.length ; i ++){
+                        const client = result[i]
+                        const newPassword = await bcrypt.hash(req.body.new_password, 10)
+                        if (client.project_id === req.params.project_id){
+                            db.modify("pw", {
+                                hashed_password : newPassword
+                            }, "user_id", client.id, (err, result) => {
+                                if (err){
+                                    res.redirect(`/p/${req.params.project_id}/login?error=internal_error`)    
+                                } else {
+                                    res.redirect(`/p/${req.params.project_id}/login?success=reset_password_done`)     
+                                }
+                            })
+                        }
+                    }
+                }
+            })
+        } else {
+            res.redirect("/account/login?error=token_expired")    
+        }
+    } catch (e) {
+        console.log(e)
+        res.redirect("/account/login?error=internal_error")   
+    }
+})
+
 router.get('/activate/:user_type/:user_id', function (req, res) {
     if (req.params.user_type == "dev" || req.params.user_type == "client"){
         db.modify(req.params.user_type, {
@@ -151,6 +278,55 @@ router.post('/login/:project_uid', function(req, res, next) {
     })(req, res, next);
 });
 
+
+router.post('/forgot-password', function (req, res) {
+    db.getXbyY("dev", "email", req.body.email, (err, result) => {
+        if (err) {
+            res.redirect("/account/login?error=internal_error")
+        } else if (result.length == 0) {
+            res.redirect("/account/login?error=user_not_found")
+        } else {
+            const dev = result[0]
+            const timestamp = Math.round(Number(new Date()) / 1000)
+            const token = encrypt(`${dev.email}|||||||${timestamp}`)
+            mail.sendMail(dev.email, "reset_password_dev", {
+                token,
+                email : dev.email,
+                name : dev.name,
+                domain : process.env.DOMAIN
+            })
+            res.redirect("/account/login?success=reset_password")
+        }
+    })
+})
+
+router.post('/forgot-password/:project_id', function (req, res) {
+    db.getXbyY("client", "email", req.body.email, (err, result) => {
+        if (err) {
+            res.redirect("/account/login?error=internal_error")
+        } else if (result.length == 0) {
+            res.redirect("/account/login?error=user_not_found")
+        } else {
+            for (let i = 0 ; i < result.length ; i ++){
+                const client = result[i]
+                if (client.project_id === req.params.project_id){
+                    const timestamp = Math.round(Number(new Date()) / 1000)
+                    const token = encrypt(`${client.email}|||||||${timestamp}`)
+                    mail.sendMail(client.email, "reset_password_client", {
+                        token,
+                        email : client.email,
+                        name : client.name,
+                        project_id : client.project_id,
+                        domain : process.env.DOMAIN
+                    })
+                    res.redirect("/account/login?success=reset_password")
+                }
+            }
+        }
+    })
+})
+
+
 router.get('/register', function (req, res) {
     const toSend = createMessage(req.query)
     res.render(dir + 'register.html', toSend)
@@ -186,6 +362,12 @@ router.post('/register', async function(req, res, next) {
                         method: 'POST',
                         url: "https://hook.integromat.com/dgcy9x2pn9t8awxj495ds8e7rln2kg4x",
                         data: user
+                    })
+                    mail.sendMail(user.email, "activate_post_register_dev", {
+                        email : user.email,
+                        id : user.id,
+                        name : user.name,
+                        domain : process.env.DOMAIN
                     })
                     res.redirect("/account/login?success=register")
                 }
@@ -239,6 +421,13 @@ router.post('/register/:project_uid', async function(req, res, next) {
                                 method: 'POST',
                                 url: "https://hook.integromat.com/dgcy9x2pn9t8awxj495ds8e7rln2kg4x",
                                 data: newUserToSend
+                            })
+                            mail.sendMail(newUserToSend.email, "activate_post_register_client", {
+                                email : newUserToSend.email,
+                                id : newUserToSend.id,
+                                name : newUserToSend.name,
+                                project_name : result[0].name,
+                                domain : process.env.DOMAIN
                             })
                             res.redirect(`/p/${req.params.project_uid}/login?success=register`)
                         }

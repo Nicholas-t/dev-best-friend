@@ -1501,7 +1501,8 @@ const messages = {
         size_too_big : "The file you uploaded is too large (4 MB Max.)",
         create_batch : "Unable to upload batch, please contact the developer.",
         not_activated : "Sorry, your account has not yet been activated. Please wait while our team activates your profile.",
-        increment_user_credit : "Sorry, unable to add credits to this user."
+        increment_user_credit : "Sorry, unable to add credits to this user.",
+        token_expired : "Token has expired, please request a new link"
     },
     success : {
         login : "Log in succesful. Welcome back.",
@@ -1526,7 +1527,10 @@ const messages = {
         modify_batch : "Batch modified succesfully.",
         plan_selected : "Succesfully subscribed to the plan.",
         activate : "Account is succesfully activated.",
-        increment_user_credit : "Credits succesfully added for this user"
+        increment_user_credit : "Credits succesfully added for this user",
+        resend_activation : "A new activation link has been sent to your email. If you have not received it, please contact our team",
+        reset_password : "A reset password link has been sent to your email. If you have not received it, please contact our team",
+        reset_password_done : "Succesfully changed the password."
     },
     info : {
         logout : "Logged out",
@@ -1536,7 +1540,7 @@ const messages = {
 }
 
 const whiteListedProjectPath = [
-    "login", "home", "register", "admin", "manage", "choose-plan"
+    "login", "home", "register", "admin", "manage", "choose-plan", "forgot-password", "reset-password"
 ]
 
 const batchStatus = {
@@ -1564,6 +1568,44 @@ const batchStatus = {
     }
 }
 
+const emailMotives = {
+    activate_post_register_dev : {
+        subject : "Thankyou for registering {name} | Dev Best Friend <> {name}",
+        file_content : "activate_post_register_dev.html",
+        fields : [
+            "email" , "id", "name", "domain"
+        ]
+    },
+    activate_post_register_client : {
+        subject : "Thankyou for registering {name} | {project_name} <> {name}",
+        file_content : "activate_post_register_client.html",
+        fields : [
+            "project_name", "email" , "id", "name", "domain"
+        ]
+    },
+    reset_password_dev : {
+        subject : "Your reset password link",
+        file_content : "reset_password_dev.html",
+        fields : [
+            "token", "email" , "name", "domain"
+        ]
+    },
+    resend_activation_link_dev : {
+        subject : "Your activation link | Dev Best Friend <> {name}",
+        file_content : "resend_activation_link_dev.html",
+        fields : [
+            "email" , "id", "name", "domain"
+        ]
+    },
+    reset_password_client : {
+        subject : "Your reset password link",
+        file_content : "reset_password_client.html",
+        fields : [
+            "token", "email" , "name", "domain", "project_id"
+        ]
+    },
+}
+
 module.exports = {
     pageTypes,
 	userTypes,
@@ -1574,5 +1616,6 @@ module.exports = {
     iconPage,
     messages,
     whiteListedProjectPath,
-    batchStatus
+    batchStatus,
+    emailMotives
 }
