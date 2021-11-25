@@ -1,11 +1,9 @@
 require('dotenv').config();
-var axios = require('axios')
-const querystring = require('querystring');
+const fs = require('fs');
 const {
     copySchema,
     createMessage,
     getCurrentTime,
-    encrypt,
     decrypt
 } = require('../packages/util')
 
@@ -33,6 +31,7 @@ const dir = __dirname + '/../public/pages/client/'
 var express = require('express');
 const e = require('express');
 const { batchProcessSchema } = require('../packages/schema');
+const { fstat } = require('fs');
 var router = express.Router()
 
 router.use('/', function (req, res, next){
@@ -235,6 +234,30 @@ router.get('/:project_uid/admin/modify/:page_id', function (req, res){
         toSend.page_id = req.params.page_id
         toSend.newly_created = req.query.created
         res.render(dir + 'adminModifyPage.html', toSend)
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
+router.post('/:project_uid/admin/modify/:page_id/batch-sample', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        let file = req.files.file;
+        if (file.size > 4000000){
+            res.redirect(`/p/${req.params.project_uid}/admin/modify/${req.params.page_id}?error=size_too_big`)
+        } else {
+            file.mv('./batch/sample/' + req.params.page_id + '.csv', () => {
+                res.redirect(`/p/${req.params.project_uid}/admin/modify/${req.params.page_id}`)
+            });
+        }
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
+router.get('/:project_uid/admin/modify/:page_id/batch-sample/remove', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        fs.unlinkSync('./batch/sample/' + req.params.page_id + '.csv')
+        res.redirect(`/p/${req.params.project_uid}/admin/modify/${req.params.page_id}`)
     } else {
         res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
     }

@@ -32,6 +32,7 @@ const fs = require("fs")
 const { v4: uuidv4 } = require('uuid');
 const mdDir = __dirname + `/../public/pages/client/md/`
 const resultBatchDir = __dirname + `/../batch/result/`
+const sampleBatchDir = __dirname + `/../batch/sample/`
 const batchHandler = require('../packages/batchHandler/batchHandler')
 const bh = new batchHandler()
 
@@ -336,7 +337,7 @@ router.post('/dev/process/batch/:process_id', function (req, res){
                             ? uploadedData[i][keyItem]
                             : batchDetail.header[j].default_value
                     }
-                    await delay(3000)
+                    await delay(300)
                     let newRow = {}
                     if (apiDetail.method === "POST") {
                         newRow = await axios({
@@ -373,6 +374,10 @@ router.post('/dev/process/batch/:process_id', function (req, res){
 
 router.get('/dev/get/batch/:process_id/download', function (req, res){
     res.sendFile(path.resolve(`${resultBatchDir}${req.params.process_id}.csv`))
+})
+
+router.get('/dev/get/batch-sample/:page_id/download', function (req, res){
+    res.sendFile(path.resolve(`${sampleBatchDir}${req.params.page_id}.csv`))
 })
 
 
@@ -451,6 +456,11 @@ router.get('/dev/check/is-project-uid-available', function (req, res){
             }
         })
     }
+})
+router.get('/dev/check/is-sample-file-exist/:page_id', function (req, res){
+    res.json({
+        exist : fs.existsSync(`./batch/sample/${req.params.page_id}.csv`)
+    })
 })
 router.get('/dev/check-available-credit/:api_id/:user_id', function (req, res){
     db.checkUserAvailableCredit( req.params.api_id, req.params.user_id, req.user.plan_id, (err, result) => {

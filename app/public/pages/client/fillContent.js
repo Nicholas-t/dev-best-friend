@@ -208,6 +208,7 @@ function fillContent(type, projectUid, pageId, userId, devId){
                                     <input onchange="processFile()" id="file-upload" type="file" name="file" accept=".csv" hidden>
                                     <label for="file-upload" class="file-upload-browse btn btn-primary" type="button" style="width:50%;">Upload</label>
                                 </form>
+                                <div id="download_current_sample"></div>
                             </div>
                         </div>
                     </div>
@@ -251,6 +252,19 @@ function fillContent(type, projectUid, pageId, userId, devId){
                         </div>
                     </div>
                 </div>`
+                fetch(`/db/dev/check/is-sample-file-exist/${pageId}`).then((data) => {
+                    return data.json()
+                }).then((data) => {
+                    if (data.exist) {
+                        document.getElementById("download_current_sample").href = ``
+                        document.getElementById("download_current_sample").innerHTML = `
+                        <br>
+                        <a class="btn btn-success" href="/db/dev/get/batch-sample/${pageId}/download" target="_blank">
+                        Download sample file
+                        </a>
+                        `
+                    }
+                })
                 document.getElementById("content").innerHTML = batchHtml
                 fetch(`/constant/batchStatus`).then((data) => {
                     return data.json()
@@ -283,25 +297,6 @@ function fillContent(type, projectUid, pageId, userId, devId){
                         }
                     })
                 })
-                /*<tr>
-                    <td class="py-1">
-                    <img src="../../images/faces/face7.jpg" alt="image"/>
-                    </td>
-                    <td>
-                    Henry Tom
-                    </td>
-                    <td>
-                    <div class="progress">
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    </td>
-                    <td>
-                    $ 150.00
-                    </td>
-                    <td>
-                    June 16, 2015
-                    </td>
-                </tr>*/
             } else {
                 createMessage("The config of this page has not yet been set up by the developer.", "error")
             }

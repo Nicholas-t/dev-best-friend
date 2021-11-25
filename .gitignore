@@ -3,3 +3,4 @@
 /app/.env
 /app/batch/uploads/*.csv
 /app/batch/result/*.csv
+/app/batch/sample/*.csv

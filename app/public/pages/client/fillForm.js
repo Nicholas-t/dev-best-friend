@@ -432,6 +432,29 @@ function _addModifyForm(page, projectUid, pageId){
                     }
                 })
             } else if (page.type === "batch"){
+                document.getElementById("batch-upload-sample-modify").innerHTML = `
+                <hr>
+                <br>
+                <h4 class="card-title">Sample file
+                &nbsp;
+                <small id="download_current_sample"></small>
+                </h4>
+                <form enctype="multipart/form-data" action="/p/${projectUid}/admin/modify/${pageId}/batch-sample" id="process-file-form" method="POST">
+                    <input onchange="document.getElementById('process-file-form').submit()" id="file-upload" type="file" name="file" accept=".csv" hidden>
+                    <label for="file-upload" class="file-upload-browse btn btn-primary" type="button">Upload Sample File</label>
+                </form>`
+                fetch(`/db/dev/check/is-sample-file-exist/${pageId}`).then((data) => {
+                    return data.json()
+                }).then((data) => {
+                    if (data.exist) {
+                        document.getElementById("download_current_sample").href = ``
+                        document.getElementById("download_current_sample").innerHTML = `
+                        <a href="/db/dev/get/batch-sample/${pageId}/download" target="_blank">Download</a>
+                        |
+                        <a href="/p/${projectUid}/admin/modify/${pageId}/batch-sample/remove" style="color:red;">Remove</a>
+                        `
+                    }
+                })
                 document.getElementById("modify-form").innerHTML = `
                 <form action="/db/dev/edit/page/${projectUid}/${pageId}/batch" method="POST" class="forms-sample">
                     <label>Batch API &nbsp;&nbsp;&nbsp;&nbsp;<small>Pick an API</small></label>
