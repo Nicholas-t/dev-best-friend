@@ -429,7 +429,18 @@ router.post('/register/:project_uid', async function(req, res, next) {
                                 project_name : result[0].name,
                                 domain : process.env.DOMAIN
                             })
-                            res.redirect(`/p/${req.params.project_uid}/login?success=register`)
+                            let projectName = result[0].name
+                            db.getXbyY("dev", "id", result[0].dev_id, (err, result) => {
+                                if (result.length){
+                                    mail.sendMail(result[0].email, "new_project", {
+                                        name : newUserToSend.name,
+                                        dev_name : result[0].name,
+                                        project_name : projectName ,
+                                        domain : process.env.DOMAIN
+                                    })
+                                }
+                                res.redirect(`/p/${req.params.project_uid}/login?success=register`)
+                            })
                         }
                     })
                 }

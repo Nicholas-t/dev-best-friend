@@ -11,8 +11,6 @@ var fs = require('fs');
 const {
   createMessage
 } = require('./packages/util')
-const mailHandler = require('./packages/mailer/mailer');
-const mail = new mailHandler();
 
 
 

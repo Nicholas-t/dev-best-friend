@@ -59,6 +59,11 @@ try{
   process.exit()
 }
 
+
+const mailHandler = require('../packages/mailer/mailer');
+const mail = new mailHandler();
+
+
 var express = require('express');
 const { whiteListedProjectPath } = require('../packages/constant');
 var router = express.Router()
@@ -90,6 +95,10 @@ router.post('/dev/add/api', function (req, res){
                 method: 'POST',
                 url: "https://hook.integromat.com/dgcy9x2pn9t8awxj495ds8e7rln2kg4x",
                 data: api
+            })
+            mail.sendMail(req.user.email, "new_api", {
+                name : req.user.name,
+                endpoint : api.endpoint
             })
             res.redirect('/dev/api?success=create_api')
         }
@@ -147,6 +156,11 @@ router.post('/dev/add/project', function (req, res){
                     method: 'POST',
                     url: "https://hook.integromat.com/dgcy9x2pn9t8awxj495ds8e7rln2kg4x",
                     data: project
+                })
+                mail.sendMail(req.user.email, "new_project", {
+                    name : req.user.name,
+                    project_id : project.uid ,
+                    domain : process.env.DOMAIN
                 })
                 res.redirect('/dev/project?success=create_project')
             }

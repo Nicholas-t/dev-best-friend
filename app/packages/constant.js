@@ -1606,6 +1606,27 @@ const emailMotives = {
             "token", "email" , "name", "domain", "project_id"
         ]
     },
+    new_api : {
+        subject : "New API has been added to your account",
+        file_content : "new_api.html",
+        fields : [
+            "name", "endpoint"
+        ]
+    },
+    new_project : {
+        subject : "New Project has been added to your account",
+        file_content : "new_project.html",
+        fields : [
+            "name", "domain", "project_id"
+        ]
+    },
+    new_user_in_project : {
+        subject : "New user has registered to {project_name}",
+        file_content : "new_user_in_project.html",
+        fields : [
+            "dev_name", "name", "domain", "project_name"
+        ]
+    }
 }
 
 module.exports = {
