@@ -5,8 +5,7 @@ var bodyparser = require('body-parser');
 const passport = require('passport');
 const session =  require('express-session');
 const fileUpload = require('express-fileupload');
-var axios = require('axios');
-var bcrypt = require('bcrypt');
+var fs = require('fs');
 
 
 const {
@@ -29,6 +28,7 @@ app.use(fileUpload({
 }));
 
 app.use('/static', express.static(__dirname + '/public'));
+app.use('/project-logo', express.static(__dirname + '/logos'));
 app.use(urlencodedParser)
 app.use(express.urlencoded({ extended: false }))
 app.use(session({
@@ -82,6 +82,12 @@ app.post('/finder', function (req, res){
 app.get('/frame', function (req, res) {
   const toSend = createMessage(req.query)
   res.render(__dirname + '/public/pages/frame.html', toSend)
+})
+
+app.get('/check-is-logo-exist/:project_id', function (req, res) {
+  res.json({
+      exist : fs.existsSync(`./logos/${req.params.project_id}.png`)
+  })
 })
 
 app.get('*', function(req, res){

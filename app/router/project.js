@@ -29,9 +29,7 @@ try{
 }
 const dir = __dirname + '/../public/pages/client/'
 var express = require('express');
-const e = require('express');
 const { batchProcessSchema } = require('../packages/schema');
-const { fstat } = require('fs');
 var router = express.Router()
 
 router.use('/', function (req, res, next){
@@ -182,6 +180,23 @@ router.get('/:project_uid/manage', function (req, res){
         res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
     }
 })
+
+
+router.post('/:project_uid/manage/logo', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        let file = req.files.file;
+        if (file.size > 4000000){
+            res.redirect(`/p/${req.params.project_uid}/manage?error=size_too_big`)
+        } else {
+            file.mv('./logos/' + req.params.project_uid + '.png', () => {
+                res.redirect(`/p/${req.params.project_uid}/manage`)
+            });
+        }
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
 
 router.get('/:project_uid/manage/create/plans', function (req, res){
     if (res.locals.project.dev_id == req.user.id){
