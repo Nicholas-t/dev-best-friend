@@ -1,6 +1,7 @@
 /app/node_modules
 /app/template
 /app/.env
+/app/logos/*.png
 /app/batch/uploads/*.csv
 /app/batch/result/*.csv
 /app/batch/sample/*.csv
