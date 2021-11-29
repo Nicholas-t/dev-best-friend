@@ -152,6 +152,28 @@ CREATE TABLE IF NOT EXISTS page (
      key_header varchar(100) NOT NULL
   )`;
 
+  
+ /**
+  * Store data of default inputs of API
+  */
+  var createDefaultInputTable = `
+  CREATE TABLE IF NOT EXISTS default_input (
+     api_id  varchar(100) NOT NULL,
+     name varchar(100) NOT NULL,
+     label varchar(100) NOT NULL,
+     type varchar(100) NOT NULL
+  )`;
+ 
+
+ /**
+  * Store data of default headers of API
+  */
+  var createDefaultHeadersTable = `
+  CREATE TABLE IF NOT EXISTS default_headers (
+     api_id  varchar(100) NOT NULL,
+     key_header varchar(100) NOT NULL
+  )`;
+
  /**
   * Store data of inputs in playground pages
   */
@@ -322,5 +344,7 @@ module.exports = {
     createBatchHeaderTable,
     createPlanPriceStripeTable,
     createCheckoutStripeTable,
-    createUserSubscriptionStripeTable
+    createUserSubscriptionStripeTable,
+    createDefaultHeadersTable,
+    createDefaultInputTable
 }

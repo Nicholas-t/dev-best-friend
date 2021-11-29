@@ -24,7 +24,9 @@ var {
     createBatchHeaderTable,
     createPlanPriceStripeTable,
     createCheckoutStripeTable,
-    createUserSubscriptionStripeTable
+    createUserSubscriptionStripeTable,
+    createDefaultHeadersTable,
+    createDefaultInputTable
 } = require('./queries.js');
 
 class databaseHandler {
@@ -79,6 +81,8 @@ class databaseHandler {
         this.createTable(createPlanPriceStripeTable, "plan_price_stripe");
         this.createTable(createCheckoutStripeTable, "checkout_stripe");
         this.createTable(createUserSubscriptionStripeTable, "user_subscription_stripe");
+        this.createTable(createDefaultHeadersTable, "default_headers");
+        this.createTable(createDefaultInputTable, "default_input");
         return true
     }
 

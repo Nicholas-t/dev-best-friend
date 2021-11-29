@@ -139,6 +139,9 @@ function addNewItem(item){
                     <a onclick="addDashboardHeader(${l})" class="btn btn-warning mr-2">Add header</a>
                 </div>
                 <div class="form-group col-3">
+                    <a onclick="importDefaultDashboardStructure(${l})" class="btn btn-warning mr-2">Add header</a>
+                </div>
+                <div class="form-group col-3">
                     <a onclick="removeItem(${l})" class="btn btn-danger mr-2">Remove</a>
                 </div>
             </div>
@@ -237,6 +240,37 @@ function addNewHeader(header){
         headers[headers.length-1].insertAdjacentHTML("afterend",d);
     }
 }
+
+function importDefaultPlaygroundStructure(){
+    let apiId = document.getElementById("api").value
+    fetch(`/db/dev/get/api/${apiId}/default`).then((data) => {
+        return data.json()
+    }).then((data) => {
+        data.defaultFields.forEach((element) =>{
+            if (element.is_headers){
+                addNewHeader(element)
+            } else {
+                addNewInput(element)
+            }
+        })
+    })
+}
+
+function importDefaultDashboardStructure(n) {
+    let apiId = document.getElementById(`api-${n}`).value
+    fetch(`/db/dev/get/api/${apiId}/default`).then((data) => {
+        return data.json()
+    }).then((data) => {
+        data.defaultFields.forEach((element) =>{
+            if (element.is_headers){
+                addDashboardHeader(n, element)
+            } else {
+                addDashboardInput(n, element)
+            }
+        })
+    })
+}
+
 
 function addBatchItem(type, batchItem){
     let d = `
@@ -364,6 +398,7 @@ function _addModifyForm(page, projectUid, pageId){
                         </div>
                         <div onclick="addNewHeader()" class="btn btn-success mr-2">Add new header</div>
                         <hr>
+                        <div onclick="importDefaultPlaygroundStructure()" class="btn btn-info mr-2">Import Default Structure</div>
                         <button type="submit" class="btn btn-primary mr-2">Save</button>
                     </form>`
                     fetch(`/db/dev/get/page/${projectUid}/${pageId}/api`).then((data) => {
@@ -393,9 +428,6 @@ function _addModifyForm(page, projectUid, pageId){
                             for (let i = 0 ; i < result.length ; i++){
                                 addNewInput(result[i])
                             }
-                            if (result.length == 0){
-                                addNewInput()
-                            }
                         })
                         fetch(`/db/dev/get/page/${projectUid}/${pageId}/headers`).then((data) => {
                             return data.json()
@@ -403,9 +435,6 @@ function _addModifyForm(page, projectUid, pageId){
                             const result = data.result
                             for (let i = 0 ; i < result.length ; i++){
                                 addNewHeader(result[i])
-                            }
-                            if (result.length == 0){
-                                addNewHeader()
                             }
                         })
                     })

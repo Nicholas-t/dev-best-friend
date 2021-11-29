@@ -19,7 +19,9 @@ const {
     clientCreditSchema,
     batchConfigSchema,
     batchInputSchema,
-    batchHeaderSchema
+    batchHeaderSchema,
+    defaultHeadersSchema,
+    defaultInputSchema
   } = require('../packages/schema')
   
 const {
@@ -793,6 +795,66 @@ router.post('/dev/edit/api/:api_id', function (req, res){
             res.redirect(`/error/500?error=modify_api`)
         } else {
             res.redirect(`/dev/api?success=modify_api`)
+        }
+    })
+})
+
+router.post('/dev/edit/api/:api_id/default', function (req, res){
+    try {
+        db.remove("default_input", "api_id", req.params.api_id, (err, result) => {
+            db.remove("default_headers", "api_id", req.params.api_id, async (err, result) => {
+                let keys = Object.keys(req.body)
+                for (let i = 0 ; i < keys.length ; i++){
+                    if (keys[i].includes("default-input-key")){
+                        let n = keys[i].replace("default-input-key-", "")
+                        let input = copySchema(defaultInputSchema)
+                        input.api_id = req.params.api_id
+                        input.name = req.body[`default-input-key-${n}`]
+                        input.label = req.body[`default-input-label-${n}`]
+                        input.type = req.body[`default-input-type-${n}`]
+                        await db.add("default_input", input, () => {})
+                    } else if (keys[i].includes("default-header-key")){
+                        let header = copySchema(defaultHeadersSchema)
+                        header.api_id = req.params.api_id
+                        header.key_header = req.body[keys[i]]
+                        await db.add("default_headers", header, () => {})
+                    }
+                }
+                res.redirect(`/dev/api/view/${req.params.api_id}`)
+            })
+        })
+    } catch (e) {
+        res.redirect(`/error/500`)
+    }
+})
+
+router.get('/dev/get/api/:api_id/default', function (req, res){
+    let defaultFields = []
+    db.getXbyY("default_input", "api_id", req.params.api_id, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            result.forEach((element) => {
+                element.is_headers = false
+                defaultFields.push(element)
+            })
+            db.getXbyY("default_headers", "api_id", req.params.api_id, (err, result) => {
+                if (err){
+                    res.json({
+                        error : err
+                    })
+                } else {
+                    result.forEach((element) => {
+                        element.is_headers = true
+                        defaultFields.push(element)
+                    })
+                    res.json({
+                        defaultFields
+                    })
+                }
+            })
         }
     })
 })

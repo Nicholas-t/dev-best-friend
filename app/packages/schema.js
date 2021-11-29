@@ -263,12 +263,31 @@ var planPriceStripeSchema = {
     user_id: "",
     session_id: ""
 }
+
 /**
- * Store data of the batch page
+ * Store data of the subscription
  */
  var userSubscriptionStripeSchema = {
     user_id: "",
     subscription_id: ""
+}
+
+/**
+ * Store data of default input
+ */
+ var defaultInputSchema = {
+    api_id: "",
+    name: "",
+    label: "",
+    type: ""
+}
+
+/**
+ * Store data of default headers
+ */
+ var defaultHeadersSchema = {
+    api_id: "",
+    key_header: ""
 }
 
 
@@ -296,5 +315,7 @@ var planPriceStripeSchema = {
     batchHeaderSchema,
     planPriceStripeSchema,
     checkoutStripeSchema,
-    userSubscriptionStripeSchema
+    userSubscriptionStripeSchema,
+    defaultInputSchema,
+    defaultHeadersSchema
  }
