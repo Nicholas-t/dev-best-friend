@@ -55,6 +55,7 @@ app.use('/constant', require("./router/constant"))
 app.use('/p', require("./router/project"))
 app.use('/account', require("./router/account"))
 app.use('/payment', require("./router/payment"))
+app.use('/api', require("./router/api"))
 
 app.get('/', function (req, res) {
   if (!req.user){

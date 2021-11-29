@@ -239,6 +239,25 @@ class databaseHandler {
         })
     }
 
+    getUserAvailableApi(userId, cb) {
+        let query = `SELECT 
+            DISTINCT client_credit.api_id
+            FROM client_credit
+            WHERE client_credit.client_id = '${userId}';`
+        this.con.query(query, (err, result) => {
+            let queryApiId = []
+            let queryApiIdString = ''
+            for (let i = 0 ; i < result.length ; i++){
+                queryApiId.push(`'${result[i].api_id}'`)
+            }
+            queryApiIdString = queryApiId.join(", ")
+            query = `SELECT *
+                FROM api
+                WHERE api.id IN (${queryApiIdString});`
+            this.con.query(query, cb);
+        })
+    }
+
     checkUserAvailableCredit(apiId, userId, planId, cb){
         let query = `SELECT *
             FROM client_credit

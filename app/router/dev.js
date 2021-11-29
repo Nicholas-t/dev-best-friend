@@ -5,7 +5,7 @@ const querystring = require('querystring');
 var express = require('express')
 var router = express.Router()
 const {
-    createMessage
+    createMessage, encrypt
 } = require("../packages/util")
 
 

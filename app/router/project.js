@@ -4,7 +4,8 @@ const {
     copySchema,
     createMessage,
     getCurrentTime,
-    decrypt
+    decrypt,
+    encrypt
 } = require('../packages/util')
 
 const { v4: uuidv4 } = require('uuid');
@@ -135,6 +136,7 @@ router.get('/:project_uid/home', function (req, res){
     toSend.user_plan_id = req.user.plan_id
     toSend.user_email = req.user.email
     toSend.user_name = req.user.name
+    toSend.apiKey = encrypt(`user|${req.user.id}`)
     res.render(dir + 'home.html', toSend)
 })
 
@@ -175,6 +177,7 @@ router.get('/:project_uid/manage', function (req, res){
         let toSend = copySchema(res.locals.project)
         toSend = createMessage(req.query, toSend)
         toSend.user_id = req.user.id
+        toSend.apiKey = encrypt(`dev|${req.params.project_uid}|${req.user.id}`)
         res.render(dir + 'adminManageProject.html', toSend)
     } else {
         res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
