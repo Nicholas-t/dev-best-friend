@@ -85,7 +85,9 @@ router.get('/fields/input/:api_id', function (req, res){
                     error : err
                 })
             } else {
-                res.json(fields)
+                res.json({
+                    fields
+                })
             }
         })
     } catch (e) {
