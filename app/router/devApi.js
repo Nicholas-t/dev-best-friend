@@ -68,50 +68,7 @@ router.post('/create-request', function (req, res){
         // https://axios-http.com/docs/req_config
         // to add :
         // - proxy
-        console.log("Request created with the following config", config)
-        if (config.method === "POST") {
-            axios({
-                method: config.method,
-                url: config.endpoint,
-                data: config.params,
-                headers: config.headers
-            }).then((response) => {
-                res.status(response.status).json(response.data)
-            }).catch((e) => {
-                if (e.response){
-                    res.status(e.response.status).json({
-                        error : e
-                    })
-                } else {
-                    res.status(500).json({
-                        error : "NO RESPONSE GIVEN"
-                    })
-                }
-            })
-        } else if (config.method === "GET"){
-            axios({
-                method: config.method,
-                url: config.endpoint,
-                params: config.params,
-                headers: config.headers
-            }).then((response) => {
-                res.status(response.status).json(response.data)
-            }).catch((e) => {
-                if (e.response){
-                    res.status(e.response.status).json({
-                        error : e
-                    })
-                } else {
-                    res.status(500).json({
-                        error : "NO RESPONSE GIVEN"
-                    })
-                }
-            })
-        } else {
-            res.json({
-                error : "INVALID METHOD"
-            })
-        }
+        createRequest(config, res)
     } catch(e) {
         res.json({
             error : e

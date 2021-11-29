@@ -258,7 +258,7 @@ class databaseHandler {
         })
     }
 
-    checkUserAvailableCredit(apiId, userId, planId, cb){
+    checkUserAvailableCredit(apiId, userId, cb){
         let query = `SELECT *
             FROM client_credit
             WHERE client_credit.client_id = '${userId}'

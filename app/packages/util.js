@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
+const axios = require('axios')
 const path = require('path')
 const crypto = require('crypto');
 const { messages } = require('./constant');
@@ -57,6 +58,59 @@ function createMessage(query, originalSend = {}){
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
+function createRequest (config, res) {
+    console.log("Request created with the following config ", config)
+    try {
+        if (config.method === "POST") {
+            axios({
+                method: config.method,
+                url: config.endpoint,
+                data: config.params,
+                headers: config.headers
+            }).then((response) => {
+                res.status(response.status).json(response.data)
+            }).catch((e) => {
+                if (e.response){
+                    res.status(e.response.status).json({
+                        error : e
+                    })
+                } else {
+                    res.status(500).json({
+                        error : "NO RESPONSE GIVEN"
+                    })
+                }
+            })
+        } else if (config.method === "GET"){
+            axios({
+                method: config.method,
+                url: config.endpoint,
+                params: config.params,
+                headers: config.headers
+            }).then((response) => {
+                res.status(response.status).json(response.data)
+            }).catch((e) => {
+                if (e.response){
+                    res.status(e.response.status).json({
+                        error : e
+                    })
+                } else {
+                    res.status(500).json({
+                        error : "NO RESPONSE GIVEN"
+                    })
+                }
+            })
+        } else {
+            res.json({
+                error : "INVALID METHOD"
+            })
+        }
+    } catch(e) {
+        res.json({
+            error : e
+        })
+    }
+}
+
 module.exports = {
     encrypt,
     decrypt,
@@ -64,5 +118,6 @@ module.exports = {
     copySchema,
     getCurrentTime,
     createMessage,
-    delay
+    delay,
+    createRequest
 }

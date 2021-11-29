@@ -2,7 +2,8 @@ require('dotenv').config();
 var axios = require('axios')
 
 const {
-    decrypt
+    decrypt,
+    createRequest
 } = require("../packages/util")
 
 let db = null
@@ -38,7 +39,6 @@ router.use('/', function (req, res, next){
 })
 
 router.get('/available-api', function (req, res){
-    //TODO
     try {
         const token = decrypt(req.headers.authorization.split(" ")[1])
         if (token.startsWith("user")){
@@ -75,56 +75,82 @@ router.get('/available-api', function (req, res){
     }
 })
 
-router.post('/request/:api_id', function (req, res){
-    let config = {}
-    try {
-        config = JSON.parse(Object.keys(req.body)[0])
-        if (config.method === "POST") {
-            axios({
-                method: config.method,
-                url: config.endpoint,
-                data: config.params,
-                headers: config.headers
-            }).then((response) => {
-                res.status(response.status).json(response.data)
-            }).catch((e) => {
-                if (e.response){
-                    res.status(e.response.status).json({
-                        error : e
-                    })
-                } else {
-                    res.status(500).json({
-                        error : "NO RESPONSE GIVEN"
-                    })
+router.post('/request/:api_id', async function (req, res){
+    const token = decrypt(req.headers.authorization.split(" ")[1])
+    if (token.startsWith("user")){
+        let userId = token.split("|")[1]
+        db.checkUserAvailableCredit(req.params.api_id, userId, (err, result) => {
+            if (err){
+                res.json({
+                    error : err
+                })
+            } else if (result.length == 0){
+                res.json({
+                    error : "No available credit"
+                })
+            } else if (result[0].credit <= 0){
+                res.json({
+                    error : "You are out of credit"
+                })
+            } else {
+                db.getXbyY("client", "id", userId, (err, result) => {
+                    if (err){
+                        res.json({
+                            error : err
+                        })
+                    } else if (result.length != 0) {
+                        let userData = result[0]
+                        if (userData.activated == 0){
+                            res.status(501).json({
+                                error : "Plase activate your account"
+                            })
+                        } else {
+                            db.getXbyY("api", "id", req.params.api_id, (err, result)=>{
+                                if (err){
+                                    res.json({
+                                        error : err
+                                    })
+                                } else  if (result.length == 0){
+                                    res.json({
+                                        error : "API Not Found"
+                                    })
+                                } else {
+                                    const apiData = result[0]
+                                    let config = {
+                                        method : apiData.method,
+                                        endpoint : apiData.endpoint,
+                                        params : req.body,
+                                        headers : {}
+                                    }
+                                    createRequest(config, res)
+                                    db.decrementCreditUser(userId, req.params.api_id, () => {})
+                                }
+                            })
+                        }
+                    }
+                })
+            }
+        })
+    } else {
+        db.getXbyY("api", "id", req.params.api_id, (err, result)=>{
+            if (err){
+                res.json({
+                    error : err
+                })
+            } else  if (result.length == 0){
+                res.json({
+                    error : "API Not Found"
+                })
+            } else {
+                const apiData = result[0]
+                let config = {
+                    method : apiData.method,
+                    endpoint : apiData.endpoint,
+                    params : req.body,
+                    headers : {}
                 }
-            })
-        } else if (config.method === "GET"){
-            axios({
-                method: config.method,
-                url: config.endpoint,
-                params: config.params,
-                headers: config.headers
-            }).then((response) => {
-                res.status(response.status).json(response.data)
-            }).catch((e) => {
-                if (e.response){
-                    res.status(e.response.status).json({
-                        error : e
-                    })
-                } else {
-                    res.status(500).json({
-                        error : "NO RESPONSE GIVEN"
-                    })
-                }
-            })
-        } else {
-            res.json({
-                error : "INVALID METHOD"
-            })
-        }
-    } catch(e) {
-        res.json({
-            error : e
+                createRequest(config, res)
+            }
         })
     }
 })

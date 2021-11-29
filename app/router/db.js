@@ -479,7 +479,7 @@ router.get('/dev/check/is-sample-file-exist/:page_id', function (req, res){
 })
 
 router.get('/dev/check-available-credit/:api_id/:user_id', function (req, res){
-    db.checkUserAvailableCredit( req.params.api_id, req.params.user_id, req.user.plan_id, (err, result) => {
+    db.checkUserAvailableCredit( req.params.api_id, req.params.user_id, (err, result) => {
         if (err){
             res.json({
                 error : err
