@@ -58,7 +58,7 @@ function createMessage(query, originalSend = {}){
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-function createRequest (config, res) {
+function createRequest(config, res) {
     console.log("Request created with the following config ", config)
     try {
         if (config.method === "POST") {

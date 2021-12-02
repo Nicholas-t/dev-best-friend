@@ -26,7 +26,11 @@ var {
     createCheckoutStripeTable,
     createUserSubscriptionStripeTable,
     createDefaultHeadersTable,
-    createDefaultInputTable
+    createDefaultInputTable,
+    createPathParameterTable,
+    createBatchPathParametersTable,
+    createItemPathParameterTable,
+    createDefaultPathParameterTable
 } = require('./queries.js');
 
 class databaseHandler {
@@ -83,6 +87,10 @@ class databaseHandler {
         this.createTable(createUserSubscriptionStripeTable, "user_subscription_stripe");
         this.createTable(createDefaultHeadersTable, "default_headers");
         this.createTable(createDefaultInputTable, "default_input");
+        this.createTable(createPathParameterTable, "path_parameter");
+        this.createTable(createBatchPathParametersTable, "batch_path_parameter");
+        this.createTable(createItemPathParameterTable, "item_path_parameter");
+        this.createTable(createDefaultPathParameterTable, "default_path_parameter");        
         return true
     }
 

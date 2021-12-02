@@ -120,19 +120,25 @@
                     <div class="card-body">
                       <h4 class="card-title">Default API Structure</h4>
                         <form action="/db/dev/edit/api/<%=api_id%>/default" method="POST" class="forms-sample">
-                            <div id = "default-area-input">
-                              <h4>API Default Inputs</h4>
-                              <br>
-                            </div>
-                            <hr>
-                            <div id = "default-area-header">
-                              <h4>API Default Headers</h4>
-                              <br>
-                            </div>
-                            <hr>
-                            <button type="submit" class="btn btn-primary mr-2">Submit</button>
-                            <a onclick="addNewDefaultInput()" class="btn btn-info mr-2">Add new input</a>
-                            <a onclick="addNewDefaultHeader()" class="btn btn-warning mr-2">Add new header</a>
+                          <div id = "default-area-input">
+                            <h4>API Default Inputs</h4>
+                            <br>
+                          </div>
+                          <hr>
+                          <div id = "default-area-path-parameter">
+                            <h4>API Default Path Parameter</h4>
+                            <br>
+                          </div>
+                          <hr>
+                          <div id = "default-area-header">
+                            <h4>API Default Header</h4>
+                            <br>
+                          </div>
+                          <hr>
+                          <button type="submit" class="btn btn-primary mr-2">Submit</button>
+                          <a onclick="addNewDefaultInput()" class="btn btn-info mr-2">Add new input</a>
+                          <a onclick="addNewDefaultPathParameter()" class="btn btn-info mr-2">Add new path parameter</a>
+                          <a onclick="addNewDefaultHeader()" class="btn btn-info mr-2">Add new header</a>
                         </form>
                     </div>
                 </div>

@@ -144,6 +144,16 @@ CREATE TABLE IF NOT EXISTS page (
  )`;
 
  /**
+  * Store data of path parameter in playground pages
+  */
+  var createPathParameterTable = `
+  CREATE TABLE IF NOT EXISTS path_parameter (
+     page_id  varchar(100) NOT NULL,
+     name varchar(100) NOT NULL,
+     label varchar(100) NOT NULL
+  )`;
+
+ /**
   * Store data of headers in playground pages
   */
   var createHeadersTable = `
@@ -163,6 +173,16 @@ CREATE TABLE IF NOT EXISTS page (
      label varchar(100) NOT NULL,
      type varchar(100) NOT NULL
   )`;
+  
+  /**
+   * Store data of default path parameter of API
+   */
+   var createDefaultPathParameterTable = `
+   CREATE TABLE IF NOT EXISTS default_path_parameter (
+      api_id  varchar(100) NOT NULL,
+      name varchar(100) NOT NULL,
+      label varchar(100) NOT NULL
+   )`;
  
 
  /**
@@ -175,7 +195,7 @@ CREATE TABLE IF NOT EXISTS page (
   )`;
 
  /**
-  * Store data of inputs in playground pages
+  * Store data of items in playground pages
   */
  var createDashboardItemTable = `
  CREATE TABLE IF NOT EXISTS dashboard_item (
@@ -227,7 +247,18 @@ CREATE TABLE IF NOT EXISTS page (
  )`;
 
  /**
-  * Store data of input of items in dashboard pages
+  * Store data of path parameters of items in dashboard pages
+  */
+  var createItemPathParameterTable = `
+  CREATE TABLE IF NOT EXISTS item_path_parameter (
+      item_id  varchar(100) NOT NULL,
+      page_id  varchar(100) NOT NULL,
+      key_item  varchar(100) NOT NULL,
+      value  varchar(100) NOT NULL
+  )`;
+
+ /**
+  * Store data of headers of items in dashboard pages
   */
  var createItemHeadersTable = `
  CREATE TABLE IF NOT EXISTS item_headers (
@@ -266,16 +297,27 @@ CREATE TABLE IF NOT EXISTS batch_process (
     status  int(3) NOT NULL
 )`;
 
- /**
-  * Store data of the batch page
-  */
-  var createBatchInputTable = `
-  CREATE TABLE IF NOT EXISTS batch_input (
-     page_id  varchar(100) NOT NULL,
-     default_value  varchar(100) NOT NULL,
-     key_item  varchar(100) NOT NULL,
-     label  varchar(100) NOT NULL
- )`;
+/**
+ * Store data of the batch page
+ */
+ var createBatchInputTable = `
+ CREATE TABLE IF NOT EXISTS batch_input (
+    page_id  varchar(100) NOT NULL,
+    default_value  varchar(100) NOT NULL,
+    key_item  varchar(100) NOT NULL,
+    label  varchar(100) NOT NULL
+)`;
+
+/**
+ * Store data of the path parameters in batch page
+ */
+ var createBatchPathParametersTable = `
+ CREATE TABLE IF NOT EXISTS batch_path_parameter (
+    page_id  varchar(100) NOT NULL,
+    default_value  varchar(100) NOT NULL,
+    key_item  varchar(100) NOT NULL,
+    label  varchar(100) NOT NULL
+)`;
 
  /**
   * Store data of the batch page
@@ -346,5 +388,9 @@ module.exports = {
     createCheckoutStripeTable,
     createUserSubscriptionStripeTable,
     createDefaultHeadersTable,
-    createDefaultInputTable
+    createDefaultInputTable,
+    createPathParameterTable,
+    createBatchPathParametersTable,
+    createItemPathParameterTable,
+    createDefaultPathParameterTable
 }

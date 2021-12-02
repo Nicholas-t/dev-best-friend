@@ -68,8 +68,6 @@ function addDashboardHeader(row, itemHeader){
         itemHeaders[itemHeaders.length-1].insertAdjacentHTML("afterend",d);
     }
 }
-
-
 function addNewItem(item){
     let apiListForm = `<option value=''>Select an API</option>`
     let widthListForm = ``
@@ -241,17 +239,49 @@ function addNewHeader(header){
     }
 }
 
+function addNewPathParameter(pathParameter){
+    let d = `
+    <div id="path-parameter-${l}">
+        <div class="row">
+            <div class="form-group col-5">
+                <label>Key</label>
+                <input ${pathParameter ? `value="${pathParameter.name}"`: ""} 
+                required type="text" class="form-control" id="key-path-parameter-${l}" name="key-path-parameter-${l}" placeholder="Key">
+            </div>
+            <div class="form-group col-5">
+                <label>Label</label>
+                <input ${pathParameter ? `value="${pathParameter.label}"`: ""} 
+                required type="text" class="form-control" id="label-path-parameter-${l}" name="label-path-parameter-${l}" placeholder="Label">
+            </div>
+            <div class="form-group col-2">
+                <a onclick="removePathParameter(${l})" style="margin-top:30px;" class="btn btn-danger mr-2">Remove</a>
+            </div>
+        </div>
+    </div>
+    `
+    l += 1
+    let pathParameters = document.querySelectorAll(`div[id^="path-parameter-"]`)
+    if (!pathParameters.length) {
+        document.getElementById(`playground-path-parameter`).innerHTML += d;
+    } else {
+        pathParameters[pathParameters.length-1].insertAdjacentHTML("afterend",d);
+    }
+}
+
 function importDefaultPlaygroundStructure(){
     let apiId = document.getElementById("api").value
     fetch(`/db/dev/get/api/${apiId}/default`).then((data) => {
         return data.json()
     }).then((data) => {
         data.defaultFields.forEach((element) =>{
-            if (element.is_headers){
+            console.log(element)
+            if (element.form_type == "header"){
                 addNewHeader(element)
-            } else {
+            } else if (element.form_type == "input"){
                 addNewInput(element)
-            }
+            }  else if (element.form_type == "path_parameter"){
+                addNewPathParameter(element)
+            } 
         })
     })
 }
@@ -262,11 +292,13 @@ function importDefaultDashboardStructure(n) {
         return data.json()
     }).then((data) => {
         data.defaultFields.forEach((element) =>{
-            if (element.is_headers){
+            if (element.form_type == "header"){
                 addDashboardHeader(n, element)
-            } else {
+            } else if (element.form_type == "input"){
                 addDashboardInput(n, element)
-            }
+            }  else if (element.form_type == "path_parameter"){
+                addDashboardPathParameter(n, element)
+            } 
         })
     })
 }
@@ -343,6 +375,10 @@ function removeHeader(n){
     document.getElementById(`header-${n}`).remove()
 }
 
+function removePathParameter(n){
+    document.getElementById(`path-parameter-${n}`).remove()
+}
+
 
 function _addModifyForm(page, projectUid, pageId){
     if (page.type === "docs"){
@@ -392,6 +428,12 @@ function _addModifyForm(page, projectUid, pageId){
                         <input type="hidden" name="type" value="${page.type}">
                         <div onclick="addNewInput()" class="btn btn-success mr-2">Add new input</div>
                         <hr>
+                        <div id="playground-path-parameter">
+                        <label>Path Parameters</label>
+                        <!--Path Parameters here-->
+                        </div>
+                        <div onclick="addNewPathParameter()" class="btn btn-success mr-2">Add new path parameter</div>
+                        <hr>
                         <div id="playground-header">
                         <label>Headers &nbsp;&nbsp;&nbsp;&nbsp;<small>Add custom headers</small></label>
                         <!--Headers here-->
@@ -435,6 +477,14 @@ function _addModifyForm(page, projectUid, pageId){
                             const result = data.result
                             for (let i = 0 ; i < result.length ; i++){
                                 addNewHeader(result[i])
+                            }
+                        })
+                        fetch(`/db/dev/get/page/${projectUid}/${pageId}/path-parameter`).then((data) => {
+                            return data.json()
+                        }).then((data) => {
+                            const result = data.result
+                            for (let i = 0 ; i < result.length ; i++){
+                                addNewPathParameter(result[i])
                             }
                         })
                     })

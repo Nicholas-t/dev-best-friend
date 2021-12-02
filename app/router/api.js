@@ -78,7 +78,6 @@ router.get('/available-api', function (req, res){
 router.get('/fields/input/:api_id', function (req, res){
     try {
         const token = decrypt(req.headers.authorization.split(" ")[1])
-        let fields = []
         db.getXbyY("default_input", "api_id", req.params.api_id, (err, fields) => {
             if (err){
                 res.json({

@@ -42,6 +42,9 @@ function removeHeader(n){
     document.getElementById(`default-header-${n}`).remove()
 }
 
+function removePathParameter(n){
+    document.getElementById(`default-path-parameter-${n}`).remove()
+}
 
 let default_l = 0
 function addNewDefaultInput(input = false){
@@ -82,7 +85,7 @@ function addNewDefaultInput(input = false){
         
     </div>
     `
-    l += 1
+    default_l += 1
     let inputs = document.querySelectorAll(`div[id^="default-input"]`)
     if (!inputs.length) {
         document.getElementById(`default-area-input`).innerHTML += d;
@@ -99,7 +102,7 @@ function addNewDefaultHeader(header){
         <div class="row">
             <div class="form-group col-5">
                 <label>Key</label>
-                <input ${header ? `value="${header.key_header}"` : ""}name="default-header-key-${default_k}" required type="text" class="form-control" id="default-header-key-${default_k}" placeholder="Key">
+                <input ${header ? `value="${header.key_header}"` : ""} name="default-header-key-${default_k}" required type="text" class="form-control" id="default-header-key-${default_k}" placeholder="Key">
             </div>
             <div style="margin-top: 30px;" class="form-group col-2">
                 <a onclick="removeHeader(${default_k})" class="btn btn-danger mr-2">Remove Header</a>
@@ -107,12 +110,42 @@ function addNewDefaultHeader(header){
         </div>
     </div>
     `
-    l += 1
+    default_k += 1
     let headers = document.querySelectorAll(`div[id^="default-header"]`)
     if (!headers.length) {
         document.getElementById(`default-area-header`).innerHTML += d;
     } else {
         headers[headers.length-1].insertAdjacentHTML("afterend",d);
+    }
+}
+
+let default_m = 0
+function addNewDefaultPathParameter(pathParameter){
+    let d = `
+    <div id="default-path-parameter-${default_m}">
+        <div class="row">
+            <div class="form-group col-5">
+                <label>Key</label>
+                <input ${pathParameter ? `value="${pathParameter.name}"` : ""} 
+                name="default-path-parameter-key-${default_m}" required type="text" class="form-control" id="default-path-parameter-key-${default_m}" placeholder="Key">
+            </div>
+            <div class="form-group col-5">
+                <label>Label</label>
+                <input ${pathParameter ? `value="${pathParameter.name}"` : ""} 
+                name="default-path-parameter-label-${default_m}" required type="text" class="form-control" id="default-path-parameter-label-${default_m}" placeholder="Label">
+            </div>
+            <div style="margin-top: 20px;" class="form-group col-2">
+                <a onclick="removePathParameter(${default_m})" class="btn btn-danger mr-2">Remove Path Parameter</a>
+            </div>
+        </div>
+    </div>
+    `
+    default_m += 1
+    let pathParameters = document.querySelectorAll(`div[id^="default-path-parameter"]`)
+    if (!pathParameters.length) {
+        document.getElementById(`default-area-path-parameter`).innerHTML += d;
+    } else {
+        pathParameters[pathParameters.length-1].insertAdjacentHTML("afterend",d);
     }
 }
 
@@ -124,11 +157,13 @@ function fillApiField(api_id){
         return data.json()
     }).then((data) => {
         data.defaultFields.forEach((element) =>{
-            if (element.is_headers){
+            if (element.form_type == "header"){
                 addNewDefaultHeader(element)
-            } else {
+            } else if (element.form_type == "input"){
                 addNewDefaultInput(element)
-            }
+            }  else if (element.form_type == "path_parameter"){
+                addNewDefaultPathParameter(element)
+            } 
         })
     })
 }

@@ -290,6 +290,44 @@ var planPriceStripeSchema = {
     key_header: ""
 }
 
+/**
+ * Store data of path parameter in playground
+ */
+ var pathParameterSchema = {
+    page_id: "",
+    name: "",
+    label: "",
+}
+
+/**
+ * Store data of default path parameter
+ */
+ var defaultPathParameterSchema = {
+    api_id: "",
+    name: "",
+    label: "",
+}
+
+/**
+ * Store data of path parameters from dashboard items
+ */
+ var itemPathParameterSchema = {
+    item_id: "",
+    page_id: "",
+    key_item : "",
+    value : ""
+}
+
+/**
+ * Store data of path parameters in batch
+ */
+ var batchPathParameterSchema = {
+    page_id: "",
+    default_value: "",
+    key_item : "",
+    label : ""
+}
+
 
  module.exports= {
     userPwSchema,
@@ -317,5 +355,9 @@ var planPriceStripeSchema = {
     checkoutStripeSchema,
     userSubscriptionStripeSchema,
     defaultInputSchema,
-    defaultHeadersSchema
+    defaultHeadersSchema,
+    pathParameterSchema, 
+    defaultPathParameterSchema, 
+    itemPathParameterSchema, 
+    batchPathParameterSchema
  }

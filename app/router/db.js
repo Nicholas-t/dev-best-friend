@@ -21,7 +21,8 @@ const {
     batchInputSchema,
     batchHeaderSchema,
     defaultHeadersSchema,
-    defaultInputSchema
+    defaultInputSchema,
+    defaultPathParameterSchema
   } = require('../packages/schema')
   
 const {
@@ -802,25 +803,34 @@ router.post('/dev/edit/api/:api_id', function (req, res){
 router.post('/dev/edit/api/:api_id/default', function (req, res){
     try {
         db.remove("default_input", "api_id", req.params.api_id, (err, result) => {
-            db.remove("default_headers", "api_id", req.params.api_id, async (err, result) => {
-                let keys = Object.keys(req.body)
-                for (let i = 0 ; i < keys.length ; i++){
-                    if (keys[i].includes("default-input-key")){
-                        let n = keys[i].replace("default-input-key-", "")
-                        let input = copySchema(defaultInputSchema)
-                        input.api_id = req.params.api_id
-                        input.name = req.body[`default-input-key-${n}`]
-                        input.label = req.body[`default-input-label-${n}`]
-                        input.type = req.body[`default-input-type-${n}`]
-                        await db.add("default_input", input, () => {})
-                    } else if (keys[i].includes("default-header-key")){
-                        let header = copySchema(defaultHeadersSchema)
-                        header.api_id = req.params.api_id
-                        header.key_header = req.body[keys[i]]
-                        await db.add("default_headers", header, () => {})
+            db.remove("default_headers", "api_id", req.params.api_id, (err, result) => {
+                db.remove("default_path_parameter", "api_id", req.params.api_id, async (err, result) => { 
+                    let keys = Object.keys(req.body)
+                    for (let i = 0 ; i < keys.length ; i++){
+                        if (keys[i].includes("default-input-key")){
+                            let n = keys[i].replace("default-input-key-", "")
+                            let input = copySchema(defaultInputSchema)
+                            input.api_id = req.params.api_id
+                            input.name = req.body[`default-input-key-${n}`]
+                            input.label = req.body[`default-input-label-${n}`]
+                            input.type = req.body[`default-input-type-${n}`]
+                            await db.add("default_input", input, () => {})
+                        } else if (keys[i].includes("default-header-key")){
+                            let header = copySchema(defaultHeadersSchema)
+                            header.api_id = req.params.api_id
+                            header.key_header = req.body[keys[i]]
+                            await db.add("default_headers", header, () => {})
+                        } else if (keys[i].includes("default-path-parameter-key")){
+                            let n = keys[i].replace("default-path-parameter-key-", "")
+                            let pathParameter = copySchema(defaultPathParameterSchema)
+                            pathParameter.api_id = req.params.api_id
+                            pathParameter.name = req.body[keys[i]]
+                            pathParameter.label = req.body[`default-path-parameter-label-${n}`]
+                            await db.add("default_path_parameter", pathParameter, () => {})
+                        }
                     }
-                }
-                res.redirect(`/dev/api/view/${req.params.api_id}`)
+                    res.redirect(`/dev/api/view/${req.params.api_id}`)
+                })
             })
         })
     } catch (e) {
@@ -837,7 +847,7 @@ router.get('/dev/get/api/:api_id/default', function (req, res){
             })
         } else {
             result.forEach((element) => {
-                element.is_headers = false
+                element.form_type = "input"
                 defaultFields.push(element)
             })
             db.getXbyY("default_headers", "api_id", req.params.api_id, (err, result) => {
@@ -847,11 +857,23 @@ router.get('/dev/get/api/:api_id/default', function (req, res){
                     })
                 } else {
                     result.forEach((element) => {
-                        element.is_headers = true
+                        element.form_type = "header"
                         defaultFields.push(element)
                     })
-                    res.json({
-                        defaultFields
+                    db.getXbyY("default_path_parameter", "api_id", req.params.api_id, (err, result) => {
+                        if (err){
+                            res.json({
+                                error : err
+                            })
+                        } else {
+                            result.forEach((element) => {
+                                element.form_type = "path_parameter"
+                                defaultFields.push(element)
+                            })
+                            res.json({
+                                defaultFields
+                            })
+                        }
                     })
                 }
             })
@@ -1060,6 +1082,21 @@ router.get('/dev/get/page/:project_uid/:page_id/input', function (req, res){
 router.get('/dev/get/page/:project_uid/:page_id/headers', function (req, res){
     try {
         db.getXbyY("headers", "page_id", req.params.page_id, (err, result) => {
+            res.json({
+                result
+            })
+        })
+    } catch (e) {
+        console.error(e)
+        res.json({
+            error: e
+        })
+    }
+})
+
+router.get('/dev/get/page/:project_uid/:page_id/path-parameter', function (req, res){
+    try {
+        db.getXbyY("path_parameter", "page_id", req.params.page_id, (err, result) => {
             res.json({
                 result
             })
