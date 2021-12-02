@@ -6,7 +6,7 @@ var express = require('express');
 var router = express.Router()
 
 const {
-    createMessage, copySchema
+    createMessage, copySchema, createRequest
 } = require("../packages/util")
 const dir = __dirname + '/../public/pages/dev/api/'
 
