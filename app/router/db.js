@@ -22,7 +22,10 @@ const {
     batchHeaderSchema,
     defaultHeadersSchema,
     defaultInputSchema,
-    defaultPathParameterSchema
+    defaultPathParameterSchema,
+    pathParameterSchema,
+    itemPathParameterSchema,
+    batchPathParameterSchema
   } = require('../packages/schema')
   
 const {
@@ -342,6 +345,7 @@ router.post('/dev/process/batch/:process_id', function (req, res){
                 for(let i = 0 ; i < uploadedData.length ; i++){
                     let curParams = {}
                     let curHeader = {}
+                    let curPathParameter = {}
                     for (let j = 0 ; j < batchDetail.input.length ; j++){
                         const keyItem = batchDetail.input[j].key_item
                         curParams[`${keyItem}`] = uploadedData[i][keyItem] 
@@ -354,6 +358,15 @@ router.post('/dev/process/batch/:process_id', function (req, res){
                             ? uploadedData[i][keyItem]
                             : batchDetail.header[j].default_value
                     }
+                    for (let j = 0 ; j < batchDetail.pathParameter.length ; j++){
+                        const keyItem = batchDetail.pathParameter[j].key_item
+                        curPathParameter[`${keyItem}`] = uploadedData[i][keyItem] 
+                            ? uploadedData[i][keyItem]
+                            : batchDetail.pathParameter[j].default_value
+                    }
+                    Object.keys(curPathParameter).forEach((key) => {
+                        apiDetail.endpoint = apiDetail.endpoint.split(`{${key}}`).join(curPathParameter[key])
+                    })
                     await delay(300)
                     let newRow = {}
                     if (apiDetail.method === "POST") {
@@ -610,6 +623,17 @@ router.post('/dev/edit/page/:project_uid/:page_id/playground', function (req, re
                                 res.redirect("/error/500?error=modify_error_header")
                             }
                         })
+                    } else if (keys[i].includes("path-parameter")){
+                        let n_keys = keys[i].replace("key-path-parameter-", "")
+                        const pathParameter = copySchema(pathParameterSchema)
+                        pathParameter.page_id = req.params.page_id
+                        pathParameter.name = req.body[keys[i]]
+                        pathParameter.label = req.body[`label-path-parameter-${n_keys}`]
+                        db.add("path_parameter", pathParameter, (err, result) => {
+                            if(err){
+                                res.redirect("/error/500?error=modify_error_path_parameter")
+                            }
+                        })
                     } else {
                         let n_keys = keys[i].replace("key-", "")
                         const input = copySchema(inputSchema)
@@ -652,28 +676,34 @@ router.post('/dev/edit/page/:project_uid/:page_id/batch', function (req, res){
         db.add("batch_config", batchConfig, (err, result) => {
             db.remove("batch_input", "page_id", req.params.page_id, (err, result) => {
                 db.remove("batch_header", "page_id", req.params.page_id, (err, result) => {
-                    let keys = Object.keys(req.body)
-                    for (let i = 0 ; i < keys.length ; i++){
-                        if (keys[i].includes("key-")){
-                            const type = keys[i].includes("input-")
-                                ? "input"
-                                : "header"
-                            const itemSchema = keys[i].includes("input-")
-                                ? batchInputSchema
-                                : batchHeaderSchema
-                            const n = keys[i].replace(`key-${type}-`, "")
-                            itemSchema.page_id = req.params.page_id
-                            itemSchema.default_value = req.body[`default-value-${type}-${n}`]
-                            itemSchema.key_item = req.body[`key-${type}-${n}`]
-                            itemSchema.label = req.body[`label-${type}-${n}`]
-                            db.add(`batch_${type}`, itemSchema, (err, result) => {
-                                if(err){
-                                    console.log(err)
-                                }
-                            })
+                    db.remove("batch_path_parameter", "page_id", req.params.page_id, (err, result) => {
+                        let keys = Object.keys(req.body)
+                        for (let i = 0 ; i < keys.length ; i++){
+                            if (keys[i].includes("key-")){
+                                const type = keys[i].includes("input-")
+                                    ? "input"
+                                    : keys[i].includes("header-")
+                                    ? "header"
+                                    : "path_parameter"
+                                const itemSchema = keys[i].includes("input-")
+                                    ? batchInputSchema
+                                    : keys[i].includes("header-")
+                                    ? batchHeaderSchema
+                                    : batchPathParameterSchema
+                                const n = keys[i].replace(`key-${type}-`, "")
+                                itemSchema.page_id = req.params.page_id
+                                itemSchema.default_value = req.body[`default-value-${type}-${n}`]
+                                itemSchema.key_item = req.body[`key-${type}-${n}`]
+                                itemSchema.label = req.body[`label-${type}-${n}`]
+                                db.add(`batch_${type}`, itemSchema, (err, result) => {
+                                    if(err){
+                                        console.log(err)
+                                    }
+                                })
+                            }
                         }
-                    }
-                    res.redirect(`/p/${req.params.project_uid}/admin?success=modify_batch`)
+                        res.redirect(`/p/${req.params.project_uid}/admin?success=modify_batch`)
+                    })
                 })
             })
         })
@@ -723,36 +753,51 @@ router.post('/dev/edit/page/:project_uid/:page_id/dashboard-item', function (req
         }
         db.remove("item_input", "page_id", req.params.page_id, (err, result) => {
             db.remove("item_headers", "page_id", req.params.page_id, (err, result) => {
-                for (let i = 0 ; i < itemInputKeys.length ; i++){
-                    if (itemInputKeys[i].includes("headers-")){
-                        let n_keys = itemInputKeys[i].replace("key-headers-", "").split("-")[0]
-                        const itemHeaders = copySchema(itemHeadersSchema)
-                        itemHeaders.page_id = req.params.page_id
-                        itemHeaders.item_id = dashboardItemId[n_keys]
-                        itemHeaders.key_item = req.body[itemInputKeys[i]]
-                        itemHeaders.value = req.body[`value-headers-${n_keys}-${itemInputKeys[i].replace("key-headers-").split("-")[1]}`]
-                        db.add("item_headers", itemHeaders, (err, result) => {
-                            if(err){
-                                console.log(err)
-                                res.redirect("/error/500?error=create_error_dashboard_item_headers")
-                            }
-                        })
-                    } else {
-                        let n_keys = itemInputKeys[i].replace("key-", "").split("-")[0]
-                        const itemInput = copySchema(itemInputSchema)
-                        itemInput.page_id = req.params.page_id
-                        itemInput.item_id = dashboardItemId[n_keys]
-                        itemInput.key_item = req.body[itemInputKeys[i]]
-                        itemInput.value = req.body[`value-${n_keys}-${itemInputKeys[i].replace("key-").split("-")[1]}`]
-                        db.add("item_input", itemInput, (err, result) => {
-                            if(err){
-                                console.log(err)
-                                res.redirect("/error/500?error=create_error_dashboard_item_inputs")
-                            }
-                        })
+                db.remove("item_path_parameter", "page_id", req.params.page_id, (err, result) => {
+                    for (let i = 0 ; i < itemInputKeys.length ; i++){
+                        if (itemInputKeys[i].includes("headers-")){
+                            let n_keys = itemInputKeys[i].replace("key-headers-", "").split("-")[0]
+                            const itemHeaders = copySchema(itemHeadersSchema)
+                            itemHeaders.page_id = req.params.page_id
+                            itemHeaders.item_id = dashboardItemId[n_keys]
+                            itemHeaders.key_item = req.body[itemInputKeys[i]]
+                            itemHeaders.value = req.body[`value-headers-${n_keys}-${itemInputKeys[i].replace("key-headers-").split("-")[1]}`]
+                            db.add("item_headers", itemHeaders, (err, result) => {
+                                if(err){
+                                    console.log(err)
+                                    res.redirect("/error/500?error=create_error_dashboard_item_headers")
+                                }
+                            })
+                        } else if (itemInputKeys[i].includes("path-parameter-")){
+                            let n_keys = itemInputKeys[i].replace("key-path-parameter-", "").split("-")[0]
+                            const itemPathParameter = copySchema(itemPathParameterSchema)
+                            itemPathParameter.page_id = req.params.page_id
+                            itemPathParameter.item_id = dashboardItemId[n_keys]
+                            itemPathParameter.key_item = req.body[itemInputKeys[i]]
+                            itemPathParameter.value = req.body[`value-path-parameter-${n_keys}-${itemInputKeys[i].replace("key-path-parameter-").split("-")[1]}`]
+                            db.add("item_path_parameter", itemPathParameter, (err, result) => {
+                                if(err){
+                                    console.log(err)
+                                    res.redirect("/error/500?error=create_error_dashboard_item_path_parameter")
+                                }
+                            })
+                        } else {
+                            let n_keys = itemInputKeys[i].replace("key-", "").split("-")[0]
+                            const itemInput = copySchema(itemInputSchema)
+                            itemInput.page_id = req.params.page_id
+                            itemInput.item_id = dashboardItemId[n_keys]
+                            itemInput.key_item = req.body[itemInputKeys[i]]
+                            itemInput.value = req.body[`value-${n_keys}-${itemInputKeys[i].replace("key-").split("-")[1]}`]
+                            db.add("item_input", itemInput, (err, result) => {
+                                if(err){
+                                    console.log(err)
+                                    res.redirect("/error/500?error=create_error_dashboard_item_inputs")
+                                }
+                            })
+                        }
                     }
-                }
-                res.redirect(`/p/${req.params.project_uid}/admin?success=modify_dashboard`)
+                    res.redirect(`/p/${req.params.project_uid}/admin?success=modify_dashboard`)
+                })
             })
         })
     })
@@ -1004,6 +1049,21 @@ router.get('/dev/get/page/:project_uid/:page_id/batch-header', function (req, re
     }
 })
 
+router.get('/dev/get/page/:project_uid/:page_id/batch-path-parameter', function (req, res){
+    try {
+        db.getXbyY("batch_path_parameter", "page_id", req.params.page_id, (err, result) => {
+            res.json({
+                result
+            })
+        })
+    } catch (e) {
+        console.error(e)
+        res.json({
+            error: e
+        })
+    }
+})
+
 
 
 router.get('/dev/get/page/:project_uid/:page_id/dashboard-item', function (req, res){
@@ -1064,6 +1124,21 @@ router.get('/dev/get/page/:project_uid/:page_id/dashboard-item/:item_id/headers'
     }
 })
 
+router.get('/dev/get/page/:project_uid/:page_id/dashboard-item/:item_id/path-parameter', function (req, res){
+    try {
+        db.getXbyY("item_path_parameter", "item_id", req.params.item_id, (err, result) => {
+            res.json({
+                result
+            })
+        })
+    } catch (e) {
+        console.error(e)
+        res.json({
+            error: e
+        })
+    }
+})
+
 router.get('/dev/get/page/:project_uid/:page_id/input', function (req, res){
     try {
         db.getXbyY("input", "page_id", req.params.page_id, (err, result) => {
@@ -1082,6 +1157,21 @@ router.get('/dev/get/page/:project_uid/:page_id/input', function (req, res){
 router.get('/dev/get/page/:project_uid/:page_id/headers', function (req, res){
     try {
         db.getXbyY("headers", "page_id", req.params.page_id, (err, result) => {
+            res.json({
+                result
+            })
+        })
+    } catch (e) {
+        console.error(e)
+        res.json({
+            error: e
+        })
+    }
+})
+
+router.get('/dev/get/page/:project_uid/:page_id/path-parameter', function (req, res){
+    try {
+        db.getXbyY("path_parameter", "page_id", req.params.page_id, (err, result) => {
             res.json({
                 result
             })

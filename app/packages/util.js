@@ -60,11 +60,15 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 function createRequest(config, res) {
     console.log("Request created with the following config ", config)
+    let endpoint = config.endpoint
+    Object.keys(config.pathParameter).forEach((key) => {
+        endpoint = config.endpoint.split(`{${key.replace("path-parameter-", "")}}`).join(config.pathParameter[key])
+    })
     try {
         if (config.method === "POST") {
             axios({
                 method: config.method,
-                url: config.endpoint,
+                url: endpoint,
                 data: config.params,
                 headers: config.headers
             }).then((response) => {
@@ -83,7 +87,7 @@ function createRequest(config, res) {
         } else if (config.method === "GET"){
             axios({
                 method: config.method,
-                url: config.endpoint,
+                url: endpoint,
                 params: config.params,
                 headers: config.headers
             }).then((response) => {

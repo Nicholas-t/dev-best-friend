@@ -1,6 +1,6 @@
 
 function _createRequest(method, endpoint, params, client_id, api_id,
-     project_id, headers, log, idSelector, outputType, dev_id, cb){
+     project_id, headers, pathParameter, log, idSelector, outputType, dev_id, cb){
     let requestStatus = 0
     fetch(`/dev/api/create-request`, {
         method: 'POST',
@@ -13,7 +13,7 @@ function _createRequest(method, endpoint, params, client_id, api_id,
         redirect: 'follow',
         referrerPolicy: 'no-referrer', 
         body: JSON.stringify({
-            method, endpoint, params, client_id, api_id, project_id, headers
+            method, endpoint, params, client_id, api_id, project_id, headers, pathParameter
         })
     }).then((data) => {
         requestStatus = data.status
@@ -55,9 +55,10 @@ function _createRequest(method, endpoint, params, client_id, api_id,
     })
 }
 function createRequest(method, endpoint, outputType, client_id, api_id, project_id, dev_id, 
-    idSelector = null, _params = null, log = true, _headers = null, cb = () => {}){
+    idSelector = null, _params = null, log = true, _headers = null, _pathParameter = null, cb = () => {}){
     const params = !_params ? getParams() : _params
     const headers = !_headers ? getHeaders() : _headers
+    const pathParameter = !_pathParameter ? getPathParameter() : _pathParameter
     if(log && !admin){
         fetch(`/db/dev/check-available-credit/${api_id}/${client_id}`).then((data) => {
             return data.json()
@@ -69,12 +70,12 @@ function createRequest(method, endpoint, outputType, client_id, api_id, project_
                 if (response.credit_available <= 0){
                     createMessage("You have used all your credits", "error")
                 } else {
-                    _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, log, idSelector, outputType, dev_id, cb)
+                    _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, pathParameter, log, idSelector, outputType, dev_id, cb)
                 }
             }
         })
     } else {
-        _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, log, idSelector, outputType, dev_id, cb)
+        _createRequest(method, endpoint, params, client_id, api_id, project_id, headers, pathParameter, log, idSelector, outputType, dev_id, cb)
     }
 }
 
@@ -94,5 +95,14 @@ function getHeaders(){
         header[headers[i].name] = headers[i].value
     }
     return header
+}
+
+function getPathParameter(){
+    const pathParameters = document.querySelectorAll("form#playground-form > div > input.form-path-parameter")
+    const pathParameter = {}
+    for (let i = 0 ; i < pathParameters.length ; i++){
+        pathParameter[pathParameters[i].name] = pathParameters[i].value
+    }
+    return pathParameter
 }
 

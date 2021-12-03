@@ -375,7 +375,13 @@ class databaseHandler {
                     WHERE batch_header.page_id = '${batchConfig.page_id}';`
                     this.con.query(query, (err, batchHeader) => {
                         batchConfig.header = batchHeader
-                        cb(err, batchConfig)
+                        let query = `SELECT *
+                        FROM batch_path_parameter
+                        WHERE batch_path_parameter.page_id = '${batchConfig.page_id}';`
+                        this.con.query(query, (err, batchPathParameter) => {
+                            batchConfig.pathParameter = batchPathParameter
+                            cb(err, batchConfig)
+                        })
                     })
                 })
             }

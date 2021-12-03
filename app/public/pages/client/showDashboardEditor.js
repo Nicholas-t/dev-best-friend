@@ -152,6 +152,6 @@ function showDashboardEditor(projectUid, pageId){
         </div>
         `
         createRequest(item.method, item.endpoint, item.output_type, 
-            item.user_id, item.api_id, item.project_uid, item.dev_id, `item-${item.item_id}`, item.params, false, item.headers)
+            item.user_id, item.api_id, item.project_uid, item.dev_id, `item-${item.item_id}`, item.params, false, item.headers, item.pathParameter)
     })
 }

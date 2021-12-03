@@ -10,7 +10,9 @@ function deleteDashboardItemInput(row, k){
 function deleteDashboardItemHeader(row, k){
     document.getElementById(`dashboard-item-${row}-header-${k}`).remove()
 }
-
+function deleteDashboardItemPathParameter(row, k){
+    document.getElementById(`dashboard-item-${row}-path-parameter-${k}`).remove()
+}
 
 function removeItem(n){
     document.getElementById(`parent-item-${n}`).remove()
@@ -68,6 +70,35 @@ function addDashboardHeader(row, itemHeader){
         itemHeaders[itemHeaders.length-1].insertAdjacentHTML("afterend",d);
     }
 }
+
+function addDashboardPathParameter(row, itemPathParameter){
+    let d = `
+    <div id="dashboard-item-${row}-path-parameter-${k}" class="row">
+        <div class="form-group col-4">
+            <label>Path Parameter's Key</label>
+            <input ${itemPathParameter ? `value="${itemPathParameter.key_item}"`: ""} required type="text" class="form-control" id="key-path-parameter-${row}-${k}" name="key-path-parameter-${row}-${k}" placeholder="Key">
+        </div>
+        <div class="form-group col-4">
+            <label>Path Parameter's Value</label>
+            <input ${itemPathParameter ? `value="${itemPathParameter.value}"`: ""} required type="text" class="form-control" id="value-path-parameter-${row}-${k}" name="value-path-parameter-${row}-${k}" placeholder="Value">
+        </div>
+        <div class="form-group col-1">
+            <div onclick="deleteDashboardItemPathParameter(${row}, ${k})" class="btn btn-warning" style="margin-top:30px;">
+                Remove
+            </div>
+        <div>
+    </div>
+    `
+    k += 1
+    let itemHeaders = document.querySelectorAll(`div[id^="dashboard-item-${row}-header-"]`)
+    if (!itemHeaders.length) {
+        document.getElementById(`item-${row}-header`).innerHTML += d;
+    } else {
+        itemHeaders[itemHeaders.length-1].insertAdjacentHTML("afterend",d);
+    }
+}
+
+
 function addNewItem(item){
     let apiListForm = `<option value=''>Select an API</option>`
     let widthListForm = ``
@@ -130,16 +161,21 @@ function addNewItem(item){
             </div>
             
             <div class="row">
-                <div class="form-group col-3">
-                    <a onclick="addDashboardInput(${l})" class="btn btn-info mr-2">Add input for this item</a>
+                <div class="form-group col-4">
+                    <a onclick="addDashboardInput(${l})" class="btn btn-success mr-2">Add input for this item</a>
                 </div>
-                <div class="form-group col-3">
-                    <a onclick="addDashboardHeader(${l})" class="btn btn-warning mr-2">Add header</a>
+                <div class="form-group col-4">
+                    <a onclick="addDashboardHeader(${l})" class="btn btn-success mr-2">Add header</a>
                 </div>
-                <div class="form-group col-3">
-                    <a onclick="importDefaultDashboardStructure(${l})" class="btn btn-warning mr-2">Add header</a>
+                <div class="form-group col-4">
+                    <a onclick="addDashboardPathParameter(${l})" class="btn btn-success mr-2">Add Path Parameter</a>
                 </div>
-                <div class="form-group col-3">
+            </div>
+            <div class="row">
+                <div class="form-group col-6">
+                    <a onclick="importDefaultDashboardStructure(${l})" class="btn btn-info mr-2">Import Default Structure</a>
+                </div>
+                <div class="form-group col-6">
                     <a onclick="removeItem(${l})" class="btn btn-danger mr-2">Remove</a>
                 </div>
             </div>
@@ -161,6 +197,13 @@ function addNewItem(item){
         }).then((response) => {
             for (let j = 0 ; j < response.result.length ; j ++){
                 addDashboardHeader(currentRow, response.result[j])
+            }
+        })
+        fetch(`/db/dev/get/page/${uid}/${pageId}/dashboard-item/${item.id}/path-parameter`).then((data) => {
+            return data.json()
+        }).then((response) => {
+            for (let j = 0 ; j < response.result.length ; j ++){
+                addDashboardPathParameter(currentRow, response.result[j])
             }
         })
     }
@@ -274,7 +317,6 @@ function importDefaultPlaygroundStructure(){
         return data.json()
     }).then((data) => {
         data.defaultFields.forEach((element) =>{
-            console.log(element)
             if (element.form_type == "header"){
                 addNewHeader(element)
             } else if (element.form_type == "input"){
@@ -552,6 +594,12 @@ function _addModifyForm(page, projectUid, pageId){
                     </div>
                     <div onclick="addBatchItem('header')" class="btn btn-success mr-2">Add new header</div>
                     <hr>
+                    <div id="batch-path_parameter">
+                    <label>Path Parameter &nbsp;&nbsp;&nbsp;&nbsp;<small>expected path parameter as columns in the csv</small></label>
+                    <!--Path Parameter here-->
+                    </div>
+                    <div onclick="addBatchItem('path_parameter')" class="btn btn-success mr-2">Add new path parameter</div>
+                    <hr>
                     <input type="hidden" name="type" value="${page.type}">
                     <button type="submit" class="btn btn-primary mr-2">Save</button>
                 </form>`
@@ -575,6 +623,13 @@ function _addModifyForm(page, projectUid, pageId){
                     }).then((response) => {
                         response.result.forEach((element) => {
                             addBatchItem("header", element)
+                        })
+                    })
+                    fetch(`/db/dev/get/page/${projectUid}/${pageId}/batch-path-parameter`).then((data) => {
+                        return data.json()
+                    }).then((response) => {
+                        response.result.forEach((element) => {
+                            addBatchItem("path_parameter", element)
                         })
                     })
                 })
