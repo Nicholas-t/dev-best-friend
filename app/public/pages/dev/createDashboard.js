@@ -1,9 +1,18 @@
-
 function randomColor(){
     const randomColor = Math.floor(Math.random()*16777215).toString(16);
     return "#" + randomColor;
 }
 
+var areaOptions = {
+    plugins: {
+        filler: {
+            propagate: true
+        }
+    },
+    legend: {
+        display: false
+    }
+}
 function fillProjectList(){
     fetch(`/db/dev/get/api`).then((data) => {
         return data.json()
@@ -27,6 +36,87 @@ function fillProjectList(){
             </div>
             `
         } else {
+            fetch(`/db/dev/get/users`).then((data) => {
+                return data.json()
+            }).then((response) => {
+                let curTimeStamp = Number(new Date()) / 1000
+                let labels = []
+                let data = []
+                for (let i = 0 ; i < 7 ; i ++){
+                    let time = new Date((curTimeStamp - (i*60*60*24)) * 1000)
+                    labels.push(`${time.getDate()}/${time.getMonth()}`)
+                    data.push(0)
+                }
+                for (let i = 0 ; i < response.result.length; i++) {
+                    let time = new Date(response.result[i].client_time_created * 1000)
+                    if (labels.includes(`${time.getDate()}/${time.getMonth()}`)) {
+                        data[labels.indexOf(`${time.getDate()}/${time.getMonth()}`)] += 1
+                    }
+                }
+                var areaData = {
+                    labels: labels.reverse(),
+                    datasets: [{
+                    label: '#New Users',
+                    data: data.reverse(),
+                    backgroundColor: [
+                        'rgba(245, 247, 255, 0.7)',
+                    ],
+                    borderColor: 'black',
+                    borderWidth: 2,
+                    fill: true, // 3: no fill
+                    }]
+                };
+                
+                var areaChartCanvas = $("#new_user_chart").get(0).getContext("2d");
+                new Chart(areaChartCanvas, {
+                    type: 'line',
+                    data: areaData,
+                    options: areaOptions
+                });
+            })
+            
+            fetch(`/db/dev/get/log?n=10000`).then((data) => {
+                return data.json()
+            }).then((response) => {
+                let curTimeStamp = Number(new Date()) / 1000
+                let data = {}
+                let labels = []
+                for (let i = 0 ; i < 7 ; i ++){
+                    let time = new Date((curTimeStamp - (i*60*60*24)) * 1000)
+                    labels.push(`${time.getDate()}/${time.getMonth()}`)
+                }
+                for (let i = 0 ; i < response.result.length; i++) {
+                    let time = new Date(response.result[i].timestamp * 1000)
+                    if (!data[response.result[i].api_name]) {
+                        data[response.result[i].api_name] = [0,0,0,0,0,0,0]
+                    }
+                    data[response.result[i].api_name][labels.indexOf(`${time.getDate()}/${time.getMonth()}`)] += 1
+                }
+                let datasets = []
+                for (let i = 0 ; i < Object.keys(data).length ; i++){
+                    datasets.push({
+                        label: Object.keys(data)[i],
+                        data: data[Object.keys(data)[i]].reverse(),
+                        backgroundColor: [
+                            'rgba(245, 247, 255, 0.7)',
+                        ],
+                        borderColor: 'black',
+                        borderWidth: 2,
+                        fill: true, // 3: no fill
+                    })
+                }
+                var areaData = {
+                    labels: labels.reverse(),
+                    datasets
+                };
+                
+                var areaChartCanvas = $("#api_log_chart").get(0).getContext("2d");
+                new Chart(areaChartCanvas, {
+                    type: 'line',
+                    data: areaData,
+                    options: areaOptions
+                });
+            })
             fetch(`/db/dev/get/project`).then((data) => {
                 return data.json()
             }).then((response) => {
@@ -66,7 +156,7 @@ function fillProjectList(){
                     let d = `
                     <div class="carousel-item ${i == 0 ? "active" : ""}">
                         <div class="row">
-                            <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-start">
+                            <div class="col-md-12 col-xl-6 d-flex flex-column justify-content-start">
                                 <div class="ml-xl-4 mt-3">
                                     <p>Path : <strong>/p/${project.uid}</strong><br><small>(<a href="/p/${project.uid}/admin">Admin View</a>)</small></p>
                                     <h1 class="text-primary">${project.name}</h1>
@@ -74,7 +164,7 @@ function fillProjectList(){
                                     <p class="mb-2 mb-xl-0">${project.description}</p>
                                 </div>  
                             </div>
-                            <div class="col-md-12 col-xl-9">
+                            <div class="col-md-12 col-xl-6">
                             <p class="card-title">User Summary</p>
                                 <div class="row">
                                     <div class="table-responsive mb-6 mb-md-0 mt-6">
