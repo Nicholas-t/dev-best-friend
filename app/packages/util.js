@@ -115,6 +115,27 @@ function createRequest(config, res) {
     }
 }
 
+function cleanObject(data){
+    let finalObject=data;
+    for(let key in finalObject){
+      if(Array.isArray(finalObject[key])==true){
+        var objectKeys=Object.keys(finalObject[key][0]);
+        for(let i=0;i<finalObject[key].length;i++){
+          for(let j=0; j<objectKeys.length;j++){
+            if (objectKeys[j] in finalObject){
+              finalObject[objectKeys[j]]=finalObject[objectKeys[j]]+", "+String(finalObject[key][i][objectKeys[j]]);
+            }
+            else{
+              finalObject[objectKeys[j]]=String(finalObject[key][i][objectKeys[j]]);
+            }
+          }
+        }
+        delete finalObject[key];
+      }
+    }
+    return finalObject
+}
+  
 module.exports = {
     encrypt,
     decrypt,
@@ -123,5 +144,6 @@ module.exports = {
     getCurrentTime,
     createMessage,
     delay,
-    createRequest
+    createRequest,
+    cleanObject
 }

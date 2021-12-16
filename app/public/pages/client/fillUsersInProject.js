@@ -3,6 +3,7 @@ function fillUsersInProject(projectUid){
         return data.json()
     }).then((response) => {
         const users = response.result
+        console.log(users)
         if (users.length !== 0) {
             document.getElementById("users-list").innerHTML = ''
         }

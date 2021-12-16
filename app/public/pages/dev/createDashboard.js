@@ -42,7 +42,7 @@ function fillProjectList(){
                 let curTimeStamp = Number(new Date()) / 1000
                 let labels = []
                 let data = []
-                for (let i = 0 ; i < 7 ; i ++){
+                for (let i = 0 ; i < 30 ; i ++){
                     let time = new Date((curTimeStamp - (i*60*60*24)) * 1000)
                     labels.push(`${time.getDate()}/${time.getMonth()}`)
                     data.push(0)
@@ -81,14 +81,20 @@ function fillProjectList(){
                 let curTimeStamp = Number(new Date()) / 1000
                 let data = {}
                 let labels = []
-                for (let i = 0 ; i < 7 ; i ++){
+                for (let i = 0 ; i < 30 ; i ++){
                     let time = new Date((curTimeStamp - (i*60*60*24)) * 1000)
                     labels.push(`${time.getDate()}/${time.getMonth()}`)
                 }
                 for (let i = 0 ; i < response.result.length; i++) {
                     let time = new Date(response.result[i].timestamp * 1000)
                     if (!data[response.result[i].api_name]) {
-                        data[response.result[i].api_name] = [0,0,0,0,0,0,0]
+                        data[response.result[i].api_name] = [
+                            0,0,0,0,0,
+                            0,0,0,0,0,
+                            0,0,0,0,0,
+                            0,0,0,0,0,
+                            0,0,0,0,0,
+                            0,0,0,0,0]
                     }
                     data[response.result[i].api_name][labels.indexOf(`${time.getDate()}/${time.getMonth()}`)] += 1
                 }

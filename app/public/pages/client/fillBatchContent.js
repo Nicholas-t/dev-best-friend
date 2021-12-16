@@ -88,7 +88,7 @@ function processContent(){
                     `
                     createMessage("Please wait while we are processing your file. Do not leave the page.", "info")
                     document.getElementById("loader-container").style.display = ''
-                    fetch(`/db/dev/process/batch/${processId}`, {
+                    fetch(`/db/dev/process/batch/${processId}/${uid}`, {
                         method: 'POST',
                     }).then((data) => {
                         return data.json()

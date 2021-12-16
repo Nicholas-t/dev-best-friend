@@ -2,7 +2,7 @@ require('dotenv').config();
 const csv = require("csvtojson");
 const fs = require("fs");
 const converter = require('json-2-csv');
-
+const {cleanObject} = require('../util')
 let db = null
 
 try{
@@ -54,7 +54,8 @@ class batchHandler {
         }
     }
 
-    addResultBatch(processId, newRow, cb){
+    addResultBatch(processId, _newRow, cb){
+        const newRow = cleanObject(_newRow)
         if(fs.existsSync(`${resultDirectory}${processId}.csv`)){
             csv().fromFile(`${resultDirectory}${processId}.csv`).then(
                 function(jsonArrayObj){

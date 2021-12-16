@@ -224,11 +224,21 @@ class databaseHandler {
     }
 
     incrementCreditUser(clientId, apiId, n, cb){
-        let query = `UPDATE client_credit
-        SET credit = credit + ${n}
-        WHERE client_id = '${clientId}'
+        let query = `SELECT * FROM client_credit WHERE client_id = '${clientId}'
         AND api_id = '${apiId}';`
-        this.con.query(query, cb);
+        this.con.query(query, (err, result) => {
+            if (result.length == 0){
+                let query = `INSERT INTO client_credit (credit, client_id, api_id) 
+                VALUES(${n}, '${clientId}', '${apiId}');`
+                this.con.query(query, cb);
+            } else {
+                let query = `UPDATE client_credit
+                SET credit = credit + ${n}
+                WHERE client_id = '${clientId}'
+                AND api_id = '${apiId}';`
+                this.con.query(query, cb);
+            }
+        }) 
     }
 
     getAvailableApiInProject(projectUid, cb){

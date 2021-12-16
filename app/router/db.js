@@ -337,7 +337,7 @@ router.get('/dev/get/batch/:process_id', function (req, res){
     })
 })
 
-router.post('/dev/process/batch/:process_id', function (req, res){
+router.post('/dev/process/batch/:process_id/:project_uid', function (req, res){
     bh.readUploadedBatchAsJson(req.params.process_id, (uploadedData) => {
         db.getBatchProcessDetail(req.params.process_id, (err, batchDetail)=>{
             db.getXbyY("api", "id", batchDetail.api_id, async (err, result) => {
@@ -369,26 +369,41 @@ router.post('/dev/process/batch/:process_id', function (req, res){
                     })
                     await delay(300)
                     let newRow = {}
+                    let status = 200
                     if (apiDetail.method === "POST") {
-                        newRow = await axios({
+                        [newRow, status] = await axios({
                             method: apiDetail.method,
                             url: apiDetail.endpoint,
                             data: curParams,
                             headers: curHeader
                         }).then((response) => {
-                            return response.data
+                            return [response.data, response.status]
                         })
                     } else if (apiDetail.method === "GET"){
-                        newRow = await axios({
+                        [newRow, status] = await axios({
                             method: apiDetail.method,
                             url: apiDetail.endpoint,
                             params: curParams,
                             headers: curHeader
                         }).then((response) => {
-                            return response.data
+                            return [response.data, response.status]
                         })
                     }
                     await db.decrementCreditUser(req.user.id, apiDetail.id, () => {})
+                    const log = copySchema(logSchema)
+                    log.id = uuidv4()
+                    log.client_id = req.user.id
+                    log.api_id = batchDetail.api_id
+                    log.dev_id = apiDetail.dev_id
+                    log.project_id = req.params.project_uid
+                    log.timestamp = getCurrentTime()
+                    log.status = status
+                    await db.add("log", log, (err, result) => {
+                        if (err){
+                            console.error(err)
+                            res.json({success:false})
+                        }
+                    })
                     bh.addResultBatch(req.params.process_id, newRow, (err) => {
                         if (err){
                             console.log(err)

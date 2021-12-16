@@ -248,12 +248,10 @@
     const admin = isAdmin("<%=dev_id%>", "<%=user_id%>")
   </script>
   <script src="/static/pages/client/fillNav.js"></script>
-  <script src="/static/pages/client/fillUsersInProject.js"></script>
-  <script src="/static/pages/client/fillPlansInProject.js"></script>
+  <script src="/static/pages/client/fillUsersAndPlansInProject.js"></script>
   <script>
     fillNav("<%=uid%>")
-    fillUsersInProject("<%=uid%>")
-    fillPlansInProject("<%=uid%>")
+    fillUsersAndPlansInProject("<%=uid%>")
   </script>
   
   <!--TOASTR-->
