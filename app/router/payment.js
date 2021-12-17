@@ -5,7 +5,7 @@ const stripeHandler = require('../packages/stripeHandler/stripeHandler')
 
 const stripe = new stripeHandler()
 
-
+stripe.initializeSchedule()
 
 let db = null
 

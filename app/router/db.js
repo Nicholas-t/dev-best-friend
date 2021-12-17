@@ -571,31 +571,44 @@ router.get('/dev/get/:project_uid/page', function (req, res){
 
 router.post('/client/edit/plan', function (req, res){
     let planId = JSON.parse(Object.keys(req.body)[0])
-    db.modify("client", planId, "id", req.user.id, (err, result) => {
+    db.modify("client", planId, "id", req.user.id, async (err, result) => {
         if (err) {
             res.json({
                 success : false
             })
         } else {
-            db.getXbyY("client_plan_item", "plan_id", planId.plan_id, (err, result) => {
+            await db.refreshUsersCredit(req.user.id)
+            db.getXbyY("client_plan_item", "plan_id", planId.plan_id, (err, planItem) => {
                 if (err){
                     res.json({
                         success : false
                     })
                 } else {
-                    for (let i = 0 ; i < result.length ; i++){
-                        const clientCredit = copySchema(clientCreditSchema)
-                        clientCredit.client_id = req.user.id
-                        clientCredit.api_id = result[i].api_id
-                        clientCredit.credit = result[i].credit
-                        db.add("client_credit", clientCredit, (err, result) => {
-                            if (err){
-                                console.log(err)
-                            }
-                        })
-                    }
-                    res.json({
-                        success : true
+                    db.getXbyY("client_credit", "client_id", req.user.id, (err, result) => {
+                        if (err){
+                            console.log(err)
+                        } else {
+                            const existingApi = []
+                            result.forEach((element) => {
+                                existingApi.push(element.api_id)
+                            })
+                            planItem.forEach((element) => {
+                                if (!existingApi.includes(element.api_id)){
+                                    const clientCredit = copySchema(clientCreditSchema)
+                                    clientCredit.client_id = req.user.id
+                                    clientCredit.api_id = element.api_id
+                                    clientCredit.credit = element.credit
+                                    db.add("client_credit", clientCredit, (err, result) => {
+                                        if (err){
+                                            console.log(err)
+                                        }
+                                    })
+                                }
+                            })
+                            res.json({
+                                success : true
+                            })
+                        }
                     })
                 }
             })

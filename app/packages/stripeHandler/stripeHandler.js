@@ -1,5 +1,6 @@
 const { planPriceStripeSchema, checkoutStripeSchema, userSubscriptionStripeSchema } = require('../schema');
 const { copySchema, getCurrentTime } = require('../util');
+const schedule = require('node-schedule');
 
 require('dotenv').config();
 
@@ -42,7 +43,15 @@ class stripeHandler {
                         const subscription = await stripe.subscriptions.retrieve(
                             result[i].subscription_id
                         );
-                        console.log(new Date(subscription.current_period_end * 1000))
+                        if (subscription.status === "active") {
+                            let date = new Date((subscription.current_period_end + 60 * 60 * 2)* 1000)
+                            let cron = `${date.getSeconds()} ${date.getMinutes()} ${date.getHours()} ${date.getDate() === 31 
+                                ? 30
+                                : date.getDate()} * *`
+                            schedule.scheduleJob(cron, function(){
+                                db.refreshUsersCredit(result[i].user_id)
+                            });
+                        }
                     }
                 }
             }

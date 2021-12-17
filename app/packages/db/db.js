@@ -201,6 +201,37 @@ class databaseHandler {
     }
 
 
+    refreshUsersCredit(userId){
+        let query = `SELECT * FROM client WHERE id='${userId}'`
+        this.con.query(query, (err, result) => {
+            if (err){
+                console.log(err)
+            } else {
+                let userData = result[0]
+                query = `SELECT * FROM client_plan_item WHERE plan_id='${userData.plan_id}';`
+                this.con.query(query, (err, planItemData) => {
+                    if (err){
+                        console.log(err)
+                    } else {
+                        planItemData.forEach((planItem) => {
+                            query = `UPDATE client_credit
+                            SET credit = GREATEST(${planItem.credit}, credit)
+                            WHERE client_id = '${userId}'
+                            AND api_id = '${planItem.api_id}';`
+                            this.con.query(query, (err, result) => {
+                                if (err){
+                                    console.log(err)
+                                } else {
+                                    console.log(`credit for ${userData.name}`)
+                                }
+                            })
+                        })
+                    }
+                });
+            }
+        });
+    }
+
     getAllUserSubscription(cb){
         let query = `SELECT * FROM user_subscription_stripe`
         this.con.query(query, cb);
