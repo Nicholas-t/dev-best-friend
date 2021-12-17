@@ -11,6 +11,13 @@ var areaOptions = {
     },
     legend: {
         display: false
+    },
+    scales: {
+        yAxes: [{
+            ticks: {
+                suggestedMax: 20
+            }
+        }]
     }
 }
 function fillProjectList(){
