@@ -125,7 +125,23 @@ router.get('/:project_uid/choose-plan', function (req, res){
     let toSend = copySchema(res.locals.project)
     toSend = createMessage(req.query, toSend)
     toSend.user_id = req.user.id
+    toSend.context = "choose"
+    toSend.currentPlanId = ""
     res.render(dir + 'choosePlan.html', toSend)
+})
+
+router.get('/:project_uid/change-plan', function (req, res){
+    let toSend = copySchema(res.locals.project)
+    toSend = createMessage(req.query, toSend)
+    toSend.user_id = req.user.id
+    toSend.context = "change"
+    toSend.currentPlanId = ""
+    db.getXbyY("client", "id", req.user.id, (err, result) => {
+        if (result.length > 0){
+            toSend.currentPlanId = result[0].plan_id
+        }
+        res.render(dir + 'choosePlan.html', toSend)
+    })
 })
 
 

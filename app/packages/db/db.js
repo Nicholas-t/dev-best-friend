@@ -107,6 +107,7 @@ class databaseHandler {
             }
         });
     }
+    
 
     /**
      * a filtering function for mysql to make process easier
@@ -199,6 +200,12 @@ class databaseHandler {
         this.con.query(query, cb);
     }
 
+
+    getAllUserSubscription(cb){
+        let query = `SELECT * FROM user_subscription_stripe`
+        this.con.query(query, cb);
+    }
+    
     getProjectPlan(projectId, cb){
         let query = `SELECT * FROM client_plan WHERE project_id='${projectId}' ORDER BY price ASC;`
         this.con.query(query, cb);

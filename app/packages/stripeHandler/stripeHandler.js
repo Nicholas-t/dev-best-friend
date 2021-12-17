@@ -32,6 +32,23 @@ class stripeHandler {
         this.description = 'Helper for operation dealing with stripe processes';
     }
 
+    async initializeSchedule(){
+        db.getAllUserSubscription(async (err, result)=>{
+            if (err){
+                console.log(err)
+            } else {
+                for (let i = 0 ; i < result.length ; i++){
+                    if (result[i].subscription_id !== ""){
+                        const subscription = await stripe.subscriptions.retrieve(
+                            result[i].subscription_id
+                        );
+                        console.log(new Date(subscription.current_period_end * 1000))
+                    }
+                }
+            }
+        })
+    }
+
     async addPlanAsStripeProduct(planItem, cb) {
         try {
             const product = await stripe.products.create({
@@ -124,6 +141,45 @@ class stripeHandler {
         })
     }
 
+    createChangePlanSession(projectUid, planId, userId, cb) {
+        db.getXbyY("plan_price_stripe", "plan_id", planId, async (err, result) => {
+            if (err){
+                cb(err, null)
+            } else {
+                if (result.length == 0){
+                    cb("Plan not found", null)
+                } else {
+                    const planPriceStripe = result[0]
+                    let currentTime = getCurrentTime()
+                    const session = await stripe.checkout.sessions.create({
+                        payment_method_types : ['card'],
+                        mode : 'subscription',
+                        line_items : [
+                            {
+                                price : planPriceStripe.price_stripe_id,
+                                quantity : 1
+                            }
+                        ],
+                        success_url : `${process.env.DOMAIN}/payment/${projectUid}/plan/change/${planId}/${currentTime}/success`,
+                        cancel_url : `${process.env.DOMAIN}/p/${projectUid}/home`
+                    })
+                    const checkoutStripe = copySchema(checkoutStripeSchema);
+                    checkoutStripe.time_created = currentTime
+                    checkoutStripe.session_id = session.id
+                    checkoutStripe.user_id = userId
+                    db.add("checkout_stripe",checkoutStripe, (err, result) => {
+                        if (err){
+                            cb(err, null)
+                        } else {
+                            cb(null, session)
+                        }
+                    } )
+                }
+            }
+        })
+    }
+
+    
     async handleCheckoutSession(sessionId, userId, cb){
         try {
             const session = await stripe.checkout.sessions.retrieve(
@@ -151,8 +207,82 @@ class stripeHandler {
         }
     }
 
+    async changeUserPlan(sessionId, userId, cb){
+        try {
+            const session = await stripe.checkout.sessions.retrieve(
+                sessionId
+            );
+            if(session.payment_status == 'paid'){
+                db.getXbyY("user_subscription_stripe", "user_id", userId, async (err, result) => {
+                    if (err){
+                        console.log(err)
+                        cb(false)
+                    } else {
+                        if (result.length > 0){
+                            const oldSubscriptionId = result[0].subscription_id
+                            if (oldSubscriptionId !== ""){
+                                await stripe.subscriptions.del(
+                                    oldSubscriptionId
+                                );
+                            }
+                            db.modify("user_subscription_stripe", {subscription_id: session.subscription},
+                            "user_id",userId, (err, result) => {
+                                if (err){
+                                    console.log(err)
+                                    cb(false)
+                                } else {
+                                    cb(true)
+                                }
+                            })
+                        } else {
+                            const userSubscriptionStripe = copySchema(userSubscriptionStripeSchema)
+                            userSubscriptionStripe.user_id = userId
+                            userSubscriptionStripe.subscription_id = session.subscription
+                            db.add("user_subscription_stripe", userSubscriptionStripe, (err, result) => {
+                                if (err){
+                                    console.log(err)
+                                    cb(false)
+                                } else {
+                                    cb(true)
+                                }
+                            })
+                        }
+                    }
+                })
+            } else {
+                console.log("UNPAID")
+                cb(false)
+            }
+        } catch (e) {
+            console.log(e)
+            cb(false)
+        }
+    }
+
     async userUnsubscribe(userId, cb){
-        // TODO
+        db.getXbyY("user_subscription_stripe", "user_id", userId, async (err, result) => {
+            if (err){
+                console.log(err)
+                cb(false)
+            } else {
+                if (result.length > 0){
+                    const oldSubscriptionId = result[0].subscription_id
+                    await stripe.subscriptions.del(
+                        oldSubscriptionId
+                    );
+                    db.modify("user_subscription_stripe", {subscription_id : ""}, "user_id", userId, (err, result) => {
+                        if (err){
+                            console.log(err)
+                            cb(false)
+                        } else {
+                            cb(true)
+                        }
+                    })
+                } else {
+                    cb(false)
+                }
+            }
+        })
     }
 }
 

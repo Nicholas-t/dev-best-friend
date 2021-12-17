@@ -16,9 +16,17 @@ fetch(`/db/dev/get/plan/${uid}`).then((data) => {
                     </div>
                 </div>
                 </div>
-                <div onclick="choosePlan('${plans[i].id}', ${plans[i].price})" class="btn btn-primary">
-                Choose Plan
+                ${plans[i].id === currentPlanId
+                ?  `
+                <div class="btn btn-warning">
+                    Current Plan
                 </div>
+                `
+                : `
+                <div onclick="choosePlan('${plans[i].id}', ${plans[i].price})" class="btn btn-primary">
+                    Choose Plan
+                </div>
+                `}
             </div>
         </div>
         `
@@ -54,22 +62,51 @@ function choosePlan(planId, planPrice){
             return data.json()
         }).then((response) => {
             if (response.success) {
-                window.location = `/p/${uid}`
+                if (context == "change"){
+                    fetch(`/payment/${uid}/plan/unsubscribe/${planId}`, {
+                        method: 'POST'
+                    }).then((data) => {
+                        return data.json()
+                    }).then((response) => {
+                        if (response.ok){
+                            window.location = `/p/${uid}`
+                        } else {
+                            createMessage("Unable to update plan", "error")
+                        }
+                    })
+                } else {
+                    window.location = `/p/${uid}`
+                }
             } else {
                 createMessage("Unsuccesful to subscribe to the plan", "error")
             }
         })
     } else {
-        fetch(`/payment/${uid}/plan/${planId}`, {
-            method: 'POST'
-        }).then((data) => {
-            return data.json()
-        }).then((response) => {
-            if (response.error) {
-                createMessage(response.error, "error")
-            } else if (response.url){
-                window.location = response.url
-            }
-        })
+        if (context == "change"){
+            //TODO
+            fetch(`/payment/${uid}/plan/change/${planId}`, {
+                method: 'POST'
+            }).then((data) => {
+                return data.json()
+            }).then((response) => {
+                if (response.error) {
+                    createMessage(response.error, "error")
+                } else if (response.url){
+                    window.location = response.url
+                }
+            })
+        } else {
+            fetch(`/payment/${uid}/plan/${planId}`, {
+                method: 'POST'
+            }).then((data) => {
+                return data.json()
+            }).then((response) => {
+                if (response.error) {
+                    createMessage(response.error, "error")
+                } else if (response.url){
+                    window.location = response.url
+                }
+            })
+        }
     }
 }
