@@ -130,6 +130,15 @@
     <script>
         fillNav("<%=uid%>")
     </script>
+    <!--INTROJS-->
+    <link rel="stylesheet" href="/static/vendors/introjs/introjs.min.css">
+    <script src="/static/js/intro.min.js"></script>
+    <script src="/static/js/tour.js"></script>
+    <script>
+      if (admin) {
+        startTour("dev")
+      }
+    </script>
 
   
     <!--TOASTR-->

@@ -49,9 +49,10 @@ function fillNav(projectUid){
         return data.json()
     }).then((data) => {
         const pages = data.result
+        let projectPageHtml = ``
         for (let i = 0 ; i < pages.length ; i++){
             if (pages[i].type == "external_url"){
-                document.getElementById("sidebar").innerHTML += `
+                projectPageHtml += `
                 <li class="nav-item">
                     <a class="nav-link" target="_blank" href="${pages[i].external_url}">
                         <i class="icon-link menu-icon"></i>
@@ -60,7 +61,7 @@ function fillNav(projectUid){
                 </li>
                 `
             } else {
-                document.getElementById("sidebar").innerHTML += `
+                projectPageHtml += `
                 <li class="nav-item">
                     <a class="nav-link" href="/p/${projectUid}/${pages[i].path}">
                         <i class="${pages[i].icon} menu-icon"></i>
@@ -70,6 +71,9 @@ function fillNav(projectUid){
                 `
             } 
         }
+        document.getElementById("sidebar").innerHTML += `
+        ${projectPageHtml}
+        `
         if (!admin){
             document.getElementById("sidebar").innerHTML += `
         <li class="nav-item">

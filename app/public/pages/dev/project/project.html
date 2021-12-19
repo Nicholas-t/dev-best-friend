@@ -61,7 +61,7 @@
                                     <th class="pl-0  pb-2 border-bottom">Name</th>
                                     <th class="border-bottom pb-2">Description</th>
                                     <th class="border-bottom pb-2">Created At</th>
-                                    <th class="border-bottom pb-2">View</th>
+                                    <th class="border-bottom pb-2">Admin View</th>
                                 </tr>
                                 </thead>
                                 <tbody id="api-list">
@@ -96,6 +96,13 @@
 
 
   <script src="/static/pages/dev/project/fillProject.js"></script>
+  <!--INTROJS-->
+  <link rel="stylesheet" href="/static/vendors/introjs/introjs.min.css">
+  <script src="/static/js/intro.min.js"></script>
+  <script src="/static/js/tour.js"></script>
+  <script>
+    startTour("dev")
+  </script>
 
   
   <!--TOASTR-->

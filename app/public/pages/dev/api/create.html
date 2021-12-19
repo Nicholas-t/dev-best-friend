@@ -63,7 +63,7 @@
                         </div>
                         
                         <div class="form-group">
-                          <label>Endpoint &nbsp;&nbsp;&nbsp;&nbsp;<small>https:// (Recommended)</small></label>
+                          <label>Endpoint &nbsp;&nbsp;&nbsp;&nbsp;<small>https:// is recommended, add {path_parameter} for path_parameter, no query string</small></label>
                           <div class="input-group">
                             <input required id="endpoint" name="endpoint" type="url" class="form-control" placeholder="Endpoint (e.g. 435.23.xx.xx/search, xyz.com/history, etc)">
                           </div>
@@ -118,6 +118,14 @@
 
   
   <script src="/static/pages/dev/api/testingArea.js"></script>
+  
+  <!--INTROJS-->
+  <link rel="stylesheet" href="/static/vendors/introjs/introjs.min.css">
+  <script src="/static/js/intro.min.js"></script>
+  <script src="/static/js/tour.js"></script>
+  <script>
+    startTour("dev")
+  </script>
 
   
   <!--TOASTR-->

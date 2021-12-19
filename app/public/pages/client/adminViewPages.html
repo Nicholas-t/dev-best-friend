@@ -115,6 +115,15 @@
     fillNav("<%=uid%>")
   </script>
 
+    <!--INTROJS-->
+    <link rel="stylesheet" href="/static/vendors/introjs/introjs.min.css">
+    <script src="/static/js/intro.min.js"></script>
+    <script src="/static/js/tour.js"></script>
+    <script>
+      if (admin) {
+        startTour("dev")
+      }
+    </script>
   
 <!--TOASTR-->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>

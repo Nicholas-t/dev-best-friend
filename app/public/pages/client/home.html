@@ -53,15 +53,26 @@
                 <div class="card-body"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
                   <p class="card-title">User Details <small>ID : <%=user_id%></small></p>
                   <p class="font-weight-500"></p>
-                  <div class="col-md-6 d-flex flex-wrap mb-5">
-                    <div class="col-md-12">
-                      <p class="text-muted">Current plan (<a href="/p/<%=uid%>/change-plan">Change</a>)</p>
-                      <h3 id="plan_name" class="text-primary fs-30 font-weight-medium"></h3>
-                      <hr>
-                    </div>
-                    <div class="col-md-12" id="api-list">
+                    <div class="row">
+                      <div class="col-md-6 d-flex flex-wrap mb-5">
+                        <div class="col-md-12">
+                          <p class="text-muted">Current plan (<a href="/p/<%=uid%>/change-plan">Change</a>)</p>
+                          <h3 id="plan_name" class="text-primary fs-30 font-weight-medium"></h3>
+                          <hr>
+                        </div>
+                        <div class="col-md-12" id="api-list">
+                          
+                        </div>
+                      </div>
                       
+                      <div class="col-md-6 d-flex flex-wrap mb-5">
+                        <p class="card-title mb-0">API Usage</p> 
+                        <br>
+                        <br>
+                        <canvas id="log-chart" style="display: block; height: 210px; width: 421px;" width="631" height="315" class="chartjs-render-monitor"></canvas>
+                      </div>
                     </div>
+                    
                     <div class="col-md-12">
                       <form class="pt-3">
                         <p class="text-muted">API Key</p>
@@ -77,11 +88,6 @@
                         </div>
                       </form>       
                     </div>
-                  </div>
-                  
-                  <div class="col-md-8 d-flex flex-wrap mb-5">
-                    <canvas id="log-chart" style="display: block; height: 210px; width: 421px;" width="631" height="315" class="chartjs-render-monitor"></canvas>
-                  </div>
                 </div>
               </div>
             </div>
@@ -92,7 +98,8 @@
     </div>
   </div>
   <script src="/static/vendors/js/vendor.bundle.base.js"></script>
-  
+  <script src="/static/vendors/chart.js/Chart.min.js"></script>
+
   <script src="/static/pages/client/getProjectLogo.js"></script>
   <script>
     getProjectLogo("<%=uid%>")
@@ -122,6 +129,16 @@
     fillNav("<%=uid%>")
   </script>
 
+
+    <!--INTROJS-->
+    <link rel="stylesheet" href="/static/vendors/introjs/introjs.min.css">
+    <script src="/static/js/intro.min.js"></script>
+    <script src="/static/js/tour.js"></script>
+    <script>
+      if (!admin) {
+        startTour("client")
+      }
+    </script>
   
 <!--TOASTR-->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
