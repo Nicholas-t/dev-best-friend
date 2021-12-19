@@ -503,7 +503,6 @@ const clientTours = {
     
 
 async function startTour(type){
-    localStorage.clear()
     const tours = type === "dev"
         ? devTours
         : type === "client"
