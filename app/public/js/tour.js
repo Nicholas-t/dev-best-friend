@@ -514,7 +514,6 @@ async function startTour(type){
     const path = "/" + domain.split("/").slice(1).join("/")
     for (let i = 0 ; i < keys.length ; i ++){
         if(localStorage.getItem(keys[i]) === null){
-            localStorage.setItem(keys[i], "done")
             if (path.match(tours[keys[i]].url)){
                 await sleep(1000).then(async () => {
                     await introJs().setOptions(tours[keys[i]].options()).start();
