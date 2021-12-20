@@ -59,7 +59,7 @@ app.use('/api', require("./router/api"))
 
 app.get('/', function (req, res) {
   if (!req.user){
-    res.redirect("/finder/")
+    res.redirect("https://dev-bf.umso.co/")
   } else {
     if (req.user.type == "dev"){
       res.redirect('/dev')
