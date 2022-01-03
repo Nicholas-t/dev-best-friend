@@ -1,5 +1,11 @@
 function fillUsers(){
-    fetch(`/db/dev/get/users`).then((data) => {
+    const params = new URLSearchParams(window.location.search)
+    let link = `/db/dev/get/users`
+    if (params.has("q")){
+        link += `?q=${params.get("q")}`
+        document.getElementById('name_q').value = params.get("q")
+    }
+    fetch(link).then((data) => {
         return data.json()
     }).then((response) => {
         const users = response.result

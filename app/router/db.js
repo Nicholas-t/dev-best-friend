@@ -1331,7 +1331,7 @@ router.get('/dev/get/log', function (req, res){
 })
 
 router.get('/dev/get/users', function (req, res){
-    db.getUsersOfDevProject(req.user.id, (err, result) => {
+    db.getUsersOfDevProject(req.user.id, req.query.q, (err, result) => {
         if (err){
             res.json({
                 error : err

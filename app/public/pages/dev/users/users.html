@@ -53,7 +53,17 @@
               <div class="col-md-12 stretch-card grid-margin">
                   <div class="card">
                     <div class="card-body">
-                        <p class="card-title mb-0">Users</p>
+                      <div class="row">
+                        <p class="card-title mb-0 col-1">Users</p>
+                        <div class="form-group col-5">
+                          <div class="input-group">
+                            <input type="text" id="name_q" class="form-control" placeholder="Search user's by name">
+                            <div class="input-group-append">
+                              <button onclick="(() => {window.location = `/dev/users?q=${document.getElementById('name_q').value}`})()" class="btn btn-sm btn-primary" type="button">Search</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                         <div class="table-responsive">
                           <table class="table table-borderless">
                               <thead>

@@ -472,7 +472,7 @@ class databaseHandler {
         this.con.query(query, cb);
     }
 
-    getUsersOfDevProject(id, cb){
+    getUsersOfDevProject(id, q="", cb= (() => {})){
         let query = `SELECT
                 client.id as client_id,
                 client.name as client_name,
@@ -483,7 +483,19 @@ class databaseHandler {
                 project.icon as project_icon
             FROM client
             LEFT JOIN project ON client.project_id = project.uid
-            WHERE project.dev_id = '${id}';`
+            WHERE project.dev_id = '${id}'
+            ${q !== ""
+         ? ` AND (
+            LOWER(client.name) LIKE '%${q.toLowerCase()}%' 
+             OR 
+            LOWER(client.email) LIKE '%${q.toLowerCase()}%' 
+                OR 
+            LOWER(client.id) LIKE '%${q.toLowerCase()}%' 
+                OR
+            LOWER(project.name) LIKE '%${q.toLowerCase()}%' 
+            )
+         `
+         : ""};`
         this.con.query(query, cb);
     }
 
