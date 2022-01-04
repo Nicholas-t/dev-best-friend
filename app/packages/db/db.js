@@ -30,7 +30,8 @@ var {
     createPathParameterTable,
     createBatchPathParametersTable,
     createItemPathParameterTable,
-    createDefaultPathParameterTable
+    createDefaultPathParameterTable,
+    createClientSupportChatTable
 } = require('./queries.js');
 
 class databaseHandler {
@@ -90,7 +91,8 @@ class databaseHandler {
         this.createTable(createPathParameterTable, "path_parameter");
         this.createTable(createBatchPathParametersTable, "batch_path_parameter");
         this.createTable(createItemPathParameterTable, "item_path_parameter");
-        this.createTable(createDefaultPathParameterTable, "default_path_parameter");        
+        this.createTable(createDefaultPathParameterTable, "default_path_parameter");   
+        this.createTable(createClientSupportChatTable, "client_support_chat");   
         return true
     }
 
@@ -436,6 +438,28 @@ class databaseHandler {
         });
     }
     
+    getChatHistory(devId, clientId, n, offset, cb){
+        let query = `SELECT 
+            client_support_chat.id as id,
+            client_support_chat.client_id as client_id,
+            client.name as client_name,
+            client_support_chat.dev_id as dev_id,
+            dev.name as dev_name,
+            client_support_chat.from_client as from_client,
+            client_support_chat.unread as unread,
+            client_support_chat.content as content,
+            client_support_chat.time_created as time_created
+            FROM client_support_chat
+            LEFT JOIN dev ON dev.id = client_support_chat.dev_id
+            LEFT JOIN client ON client.id = client_support_chat.client_id
+            WHERE dev_id = '${devId}'
+            AND client_id = '${clientId}'
+            ORDER BY time_created DESC
+            LIMIT ${n}
+            OFFSET ${offset};`
+        this.con.query(query, cb);
+    }
+
     getAllLogByDevId(id, n, offset, cb){
         let query = `SELECT 
                 api.name as api_name,

@@ -25,7 +25,8 @@ const {
     defaultPathParameterSchema,
     pathParameterSchema,
     itemPathParameterSchema,
-    batchPathParameterSchema
+    batchPathParameterSchema,
+    clientSupportChatSchema
   } = require('../packages/schema')
   
 const {
@@ -1327,6 +1328,85 @@ router.get('/dev/get/log', function (req, res){
                 result
             })
         }
+    })
+})
+
+router.get('/dev/get/chat/:user_id', function (req, res){
+    let n = req.query.n ? req.query.n : 20
+    let offset = req.query.offset ? req.query.offset : 0
+    db.getChatHistory(req.user.id, req.params.user_id, n, offset, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
+router.post('/dev/add/chat/:user_id', function (req, res){
+    const clientSupportChat = copySchema(clientSupportChatSchema)
+    clientSupportChat.id = uuidv4()
+    clientSupportChat.client_id = req.params.user_id
+    clientSupportChat.dev_id = req.user.id
+    clientSupportChat.from_client = false
+    clientSupportChat.unread = true
+    clientSupportChat.content = req.body.message.split("'").join(`"`)
+    clientSupportChat.time_created = getCurrentTime()
+    db.add("client_support_chat", clientSupportChat, (err, result) =>{
+        if (err){
+            console.log(err)
+            res.redirect("/error/500")
+        } else {
+            res.redirect(`/dev/users/view/${req.params.user_id}`)
+        }
+    })
+})
+router.get('/client/get/chat/:dev_id', function (req, res){
+    let n = req.query.n ? req.query.n : 20
+    let offset = req.query.offset ? req.query.offset : 0
+    db.getChatHistory(req.params.dev_id, req.user.id, n, offset, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
+router.post('/client/add/chat/:project_uid/:dev_id', function (req, res){
+    const clientSupportChat = copySchema(clientSupportChatSchema)
+    clientSupportChat.id = uuidv4()
+    clientSupportChat.client_id = req.user.id
+    clientSupportChat.dev_id =  req.params.dev_id
+    clientSupportChat.from_client = true
+    clientSupportChat.unread = true
+    clientSupportChat.content = req.body.message.split("'").join(`"`)
+    clientSupportChat.time_created = getCurrentTime()
+    db.add("client_support_chat", clientSupportChat, (err, result) =>{
+        if (err){
+            console.log(err)
+            res.redirect("/error/500")
+        } else {
+            res.redirect(`/p/${req.params.project_uid}/home`)
+        }
+    })
+})
+
+router.get('/dev/read/chat/:chat_id', function (req, res){
+    db.modify("client_support_chat", {
+        unread : false
+    }, "id", req.params.chat_id, (err, result) => {
+        res.json({
+            error : err
+        })
     })
 })
 

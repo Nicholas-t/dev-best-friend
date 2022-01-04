@@ -38,6 +38,7 @@ const firstDevVisit = (() => {
                     <ul>
                         <li>Viewing your user's API usage.</li>
                         <li>Manually add credits for a user.</li>
+                        <li>Chat directly with your users. (New)</li>
                     </ul>`
             },
             {
@@ -416,7 +417,7 @@ const firstClientVisit = (() => {
                 intro : `In here, you can see the plan you are in.`
             },
             {
-                element: document.querySelector('body > div.container-scroller > div > div > div > div > div > div > div.row > div:nth-child(1) > div:nth-child(1) > p > a'),
+                element: document.querySelector('body > div.container-scroller > div > div > div > div > div.col-md-7.grid-margin.stretch-card > div > div > div.row > div:nth-child(1) > div:nth-child(1) > p > a'),
                 title: `Change your plan`,
                 intro : `In here, you can also change your plan.`
             },
@@ -426,16 +427,20 @@ const firstClientVisit = (() => {
                 intro : `In here, you can see all the usable credits you have left.`
             },
             {
-                element: document.querySelector('body > div.container-scroller > div > div > div > div > div > div > div.row > div:nth-child(2)'),
+                element: document.querySelector('body > div > div > div > div > div > div.col-md-7.grid-margin.stretch-card > div > div > div.row > div:nth-child(2)'),
                 title: `API Usage`,
                 intro : `In here, you can see your API usage.`
             },
             {
-                element: document.querySelector('body > div.container-scroller > div > div > div > div > div > div > div.col-md-12 '),
+                element: document.querySelector('#api-key'),
                 title: `Your API Key`,
-                intro : `In here, you can see your API usage.`
+                intro : `In here, you can see your API key.`
+            },
+            {
+                element: document.querySelector('#chat'),
+                title: `Chat with the developer`,
+                intro : `You can chat directly with the developer here.`
             }
-                       
         ]
     }
 })
@@ -493,7 +498,7 @@ const devTours = {
 const clientTours = {
     first_client_visit_tour : {
         options : firstClientVisit,
-        url : /\/p\/(.*)/g
+        url : /\/p\/(.*)\/home$/g
     },
     first_client_choose_plan_section_tour : {
         options : firstClientChoosePlanSection,
@@ -520,6 +525,25 @@ async function startTour(type){
                     localStorage.setItem(keys[i], "done")
                 })
             }
+        }
+    }
+}
+
+async function manualRunTour(type){
+    const tours = type === "dev"
+        ? devTours
+        : type === "client"
+            ? clientTours
+            : {}
+    let keys = Object.keys(tours)
+    var url = window.location.href;
+    var domain = url.replace('http://','').replace('https://','').split("?")[0];
+    const path = "/" + domain.split("/").slice(1).join("/")
+    for (let i = 0 ; i < keys.length ; i ++){
+        if (path.match(tours[keys[i]].url)){
+            await sleep(1000).then(async () => {
+                await introJs().setOptions(tours[keys[i]].options()).start();
+            })
         }
     }
 }

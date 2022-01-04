@@ -1,3 +1,13 @@
+function formatDigit(int){
+    if (int.toString().length == 1){
+        return `0${int}`
+    } else {
+        return `${int}`
+    }
+}
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
 function viewUser(userId){
     fetch(`/db/dev/get/users/view/${userId}`).then((data) => {
         return data.json()
@@ -82,6 +92,86 @@ function viewUser(userId){
                 })
             })
         }
+        fetch(`/db/dev/get/chat/${userId}`).then((data) => {
+            return data.json()
+        }).then((response) => {
+            let chat = response.result.reverse()
+            let chatHtml = ``
+            let markedUnread = false
+            for (let i = 0 ; i < chat.length ; i ++){
+                let right = !chat[i].from_client
+                let unread = chat[i].from_client && chat[i].unread
+                let time  = new Date(chat[i].time_created*1000)
+                if (unread && !markedUnread){
+                    markedUnread = true
+                    chatHtml += `<small>New message</small><hr></hr>`
+                }
+                chatHtml += `
+                <li class="row">
+                    ${right 
+                        ? `
+                        <div class="col-10">
+                            <p style="float: right;" class="text-info mb-1">
+                            ${
+                                chat[i].dev_name
+                            }
+                            </p><br>
+                            <p style="float: right;" class="mb-0">
+                            ${
+                                chat[i].content.split("\n").join("<br>")
+                            }
+                            <br>
+                            <small style="float: right;" >
+                            ${time.getDate()} ${MONTHS[time.getMonth()]} ${
+                                formatDigit(time.getHours())
+                            }:${
+                                formatDigit(time.getMinutes())
+                            }
+                            </small>
+                            </p>
+                        </div>
+                        <div  class="col-2">
+                            <img  style="float: right;" src="https://eu.ui-avatars.com/api/?name=${
+                                chat[i].dev_name
+                            }" alt="user">
+                        </div>`
+                        : `
+                        <div class="col-2">
+                            <img  src="https://eu.ui-avatars.com/api/?name=${
+                                chat[i].client_name
+                            }" alt="user">
+                        </div>
+                        <div class="col-10">
+                            <p class="text-info mb-1">
+                            ${
+                                chat[i].client_name
+                            }  
+                            </p>
+                            <p class="mb-0">
+                            ${
+                                chat[i].content.split("\n").join("</br>")
+                            }
+                            <br>
+                            <small>
+                            ${time.getDate()} ${MONTHS[time.getMonth()]} ${
+                                formatDigit(time.getHours())
+                            }:${
+                                formatDigit(time.getMinutes())
+                            }
+                            </small>
+                            </p>
+                        </div>`
+                    }
+                </li>`
+                if (unread){
+                    fetch(`/db/dev/read/chat/${chat[i].id}`)
+                }
+            }
+            if (chatHtml !== ''){
+                document.getElementById("chat").innerHTML = chatHtml
+                document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight
+            }
+        })
     })
 
     fetch("/db/dev/get/api").then((data) => {

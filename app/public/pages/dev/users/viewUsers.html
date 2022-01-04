@@ -50,87 +50,116 @@
         <div class="content-wrapper">
             <!--Content here-->
             <div class="row">
-                <div class="col-5 grid-margin stretch-card">
-                    <div class="card">
-                      <div class="card-body">
-                        <p id="client_id" class="card-description">
-                            ID: <%=client_id%>
-                        </p>
-                        <p id="project" class="card-description">
-                            
-                        </p>
-                        <form class="forms-sample">
-                            <div class="form-group">
-                              <label>Name</label>
-                              <input readonly="readonly" required type="text" name="name" class="form-control" id="name">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Email</label>
-                                <div class="input-group">
-                                  <input  readonly="readonly" required id="email" name="email" type="email" class="form-control">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Plan</label>
-                                <div class="input-group">
-                                    <input  readonly="readonly" required id="plan" name="plan" type="text" class="form-control">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Time Created</label>
-                                <div class="input-group">
-                                    <input  readonly="readonly" required id="time_created" name="time_created" type="text" class="form-control" >
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Last Seen</label>
-                                <div class="input-group">
-                                    <input  readonly="readonly" required id="last_seen" name="last_seen" type="text" class="form-control">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Activated</label>
-                                <div class="input-group">
-                                    <input  readonly="readonly" required id="activated" name="activated" type="text" class="form-control">
-                                </div>
-                            </div>
-                            <a href="/dev/users" class="btn btn-warning">Back</a>
-                        </form>
-                      </div>
-                    </div>
-                </div>
-                <div class="col-7 grid-margin stretch-card">
-                    <div class="card">
-                      <div class="card-body">
-                        <h4 class="card-title">Available Credits</h4>
-                        <div id="available-credit">
-
+                <div class="col-md-5 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">Chat with your user</h4>
+                      <ul id="chat" class="icon-data-list">
+                        
+                        <li class="row">
+                          <div class="col-2">
+                            <img src="/static/images/logo-white.png" alt="user">
+                          </div>
+                          <div class="col-10">
+                              <p class="text-info mb-1">Dev BF</p>
+                              <p class="mb-0">Start chatting with your user!</p>
+                          </div>
+                        </li>
+                      </ul>
+                      <br>
+                      <form action="/db/dev/add/chat/<%=client_id%>" method="POST">
+                        <div class="form-group">
+                          <textarea placeholder="Write your message here" class="form-control" name="message" id="message" rows="4"></textarea>
                         </div>
-                        <br>
-                        <h4 class="card-title">Log</h4>
-                        <div class="table-responsive">
-                          <table class="table table-hover">
-                              <thead>
-                                <tr>
-                                  <th>Endpoint</th>
-                                  <th>Time</th>
-                                  <th>Status</th>
-                                </tr>
-                              </thead>
-                              <tbody id="log-list">
-                                <tr>
-                                  <td></td>
-                                  <td class="text-danger">No Logs</td>
-                                  <td></td>
-                                </tr>
-                              </tbody>
-                          </table>
-                      </div>
-                      </div>
+                        <button type="submit" class="btn btn-primary mr-2">Send Message</button>
+                      </form>
                     </div>
+                  </div>
+              </div>
+              
+              <div class="col-7 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">User's detail</h4>
+                    <p id="client_id" class="card-description">
+                        ID: <%=client_id%>
+                    </p>
+                    <p id="project" class="card-description">
+                        
+                    </p>
+                    <form class="forms-sample">
+                        <div class="form-group">
+                          <label>Name</label>
+                          <input readonly="readonly" required type="text" name="name" class="form-control" id="name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email</label>
+                            <div class="input-group">
+                              <input  readonly="readonly" required id="email" name="email" type="email" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Plan</label>
+                            <div class="input-group">
+                                <input  readonly="readonly" required id="plan" name="plan" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Time Created</label>
+                            <div class="input-group">
+                                <input  readonly="readonly" required id="time_created" name="time_created" type="text" class="form-control" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Seen</label>
+                            <div class="input-group">
+                                <input  readonly="readonly" required id="last_seen" name="last_seen" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Activated</label>
+                            <div class="input-group">
+                                <input  readonly="readonly" required id="activated" name="activated" type="text" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                  </div>
                 </div>
+              </div>
             </div>
+            <div class="row">
+              <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Available Credits</h4>
+                    <div id="available-credit">
+
+                    </div>
+                    <br>
+                    <h4 class="card-title">Log</h4>
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th>Endpoint</th>
+                              <th>Time</th>
+                              <th>Status</th>
+                            </tr>
+                          </thead>
+                          <tbody id="log-list">
+                            <tr>
+                              <td></td>
+                              <td class="text-danger">No Logs</td>
+                              <td></td>
+                            </tr>
+                          </tbody>
+                      </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         
         <footer class="footer" include-html="/static/pages/frame/footer.html">
@@ -152,7 +181,8 @@
   <script src="/static/pages/dev/users/viewUser.js"></script>
   <script>
     const userId = "<%=client_id%>"
-    viewUser(userId)
+    const projectUid = ""
+    viewUser(userId, projectUid)
   </script>
   <!--TOASTR-->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>

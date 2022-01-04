@@ -354,11 +354,26 @@ CREATE TABLE IF NOT EXISTS batch_process (
 /**
  * Store data of the checkout sessions stripe ID
  */
-var createUserSubscriptionStripeTable = `
-CREATE TABLE IF NOT EXISTS user_subscription_stripe (
-     user_id varchar(100) NOT NULL PRIMARY KEY,
-     subscription_id  varchar(100) NOT NULL
-)`;
+ var createUserSubscriptionStripeTable = `
+ CREATE TABLE IF NOT EXISTS user_subscription_stripe (
+      user_id varchar(100) NOT NULL PRIMARY KEY,
+      subscription_id  varchar(100) NOT NULL
+ )`;
+
+
+ /**
+  * Store data of the chat messages
+  */
+ var createClientSupportChatTable = `
+ CREATE TABLE IF NOT EXISTS client_support_chat (
+      id varchar(100) NOT NULL PRIMARY KEY,
+      client_id  varchar(100) NOT NULL,
+      dev_id  varchar(100) NOT NULL,
+      from_client  BOOLEAN NOT NULL,
+      unread  BOOLEAN NOT NULL,
+      content TEXT NOT NULL,
+      time_created int(11) NOT NULL
+ )`;
   
 
 
@@ -392,5 +407,6 @@ module.exports = {
     createPathParameterTable,
     createBatchPathParametersTable,
     createItemPathParameterTable,
-    createDefaultPathParameterTable
+    createDefaultPathParameterTable,
+    createClientSupportChatTable
 }

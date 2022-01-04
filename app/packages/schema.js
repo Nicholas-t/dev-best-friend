@@ -328,6 +328,18 @@ var planPriceStripeSchema = {
     label : ""
 }
 
+/**
+ * Store data of chat support
+ */
+ var clientSupportChatSchema = {
+    id: "",
+    client_id: "",
+    dev_id : "",
+    from_client : false,
+    unread : true,
+    content : "",
+    time_created : 0
+}
 
  module.exports= {
     userPwSchema,
@@ -359,5 +371,6 @@ var planPriceStripeSchema = {
     pathParameterSchema, 
     defaultPathParameterSchema, 
     itemPathParameterSchema, 
-    batchPathParameterSchema
+    batchPathParameterSchema,
+    clientSupportChatSchema
  }

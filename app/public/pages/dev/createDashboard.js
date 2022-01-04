@@ -213,7 +213,7 @@ function fillProjectList(){
                                             ${users[i].client_email}
                                         </td>
                                         <td><h5 class="font-weight-bold mb-0" id="${users[i].client_id}-log-n">${users[i].count}</h5></td>
-                                        <td><a href="/p/${project.uid}/manage/users/${users[i].client_id}">View</a></td>
+                                        <td><a href="/dev/users/view/${users[i].client_id}">View</a></td>
                                     </tr>`
                                 }
                             }

@@ -48,7 +48,8 @@
       <div class="main-panel">
         <div class="content-wrapper">
             <!--Content here-->
-            <div class="col-md-12 grid-margin stretch-card">
+            <div class="row">
+            <div class="col-md-7 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
                   <p class="card-title">User Details <small>ID : <%=user_id%></small></p>
@@ -91,6 +92,34 @@
                 </div>
               </div>
             </div>
+            
+            <div class="col-md-5 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Chat with the developer</h4>
+                  <ul id="chat" class="icon-data-list">
+                    
+                    <li class="row">
+                      <div class="col-2">
+                        <img src="/static/images/logo-white.png" alt="user">
+                      </div>
+                      <div class="col-10">
+                          <p class="text-info mb-1">Dev BF</p>
+                          <p class="mb-0">Start chatting with your developer!</p>
+                      </div>
+                    </li>
+                  </ul>
+                  <br>
+                  <form action="/db/client/add/chat/<%=uid%>/<%=dev_id%>" method="POST">
+                    <div class="form-group">
+                      <textarea placeholder="Write your message here" class="form-control" name="message" id="message" rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary mr-2">Send Message</button>
+                  </form>
+                </div>
+              </div>
+          </div>
+          </div>
         </div>
         <footer class="footer" include-html="/static/pages/frame/footer.html">
         </footer>
@@ -115,10 +144,11 @@
     const uid = "<%=uid%>"
     const planId = "<%=user_plan_id%>"
     const userId = "<%=user_id%>"
+    const devId = "<%=dev_id%>"
   </script>
   <script src="/static/pages/client/fillHome.js"></script>
   <script>
-    fillHome(uid, planId, userId)
+    fillHome(uid, planId, userId, devId)
   </script>
   <script src="/static/pages/client/isAdmin.js"></script>
   <script>

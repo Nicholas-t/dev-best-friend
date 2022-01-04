@@ -23758,8 +23758,8 @@ dl li {
 }
 
 .icon-data-list li img {
-  width: 40px;
-  height: 40px;
+  width: 80%;
+  height: 80;
   margin-right: 10px;
   border-radius: 100%;
 }
@@ -30623,6 +30623,10 @@ div.tagsinput span.tag a {
   padding:2px;
 }
 
-
+#chat {
+  height: 460px;
+  width: 100%;
+  overflow-y: scroll;
+}
 
 /*# sourceMappingURL=../maps/vertical-layout-light/style.css.map */
