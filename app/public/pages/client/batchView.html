@@ -83,6 +83,10 @@
                   <h4 class="card-title">Batch Processes </h4>
                   
                   <small>ID : <%=process_id%> &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;<i id="batch_status"></i></small> <br> <br>
+                  
+                  <div id="progress" class="d-flex justify-content-between align-items-center">
+                  </div>
+                  <br> <br>
                   <div class="row">
                     <button id="process_content_button" onclick="processContent()" style="margin-left: 20px;" class="btn btn-primary">Process Batch</button>
                     <button id="download_content_button" onclick="downloadContent()" style="margin-left: 20px;" disabled class="btn btn-success">Download Result</button>

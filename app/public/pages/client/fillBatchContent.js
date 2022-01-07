@@ -1,5 +1,25 @@
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
+function setLiveProgressTracker(processId){
+    var intervalId = null;
+    var refreshProgress = function(){
+        fetch(`/db/dev/get/batch/${processId}/result`).then((data) => {
+            return data.json()
+        }).then((data) => {
+            const resultData = data.result
+            document.getElementById("progress").innerHTML = `
+            <div class="progress progress-md flex-grow-1 mr-4">
+              <div class="progress-bar bg-inf0" role="progressbar" style="width: ${Number(resultData.length / uploadedData.length * 100)}%" aria-valuenow="${Number(resultData.length / uploadedData.length * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <p class="mb-0">${resultData.length} / ${uploadedData.length}</p>`
+            if (resultData.length === uploadedData.length){
+                clearInterval(intervalId);
+            }
+        })
+    };
+    intervalId = setInterval(refreshProgress, 300);
+}
+
 let uploadedData = []
 let resultedData = []
 let batchDetail = {}
@@ -48,6 +68,19 @@ function fillBatchContent() {
                     <th>${headers.join("</th><th>")}</th>
                 </tr>`
                 document.getElementById("uploaded_content_rows").innerHTML = allRows.join("")
+                fetch(`/db/dev/get/batch/${processId}/result`).then((data) => {
+                    return data.json()
+                }).then((data) => {
+                    const resultData = data.result
+                    document.getElementById("progress").innerHTML = `
+                    <div class="progress progress-md flex-grow-1 mr-4">
+                      <div class="progress-bar bg-inf0" role="progressbar" style="width: ${Number(resultData.length / uploadedData.length * 100)}%" aria-valuenow="${Number(resultData.length / uploadedData.length * 100)}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <p class="mb-0">${resultData.length} / ${uploadedData.length}</p>`
+                })
+                if (processDetail.status == 1){
+                    setLiveProgressTracker(processId)
+                }
             })
         })
     })
@@ -86,54 +119,17 @@ function processContent(){
                         ${batchStatus[1].label}
                     </label>
                     `
-                    createMessage("Please wait while we are processing your file. Do not leave the page.", "info")
-                    document.getElementById("loader-container").style.display = ''
                     fetch(`/db/dev/process/batch/${processId}/${uid}`, {
                         method: 'POST',
                     }).then((data) => {
                         return data.json()
                     }).then((data) => {
                         if (data.success){
-                            createMessage("The file is fully processed. You can now download the resulting file.", "success")
-                            fetch(`/db/dev/modify/batch/${processId}/status/2`, {
-                                method: 'POST',
-                                mode: 'cors',
-                                cache: 'no-cache', 
-                                credentials: 'same-origin',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                redirect: 'follow',
-                                referrerPolicy: 'no-referrer'
-                            })
-                            document.getElementById("batch_status").innerHTML = `
-                            <label class="badge badge-${batchStatus[2].button_type}">
-                                ${batchStatus[2].label}
-                            </label>
-                            `
-                            document.getElementById("loader-container").style.display = 'none'
+                            createMessage("The file is currently being processed.", "info")
+                            setLiveProgressTracker(processId)
                         } else {
                             createMessage("Something wrong while processing your file. You can download the last checkpoint.", "error")
-                            fetch(`/db/dev/modify/batch/${processId}/status/3`, {
-                                method: 'POST',
-                                mode: 'cors',
-                                cache: 'no-cache', 
-                                credentials: 'same-origin',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                redirect: 'follow',
-                                referrerPolicy: 'no-referrer'
-                            })
-                            document.getElementById("batch_status").innerHTML = `
-                            <label class="badge badge-${batchStatus[3].button_type}">
-                                ${batchStatus[3].label}
-                            </label>
-                            `
-                            document.getElementById("loader-container").style.display = 'none'
                         }
-                        document.getElementById("process_content_button").disabled = true
-                        document.getElementById("download_content_button").disabled = false
                     })
                 } else {
                     createMessage("Processing is cancelled. We are not processing your batch.", "info")

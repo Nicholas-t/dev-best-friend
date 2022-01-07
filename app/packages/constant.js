@@ -1552,8 +1552,8 @@ const batchStatus = {
         button_type : "Unprocessed",
         button_type : "info"
     }, 1 : {
-        key : "processed",
-        label : "Processed",
+        key : "processing",
+        label : "Processing",
         button_type : "warning"
     }, 2 : {
         key : "completed",

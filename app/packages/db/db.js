@@ -397,7 +397,8 @@ class databaseHandler {
 
     getAllProcessesOfPage(pageId, userId, cb){
         let query = `SELECT * FROM batch_process
-        WHERE page_id = '${pageId}' AND client_id = '${userId}';`
+        WHERE page_id = '${pageId}' AND client_id = '${userId}' 
+        ORDER BY time_created DESC;`
         this.con.query(query, cb);
     }
 
