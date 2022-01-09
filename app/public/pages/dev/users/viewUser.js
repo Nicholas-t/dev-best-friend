@@ -116,7 +116,7 @@ function viewUser(userId){
                                 chat[i].dev_name
                             }
                             </p><br>
-                            <p style="float: right;" class="mb-0">
+                            <p style="float: right;text-align:right;" class="mb-0">
                             ${
                                 chat[i].content.split("\n").join("<br>")
                             }

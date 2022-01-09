@@ -161,7 +161,7 @@ function fillHome(uid, planId, userId, devId){
                             chat[i].client_name
                         } 
                         </p><br>
-                        <p style="float: right;" class="mb-0">
+                        <p style="float: right;text-align:right;" class="mb-0">
                         ${
                             chat[i].content.split("\n").join("<br>")
                         }
