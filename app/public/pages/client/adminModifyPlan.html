@@ -71,8 +71,8 @@
                           <input type="text" name="description" class="form-control" id="description" value="<%=plan_description%>"placeholder="Description">
                         </div>
 
-                        <button type="submit" class="btn btn-primary mr-2">Submit</button>
-                        <a href="/p/<%=uid%>/manage" class="btn btn-light">Cancel</a>
+                        <button type="submit" class="move-up-on-hover btn btn-primary mr-2">Submit</button>
+                        <a href="/p/<%=uid%>/manage" class="move-up-on-hover btn btn-light">Cancel</a>
                     </form>
                   </div>
                 </div>
@@ -85,8 +85,8 @@
                         <div class="card-body" id="modify-form">
 
                         </div>
-                        <button type="submit" style="margin-left: 10px;margin-bottom: 10px;" class="btn btn-primary mr-2">Submit</button>
-                        <div onclick="addItemPlan()" style="margin-left: 10px;margin-bottom: 10px;" class="btn btn-success mr-2">Add new item</div>
+                        <button type="submit" style="margin-left: 10px;margin-bottom: 10px;" class="move-up-on-hover btn btn-primary mr-2">Submit</button>
+                        <div onclick="addItemPlan()" style="margin-left: 10px;margin-bottom: 10px;" class="move-up-on-hover btn btn-success mr-2">Add new item</div>
                       </form>
                     </div>
                 </div>
@@ -98,7 +98,7 @@
                 <div class="card-body">
                   <h4 class="card-title">Danger zone</h4>
                   <form action="/db/dev/delete/plan/<%=uid%>/<%=plan_id%>" method="POST" class="forms-sample">
-                      <button type="submit" class="btn btn-danger mr-2">Delete plan</button>
+                      <button type="submit" class="move-up-on-hover btn btn-danger mr-2">Delete plan</button>
                   </form>
                 </div>
               </div>

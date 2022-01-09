@@ -1,6 +1,6 @@
 function runTest(){
     const method = document.getElementById("method").value
-    const endpoint = document.getElementById("endpoint").value
+    let endpoint = document.getElementById("endpoint").value
     const params = {}
     let keysElement = document.querySelectorAll(`input[id^="test-key"]`)
     let valuesElement = document.querySelectorAll(`input[id^="test-value"]`)
@@ -18,6 +18,11 @@ function runTest(){
         !Object.keys(headers).includes(keysHeaderElement[i].value)){
             headers[keysHeaderElement[i].value] = valuesHeaderElement[i].value
         }
+    }
+    let keysPathParameterElement = document.querySelectorAll(`input[id^="test-path-parameter-key"]`)
+    let valuesPathParameterElement = document.querySelectorAll(`input[id^="test-path-parameter-value"]`)
+    for (let i = 0; i < keysPathParameterElement.length ; i++){
+        endpoint = endpoint.replace(`{${keysPathParameterElement[i].value}}`, valuesPathParameterElement[i].value)
     }
     fetch(`/dev/api/create-request`, {
         method: 'POST',
@@ -50,12 +55,15 @@ function runTest(){
     })
 }
 
-function removeInput(n){
+function removeTestInput(n){
     document.getElementById(`test-input-${n}`).remove()
 }
 
-function removeHeader(n){
+function removeTestHeader(n){
     document.getElementById(`test-header-${n}`).remove()
+}
+function removeTestPathParameter(n){
+    document.getElementById(`test-path-parameter-${n}`).remove()
 }
 
 function changeValueType(n){
@@ -79,7 +87,7 @@ function changeValueType(n){
 }
 
 let l = 1
-function addNewInput(){
+function addTestNewInput(){
     let d = `
     <div id="test-input-${l}">
         <div class="row">
@@ -101,7 +109,7 @@ function addNewInput(){
         
         <div class="row">
             <div style="margin-top: 30px;" class="form-group col-3">
-                <a onclick="removeInput(${l})" class="btn btn-danger mr-2">Remove Input</a>
+                <a onclick="removeTestInput(${l})" class="move-up-on-hover btn btn-danger mr-2">Remove Input</a>
             </div>
             <div class="form-group col-9">
                 <label>Value</label>
@@ -121,7 +129,7 @@ function addNewInput(){
 
 
 let k = 0
-function addNewHeader(){
+function addTestNewHeader(){
     let d = `
     <div id="test-header-${k}">
         <div class="row">
@@ -134,17 +142,45 @@ function addNewHeader(){
                 <input type="text" class="form-control" id="test-header-value-${k}" placeholder="Value">
             </div>
             <div style="margin-top: 30px;" class="form-group col-2">
-                <a onclick="removeHeader(${k})" class="btn btn-danger mr-2">Remove Header</a>
+                <a onclick="removeTestHeader(${k})" class="move-up-on-hover btn btn-danger mr-2">Remove Header</a>
             </div>
         </div>
     </div>
     `
-    l += 1
+    k += 1
     let headers = document.querySelectorAll(`div[id^="test-header"]`)
     if (!headers.length) {
         document.getElementById(`testing-area-header`).innerHTML += d;
     } else {
         headers[headers.length-1].insertAdjacentHTML("afterend",d);
+    }
+}
+
+let m = 0
+function addTestNewPathParameter(){
+    let d = `
+    <div id="test-path-parameter-${m}">
+        <div class="row">
+            <div class="form-group col-5">
+                <label>Key</label>
+                <input required type="text" class="form-control" id="test-path-parameter-key-${m}" placeholder="Key">
+            </div>
+            <div class="form-group col-5">
+                <label>Value</label>
+                <input type="text" class="form-control" id="test-path-parameter-value-${m}" placeholder="Value">
+            </div>
+            <div style="margin-top: 30px;" class="form-group col-2">
+                <a onclick="removeTestPathParameter(${m})" class="move-up-on-hover btn btn-danger mr-2">Remove Path Parameter</a>
+            </div>
+        </div>
+    </div>
+    `
+    m += 1
+    let pathParameter = document.querySelectorAll(`div[id^="test-path-parameter"]`)
+    if (!pathParameter.length) {
+        document.getElementById(`testing-area-path-parameter`).innerHTML += d;
+    } else {
+        pathParameter[pathParameter.length-1].insertAdjacentHTML("afterend",d);
     }
 }
 

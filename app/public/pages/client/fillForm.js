@@ -30,7 +30,7 @@ function addDashboardInput(row, itemInput){
             <input ${itemInput ? `value="${itemInput.value}"`: ""} required type="text" class="form-control" id="value-${row}-${k}" name="value-${row}-${k}" placeholder="Value">
         </div>
         <div class="form-group col-1">
-            <div onclick="deleteDashboardItemInput(${row}, ${k})" class="btn btn-warning" style="margin-top:30px;">
+            <div onclick="deleteDashboardItemInput(${row}, ${k})" class="move-up-on-hover btn btn-warning" style="margin-top:30px;">
                 Remove
             </div>
         <div>
@@ -56,7 +56,7 @@ function addDashboardHeader(row, itemHeader){
             <input ${itemHeader ? `value="${itemHeader.value}"`: ""} required type="text" class="form-control" id="value-headers-${row}-${k}" name="value-headers-${row}-${k}" placeholder="Value">
         </div>
         <div class="form-group col-1">
-            <div onclick="deleteDashboardItemHeader(${row}, ${k})" class="btn btn-warning" style="margin-top:30px;">
+            <div onclick="deleteDashboardItemHeader(${row}, ${k})" class="move-up-on-hover btn btn-warning" style="margin-top:30px;">
                 Remove
             </div>
         <div>
@@ -83,7 +83,7 @@ function addDashboardPathParameter(row, itemPathParameter){
             <input ${itemPathParameter ? `value="${itemPathParameter.value}"`: ""} required type="text" class="form-control" id="value-path-parameter-${row}-${k}" name="value-path-parameter-${row}-${k}" placeholder="Value">
         </div>
         <div class="form-group col-1">
-            <div onclick="deleteDashboardItemPathParameter(${row}, ${k})" class="btn btn-warning" style="margin-top:30px;">
+            <div onclick="deleteDashboardItemPathParameter(${row}, ${k})" class="move-up-on-hover btn btn-warning" style="margin-top:30px;">
                 Remove
             </div>
         <div>
@@ -162,21 +162,21 @@ function addNewItem(item){
             
             <div class="row">
                 <div class="form-group col-4">
-                    <a onclick="addDashboardInput(${l})" class="btn btn-success mr-2">Add input for this item</a>
+                    <a onclick="addDashboardInput(${l})" class="move-up-on-hover btn btn-success mr-2">Add input for this item</a>
                 </div>
                 <div class="form-group col-4">
-                    <a onclick="addDashboardHeader(${l})" class="btn btn-success mr-2">Add header</a>
+                    <a onclick="addDashboardHeader(${l})" class="move-up-on-hover btn btn-success mr-2">Add header</a>
                 </div>
                 <div class="form-group col-4">
-                    <a onclick="addDashboardPathParameter(${l})" class="btn btn-success mr-2">Add Path Parameter</a>
+                    <a onclick="addDashboardPathParameter(${l})" class="move-up-on-hover btn btn-success mr-2">Add Path Parameter</a>
                 </div>
             </div>
             <div class="row">
                 <div class="form-group col-6">
-                    <a onclick="importDefaultDashboardStructure(${l})" class="btn btn-info mr-2">Import Default Structure</a>
+                    <a onclick="importDefaultDashboardStructure(${l})" class="move-up-on-hover btn btn-info mr-2">Import Default Structure</a>
                 </div>
                 <div class="form-group col-6">
-                    <a onclick="removeItem(${l})" class="btn btn-danger mr-2">Remove</a>
+                    <a onclick="removeItem(${l})" class="move-up-on-hover btn btn-danger mr-2">Remove</a>
                 </div>
             </div>
             <hr>
@@ -245,7 +245,7 @@ function addNewInput(input){
             </div>
             
             <div class="form-group col-3">
-                <a onclick="removeInput(${l})" class="btn btn-danger mr-2" style="margin-top:30px;">Remove</a>
+                <a onclick="removeInput(${l})" class="move-up-on-hover btn btn-danger mr-2" style="margin-top:30px;">Remove</a>
             </div>
         </div>
     </div>
@@ -268,7 +268,7 @@ function addNewHeader(header){
                 <input ${header ? `value="${header.key_header}"`: ""} required type="text" class="form-control" id="key-header-${l}" name="key-header-${l}" placeholder="Key">
             </div>
             <div class="form-group col-3">
-                <a onclick="removeHeader(${l})" style="margin-top:30px;" class="btn btn-danger mr-2">Remove</a>
+                <a onclick="removeHeader(${l})" style="margin-top:30px;" class="move-up-on-hover btn btn-danger mr-2">Remove</a>
             </div>
         </div>
     </div>
@@ -297,7 +297,7 @@ function addNewPathParameter(pathParameter){
                 required type="text" class="form-control" id="label-path-parameter-${l}" name="label-path-parameter-${l}" placeholder="Label">
             </div>
             <div class="form-group col-2">
-                <a onclick="removePathParameter(${l})" style="margin-top:30px;" class="btn btn-danger mr-2">Remove</a>
+                <a onclick="removePathParameter(${l})" style="margin-top:30px;" class="move-up-on-hover btn btn-danger mr-2">Remove</a>
             </div>
         </div>
     </div>
@@ -363,7 +363,7 @@ function addBatchItem(type, batchItem){
                 <input ${batchItem ? `value="${batchItem.default_value}"`: ""} type="text" class="form-control" id="default-value-${type}-${l}" name="default-value-${type}-${l}" placeholder="Default Value">
             </div>
             <div class="form-group col-3">
-                <a onclick="removeBatchItem('${type}', ${l})" style="margin-top:30px;" class="btn btn-danger mr-2">Remove</a>
+                <a onclick="removeBatchItem('${type}', ${l})" style="margin-top:30px;" class="move-up-on-hover btn btn-danger mr-2">Remove</a>
             </div>
         </div>
     </div>
@@ -431,7 +431,7 @@ function _addModifyForm(page, projectUid, pageId){
                 <textarea required type="text" name="md" class="form-control" id="md" rows="4"></textarea>
             </div>
             <input type="hidden" name="type" value="${page.type}">
-            <button type="submit" class="btn btn-primary mr-2">Save</button>
+            <button type="submit" class="move-up-on-hover btn btn-primary mr-2">Save</button>
         </form>`
         fetch(`/db/dev/get/page/${projectUid}/${pageId}/md`).then((data) => {
             return data.json()
@@ -446,7 +446,7 @@ function _addModifyForm(page, projectUid, pageId){
                 <input required type="url" name="external_url" class="form-control" id="external_url" value="${page.external_url}" placeholder="External URL">
             </div>
             <input type="hidden" name="type" value="${page.type}">
-            <button type="submit" class="btn btn-primary mr-2">Save</button>
+            <button type="submit" class="move-up-on-hover btn btn-primary mr-2">Save</button>
         </form>`
     } else {
         fetch(`/db/dev/get/project/${projectUid}/available-api`).then((data) => {
@@ -468,22 +468,22 @@ function _addModifyForm(page, projectUid, pageId){
                         <div id="playground-input">
                         </div>
                         <input type="hidden" name="type" value="${page.type}">
-                        <div onclick="addNewInput()" class="btn btn-success mr-2">Add new input</div>
+                        <div onclick="addNewInput()" class="move-up-on-hover btn btn-success mr-2">Add new input</div>
                         <hr>
                         <div id="playground-path-parameter">
                         <label>Path Parameters</label>
                         <!--Path Parameters here-->
                         </div>
-                        <div onclick="addNewPathParameter()" class="btn btn-success mr-2">Add new path parameter</div>
+                        <div onclick="addNewPathParameter()" class="move-up-on-hover btn btn-success mr-2">Add new path parameter</div>
                         <hr>
                         <div id="playground-header">
                         <label>Headers &nbsp;&nbsp;&nbsp;&nbsp;<small>Add custom headers</small></label>
                         <!--Headers here-->
                         </div>
-                        <div onclick="addNewHeader()" class="btn btn-success mr-2">Add new header</div>
+                        <div onclick="addNewHeader()" class="move-up-on-hover btn btn-success mr-2">Add new header</div>
                         <hr>
-                        <div onclick="importDefaultPlaygroundStructure()" class="btn btn-info mr-2">Import Default Structure</div>
-                        <button type="submit" class="btn btn-primary mr-2">Save</button>
+                        <div onclick="importDefaultPlaygroundStructure()" class="move-up-on-hover btn btn-info mr-2">Import Default Structure</div>
+                        <button type="submit" class="move-up-on-hover btn btn-primary mr-2">Save</button>
                     </form>`
                     fetch(`/db/dev/get/page/${projectUid}/${pageId}/api`).then((data) => {
                         return data.json()
@@ -538,8 +538,8 @@ function _addModifyForm(page, projectUid, pageId){
                     <div id="dashboard-item-container">
                     </div>
                     <input type="hidden" name="type" value="${page.type}">
-                    <button type="submit" class="btn btn-primary mr-2">Save</button>
-                    <div onclick="addNewItem()" class="btn btn-success mr-2">Add new item</div>
+                    <button type="submit" class="move-up-on-hover btn btn-primary mr-2">Save</button>
+                    <div onclick="addNewItem()" class="move-up-on-hover btn btn-success mr-2">Add new item</div>
                 </form>`
                 fetch(`/db/dev/get/page/${projectUid}/${pageId}/dashboard-item`).then((data) => {
                     return data.json()
@@ -586,22 +586,22 @@ function _addModifyForm(page, projectUid, pageId){
                     <div id="batch-input">
                     <!--Input here-->
                     </div>
-                    <div onclick="addBatchItem('input')" class="btn btn-success mr-2">Add new input</div>
+                    <div onclick="addBatchItem('input')" class="move-up-on-hover btn btn-success mr-2">Add new input</div>
                     <hr>
                     <div id="batch-header">
                     <label>Headers &nbsp;&nbsp;&nbsp;&nbsp;<small>expected headers as columns in the csv</small></label>
                     <!--Headers here-->
                     </div>
-                    <div onclick="addBatchItem('header')" class="btn btn-success mr-2">Add new header</div>
+                    <div onclick="addBatchItem('header')" class="move-up-on-hover btn btn-success mr-2">Add new header</div>
                     <hr>
                     <div id="batch-path_parameter">
                     <label>Path Parameter &nbsp;&nbsp;&nbsp;&nbsp;<small>expected path parameter as columns in the csv</small></label>
                     <!--Path Parameter here-->
                     </div>
-                    <div onclick="addBatchItem('path_parameter')" class="btn btn-success mr-2">Add new path parameter</div>
+                    <div onclick="addBatchItem('path_parameter')" class="move-up-on-hover btn btn-success mr-2">Add new path parameter</div>
                     <hr>
                     <input type="hidden" name="type" value="${page.type}">
-                    <button type="submit" class="btn btn-primary mr-2">Save</button>
+                    <button type="submit" class="move-up-on-hover btn btn-primary mr-2">Save</button>
                 </form>`
                 fetch(`/db/dev/get/page/${projectUid}/${pageId}/batch-config`).then((data) => {
                     return data.json()

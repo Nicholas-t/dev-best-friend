@@ -63,14 +63,14 @@ function viewUser(userId){
                             <p class="text-muted">&nbsp;&nbsp;&nbsp;&nbsp;Give free credits :
                             &nbsp;&nbsp;&nbsp;&nbsp;
                             <form class="col-2" action="/db/dev/add/credit/${userId}/${planApi.api_id}/1" method="POST">
-                                <button type="submit" class="btn btn-rounded btn-sm btn-success">
+                                <button type="submit" class="move-up-on-hover btn btn-rounded btn-sm btn-success">
                                 1 + 
                                 </button>
                             </form>
                              ${planApi.credit > 50
                               ? `&nbsp;&nbsp;&nbsp;&nbsp;
                               <form class="col-2" action="/db/dev/add/credit/${userId}/${planApi.api_id}/10" method="POST">
-                                <button type="submit" class="btn btn-rounded btn-sm btn-success">
+                                <button type="submit" class="move-up-on-hover btn btn-rounded btn-sm btn-success">
                                 10 + 
                                 </button>
                             </form>`
@@ -78,14 +78,14 @@ function viewUser(userId){
                              ${planApi.credit > 500
                               ? `&nbsp;&nbsp;&nbsp;&nbsp;
                               <form class="col-3" action="/db/dev/add/credit/${userId}/${planApi.api_id}/100" method="POST">
-                                <button type="submit" class="btn btn-rounded btn-sm btn-success">
+                                <button type="submit" class="move-up-on-hover btn btn-rounded btn-sm btn-success">
                                 100 + 
                                 </button>
                             </form>`
                              : ""}
                             </p>  
-                            <hr>
                             </div>
+                            <br>
                             `
                         })
                     }

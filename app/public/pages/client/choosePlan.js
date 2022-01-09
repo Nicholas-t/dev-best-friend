@@ -18,12 +18,12 @@ fetch(`/db/dev/get/plan/${uid}`).then((data) => {
                 </div>
                 ${plans[i].id === currentPlanId
                 ?  `
-                <div class="btn btn-warning">
+                <div class="move-up-on-hover btn btn-warning">
                     Current Plan
                 </div>
                 `
                 : `
-                <div onclick="choosePlan('${plans[i].id}', ${plans[i].price})" class="btn btn-primary">
+                <div onclick="choosePlan('${plans[i].id}', ${plans[i].price})" class="move-up-on-hover btn btn-primary">
                     Choose Plan
                 </div>
                 `}

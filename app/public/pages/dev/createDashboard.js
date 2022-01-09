@@ -2,6 +2,14 @@ function randomColor(){
     const randomColor = Math.floor(Math.random()*16777215).toString(16);
     return "#" + randomColor;
 }
+function formatDigit(int){
+    if (int.toString().length == 1){
+        return `0${int}`
+    } else {
+        return `${int}`
+    }
+}
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 var areaOptions = {
     plugins: {
@@ -27,7 +35,7 @@ function fillProjectList(){
         if (response.result.length == 0){
             document.getElementById("project-list-carousel").innerHTML += `
             <div class="row">
-                <a href="/dev/api/create" style="border-radius:100px;" type="button" class="btn btn-primary btn-lg btn-block">
+                <a href="/dev/api/create" style="border-radius:100px;" type="button" class="move-up-on-hover btn btn-primary btn-lg btn-block">
                     <i class="ti-bar-chart"></i>                      
                     Step 1. Create your first API!
                 </a>
@@ -51,13 +59,13 @@ function fillProjectList(){
                 let data = []
                 for (let i = 0 ; i < 30 ; i ++){
                     let time = new Date((curTimeStamp - (i*60*60*24)) * 1000)
-                    labels.push(`${time.getDate()}/${time.getMonth()}`)
+                    labels.push(`${time.getDate()}/${time.getMonth() + 1}`)
                     data.push(0)
                 }
                 for (let i = 0 ; i < response.result.length; i++) {
                     let time = new Date(response.result[i].client_time_created * 1000)
-                    if (labels.includes(`${time.getDate()}/${time.getMonth()}`)) {
-                        data[labels.indexOf(`${time.getDate()}/${time.getMonth()}`)] += 1
+                    if (labels.includes(`${time.getDate()}/${time.getMonth() + 1}`)) {
+                        data[labels.indexOf(`${time.getDate()}/${time.getMonth() + 1}`)] += 1
                     }
                 }
                 var areaData = {
@@ -81,6 +89,64 @@ function fillProjectList(){
                     options: areaOptions
                 });
             })
+            fetch(`/db/dev/get/chat`).then((data) => {
+                return data.json()
+            }).then((response) => {
+                let chat = response.result.reverse()
+                let chatHtml = ``
+                let userChats = {}
+                for (let i = 0 ; i < chat.length ; i ++){
+                    if (!userChats[chat[i].client_id]){
+                        userChats[chat[i].client_id] = {
+                            client_name : chat[i].client_name,
+                            client_id : chat[i].client_id,
+                            content : chat[i].content,
+                            time : new Date(chat[i].time_created*1000),
+                            n : 1
+                        }
+                    } else {
+                        userChats[chat[i].client_id].n += 1
+                    }
+                }
+                let userIds = Object.keys(userChats)
+                for (let i = 0 ; i < Math.min(5, userIds.length) ; i ++){
+                    let chat = userChats[userIds[i]]
+                    chatHtml += `
+                    <li class="move-up-on-hover row" style="cursor:pointer;" onclick="(() => {window.location='/dev/users/view/${chat.client_id}'})()">
+                        <div class="col-4">
+                            <img  src="https://eu.ui-avatars.com/api/?name=${
+                                chat.client_name
+                            }" alt="user"> 
+                        </div>
+                        <div class="col-8">
+                            <p class="text-info mb-1">
+                            ${
+                                chat.client_name
+                            } <small> (${chat.n}) </small>
+                            </p>
+                            <p class="mb-0">
+                            ${
+                                chat.content.split("\n").join("</br>")
+                            }
+                            <br>
+                            <small>
+                            ${chat.time.getDate()} ${MONTHS[chat.time.getMonth()]} ${
+                                formatDigit(chat.time.getHours())
+                            }:${
+                                formatDigit(chat.time.getMinutes())
+                            }
+                            </small>
+                            </p>
+                        </div>
+                    </li>`
+                }
+                if (chatHtml !== ''){
+                    document.getElementById("unread-message").innerHTML = chatHtml
+                }
+                if (userIds.length > 5) {
+                    document.getElementById("more_message").innerHTML = `(${userIds.length - 5} More)`
+                }
+            })
             
             fetch(`/db/dev/get/log?n=10000`).then((data) => {
                 return data.json()
@@ -90,7 +156,7 @@ function fillProjectList(){
                 let labels = []
                 for (let i = 0 ; i < 30 ; i ++){
                     let time = new Date((curTimeStamp - (i*60*60*24)) * 1000)
-                    labels.push(`${time.getDate()}/${time.getMonth()}`)
+                    labels.push(`${time.getDate()}/${time.getMonth() + 1}`)
                 }
                 for (let i = 0 ; i < response.result.length; i++) {
                     let time = new Date(response.result[i].timestamp * 1000)
@@ -103,7 +169,7 @@ function fillProjectList(){
                             0,0,0,0,0,
                             0,0,0,0,0]
                     }
-                    data[response.result[i].api_name][labels.indexOf(`${time.getDate()}/${time.getMonth()}`)] += 1
+                    data[response.result[i].api_name][labels.indexOf(`${time.getDate()}/${time.getMonth() + 1}`)] += 1
                 }
                 let datasets = []
                 for (let i = 0 ; i < Object.keys(data).length ; i++){
@@ -137,7 +203,7 @@ function fillProjectList(){
                 if (projects.length == 0){
                     document.getElementById("project-list-carousel").innerHTML += `
                     <div class="row">
-                        <a href="/dev/project/create" style="border-radius:100px;" type="button" class="btn btn-primary btn-lg btn-block">
+                        <a href="/dev/project/create" style="border-radius:100px;" type="button" class="move-up-on-hover btn btn-primary btn-lg btn-block">
                             <i class="ti-rocket"></i>                      
                             Step 2. Create your first project!
                         </a>
@@ -169,16 +235,16 @@ function fillProjectList(){
                     let d = `
                     <div class="carousel-item ${i == 0 ? "active" : ""}">
                         <div class="row">
-                            <div class="col-md-12 col-xl-6 d-flex flex-column justify-content-start">
+                            <div class="col-md-12 col-xl-12 d-flex flex-column justify-content-start">
                                 <div class="ml-xl-4 mt-3">
-                                    <p>Path : <strong>/p/${project.uid}</strong><br><small>(<a href="/p/${project.uid}/admin">Admin View</a>)</small></p>
+                                    <p>Path : <strong>/p/${project.uid}</strong>  <small class="move-up-on-hover">(<a href="/p/${project.uid}/admin">Admin View</a>)</small></p>
                                     <h1 class="text-primary">${project.name}</h1>
                                     <h3 class="font-weight-500 mb-xl-4 text-primary" id="n-user-${project.uid}"></h3>
                                     <p class="mb-2 mb-xl-0">${project.description}</p>
                                 </div>  
                             </div>
-                            <div class="col-md-12 col-xl-6">
-                            <p class="card-title">User Summary</p>
+                            <div class="col-md-12 col-xl-12  ml-xl-4 mt-3">
+                                <p class="card-title">Top Users</p>
                                 <div class="row">
                                     <div class="table-responsive mb-6 mb-md-0 mt-6">
                                         <table id="user-${project.uid}" class="table table-borderless report-table">
@@ -204,7 +270,7 @@ function fillProjectList(){
                         document.getElementById(`n-user-${project.uid}`).innerHTML = `${response.count} <small>Users</small>`
                         let html = ''
                         if (users.length != 0){
-                            for (let i = 0 ; i < users.length ; i++){
+                            for (let i = 0 ; i < Math.min(users.length, 5) ; i++){
                                 if (users[i].client_name){
                                     html += `
                                     <tr>
@@ -213,7 +279,7 @@ function fillProjectList(){
                                             ${users[i].client_email}
                                         </td>
                                         <td><h5 class="font-weight-bold mb-0" id="${users[i].client_id}-log-n">${users[i].count}</h5></td>
-                                        <td><a href="/dev/users/view/${users[i].client_id}">View</a></td>
+                                        <td><a class="move-up-on-hover" href="/dev/users/view/${users[i].client_id}">View</a></td>
                                     </tr>`
                                 }
                             }

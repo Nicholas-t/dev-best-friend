@@ -30,7 +30,7 @@ function addItemPlan(itemPlan){
             <input ${itemPlan ? `value="${itemPlan.description}"`: ""} type="text" class="form-control" id="description-${k}" name="description-${k}">
         </div>
         <div class="form-group col-3">
-            <div onclick="deleteItemPlan(${k})" class="btn btn-warning" style="margin-top:30px;">
+            <div onclick="deleteItemPlan(${k})" class="move-up-on-hover btn btn-warning" style="margin-top:30px;">
                 Remove
             </div>
         <div>

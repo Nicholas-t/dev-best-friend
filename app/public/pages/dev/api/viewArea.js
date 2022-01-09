@@ -79,7 +79,7 @@ function addNewDefaultInput(input = false){
             </div>
             
             <div style="margin-top:30px" class="form-group col-3">
-                <a onclick="removeInput(${default_l})" class="btn btn-danger mr-2">Remove Input</a>
+                <a onclick="removeInput(${default_l})" class="move-up-on-hover btn btn-danger mr-2">Remove Input</a>
             </div>
         </div>
         
@@ -105,7 +105,7 @@ function addNewDefaultHeader(header){
                 <input ${header ? `value="${header.key_header}"` : ""} name="default-header-key-${default_k}" required type="text" class="form-control" id="default-header-key-${default_k}" placeholder="Key">
             </div>
             <div style="margin-top: 30px;" class="form-group col-2">
-                <a onclick="removeHeader(${default_k})" class="btn btn-danger mr-2">Remove Header</a>
+                <a onclick="removeHeader(${default_k})" class="move-up-on-hover btn btn-danger mr-2">Remove Header</a>
             </div>
         </div>
     </div>
@@ -135,7 +135,7 @@ function addNewDefaultPathParameter(pathParameter){
                 name="default-path-parameter-label-${default_m}" required type="text" class="form-control" id="default-path-parameter-label-${default_m}" placeholder="Label">
             </div>
             <div style="margin-top: 20px;" class="form-group col-2">
-                <a onclick="removePathParameter(${default_m})" class="btn btn-danger mr-2">Remove Path Parameter</a>
+                <a onclick="removePathParameter(${default_m})" class="move-up-on-hover btn btn-danger mr-2">Remove Path Parameter</a>
             </div>
         </div>
     </div>

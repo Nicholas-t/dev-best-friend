@@ -82,7 +82,7 @@ function fillHome(uid, planId, userId, devId){
         let apiName = {}
         for (let i = 0 ; i < 30 ; i ++){
             let time = new Date((curTimeStamp - (i*60*60*24)) * 1000)
-            labels.push(`${time.getDate()}/${time.getMonth()}`)
+            labels.push(`${time.getDate()}/${time.getMonth() + 1}`)
         }
         for (let i = 0 ; i < response.result.length; i++) {
             let time = new Date(response.result[i].timestamp * 1000)
@@ -109,7 +109,7 @@ function fillHome(uid, planId, userId, devId){
                     return data.result[0].name
                 })
             }
-            data[response.result[i].api_id][labels.indexOf(`${time.getDate()}/${time.getMonth()}`)] += 1
+            data[response.result[i].api_id][labels.indexOf(`${time.getDate()}/${time.getMonth() + 1}`)] += 1
         }
         let datasets = []
         for (let i = 0 ; i < Object.keys(data).length ; i++){

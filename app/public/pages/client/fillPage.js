@@ -21,13 +21,13 @@ function fillPage(projectUid){
                     ${response.result[i].type}
                 </td>
                 <td>
-                    <p class="mb-0">
+                    <p class="move-up-on-hover mb-0">
                         <a href="/p/${projectUid}/admin/modify/${response.result[i].id}">Modify</a>
                     </p>
                 </td>
                 <td class="pl-0">
                     <form id="delete-${response.result[i].id}" action="/db/dev/delete/page/${projectUid}/${response.result[i].id}" method="POST">
-                        <div style="cursor:pointer;" onclick="deleteApi('${response.result[i].id}', '${response.result[i].name}')">Delete</div>
+                        <div class="move-up-on-hover text-danger" style="cursor:pointer;" onclick="deleteApi('${response.result[i].id}', '${response.result[i].name}')">Delete</div>
                     </form>
                 </td>
             </tr>`

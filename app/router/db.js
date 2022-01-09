@@ -1299,6 +1299,20 @@ router.get('/dev/get/chat/:user_id', function (req, res){
     })
 })
 
+router.get('/dev/get/chat', function (req, res){
+    db.getUnreadChat(req.user.id, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
 router.post('/dev/add/chat/:user_id', function (req, res){
     const clientSupportChat = copySchema(clientSupportChatSchema)
     clientSupportChat.id = uuidv4()

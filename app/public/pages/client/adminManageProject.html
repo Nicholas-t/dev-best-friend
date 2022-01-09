@@ -99,7 +99,7 @@
                     <label>New User Webhook</label>
                     <input type="url" placeholder="Endpoint (e.g. 435.23.xx.xx/new_user, xyz.com/add/user, etc)" value="<%=new_user_webhook%>"type="text" name="new_user_webhook" class="form-control" id="new_user_webhook" placeholder="">
                   </div>
-                  <button type="submit" class="btn btn-info">Save</button>
+                  <button type="submit" class="move-up-on-hover btn btn-info">Save</button>
                   <div 
                   onclick="(() => {fetch(`/dev/api/send-user-webhook-test`, {
                       method: 'POST',
@@ -126,7 +126,7 @@
                       toastr.error('The test was unsuccessful')
                     })
                 })()"
-                  style="margin-left: 20px;" class="btn btn-warning">Send test</div>
+                  style="margin-left: 20px;" class="move-up-on-hover btn btn-warning">Send test</div>
                 </form>
                 
               </div>
@@ -141,7 +141,7 @@
                   <div class="form-group col-8">
                     <label>Upload custom logo<br> <small>(100x100 recommended, .png file only)</small></label>
                       <input onchange="document.getElementById('upload-custom-logo').submit()" id="file-upload" type="file" name="file" accept=".png" hidden>
-                      <label for="file-upload" style="margin-top:30px;" class="file-upload-browse btn btn-info" type="button">Upload Logo</label>
+                      <label for="file-upload" style="margin-top:30px;" class="move-up-on-hover file-upload-browse btn btn-info" type="button">Upload Logo</label>
                   </div>
                   <div class="form-group col-4" style="text-align: center;">
                     <img class="project_logo" style="width:75%;" src="/static/images/logo-white.png">
@@ -159,7 +159,7 @@
               <div class="card-body">
                 <h4 class="card-title">Danger Zone</h4>
                 
-                <button type="button" onclick="(() => {if (confirm('Are  you sure you want to delete <%=uid%> ? (This step cannot be undone)')){document.getElementById('delete-form').submit()}})()" id="delete-button" class="btn btn-danger">Delete Project</button>
+                <button type="button" onclick="(() => {if (confirm('Are  you sure you want to delete <%=uid%> ? (This step cannot be undone)')){document.getElementById('delete-form').submit()}})()" id="delete-button" class="move-up-on-hover btn btn-danger">Delete Project</button>
                 <form id="delete-form" method="POST" action="/db/dev/delete/project/<%=uid%>"></form>
               </div>
             </div>
@@ -177,7 +177,7 @@
                     createMessage('API Key copied to clipboard', 'success');
                   }, function(err) {
                     createMessage('Unable to copy API Key', 'error');
-                  });})()" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">Copy API Key</div>
+                  });})()" class="move-up-on-hover btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">Copy API Key</div>
               </div>
               </form>
             </div>

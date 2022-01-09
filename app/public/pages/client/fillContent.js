@@ -179,7 +179,7 @@ function fillContent(type, projectUid, pageId, userId, devId){
                                                 Output : <strong>${data.result[0].output_type}</strong> 
                                             </p>
                                             ${formHtml}
-                                            <button class="btn btn-primary" onclick="createRequest('${data.result[0].method}',
+                                            <button class="move-up-on-hover btn btn-primary" onclick="createRequest('${data.result[0].method}',
                                             '${data.result[0].endpoint}',
                                             '${data.result[0].output_type}', '${userId}', '${apiId}', '${projectUid}', 
                                             '${devId}', 'api_output')">Send API Request</button>
@@ -233,7 +233,7 @@ function fillContent(type, projectUid, pageId, userId, devId){
                                 </div>
                                 <form enctype="multipart/form-data" action="/p/${projectUid}/${pagePath}/${pageId}/batch" id="process-file-form" method="POST">
                                     <input onchange="processFile()" id="file-upload" type="file" name="file" accept=".csv" hidden>
-                                    <label for="file-upload" class="file-upload-browse btn btn-primary" type="button" style="width:50%;">Upload</label>
+                                    <label for="file-upload" class="move-up-on-hover file-upload-browse btn btn-primary" type="button" style="width:50%;">Upload</label>
                                 </form>
                                 <div id="download_current_sample"></div>
                             </div>
@@ -286,7 +286,7 @@ function fillContent(type, projectUid, pageId, userId, devId){
                         document.getElementById("download_current_sample").href = ``
                         document.getElementById("download_current_sample").innerHTML = `
                         <br>
-                        <a class="btn btn-success" href="/db/dev/get/batch-sample/${pageId}/download" target="_blank">
+                        <a class="move-up-on-hover btn btn-success" href="/db/dev/get/batch-sample/${pageId}/download" target="_blank">
                         Download sample file
                         </a>
                         `

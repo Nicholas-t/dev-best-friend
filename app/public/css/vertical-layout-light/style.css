@@ -30629,4 +30629,13 @@ div.tagsinput span.tag a {
   overflow-y: scroll;
 }
 
+.move-up-on-hover {
+  position: relative;
+  top: 0;
+  transition: top ease 0.5s;
+}
+.move-up-on-hover:hover {
+  top: -5px;
+}
+
 /*# sourceMappingURL=../maps/vertical-layout-light/style.css.map */

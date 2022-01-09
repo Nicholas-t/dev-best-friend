@@ -461,6 +461,26 @@ class databaseHandler {
         this.con.query(query, cb);
     }
 
+    getUnreadChat(devId, cb){
+        let query = `SELECT 
+            client_support_chat.id as id,
+            client_support_chat.client_id as client_id,
+            client.name as client_name,
+            client_support_chat.dev_id as dev_id,
+            dev.name as dev_name,
+            client_support_chat.from_client as from_client,
+            client_support_chat.unread as unread,
+            client_support_chat.content as content,
+            client_support_chat.time_created as time_created
+            FROM client_support_chat
+            LEFT JOIN dev ON dev.id = client_support_chat.dev_id
+            LEFT JOIN client ON client.id = client_support_chat.client_id
+            WHERE dev_id = '${devId}'
+            AND from_client = 1
+            AND unread = 1;`
+        this.con.query(query, cb);
+    }
+
     getAllLogByDevId(id, n, offset, cb){
         let query = `SELECT 
                 api.name as api_name,
@@ -493,6 +513,7 @@ class databaseHandler {
             LEFT JOIN client ON log.client_id = client.id
             WHERE log.project_id = '${id}' AND NOT log.client_id = ""
             GROUP BY log.client_id
+            ORDER BY count DESC
             LIMIT 5;`
         this.con.query(query, cb);
     }

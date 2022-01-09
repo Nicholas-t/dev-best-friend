@@ -17,10 +17,10 @@ function fetchUserApi(){
                     ${response.result[i].method}
                 </td>
                 <td><p class="mb-0"><span id="n-calls-${response.result[i].id}" class="font-weight-bold mr-2">0</span></p></td>
-                <td><p class="mb-0"><a href="/dev/api/view/${response.result[i].id}">Modify</a></p></td>
+                <td><p class="mb-0"><a class="move-up-on-hover" href="/dev/api/view/${response.result[i].id}">Modify</a></p></td>
                 <td><p class="mb-0">
                 <form id="delete-${response.result[i].id}" action="/db/dev/delete/api/${response.result[i].id}" method="POST">
-                    <div style="cursor:pointer;" onclick="deleteApi('${response.result[i].id}', '${response.result[i].name}')">Delete</div>
+                    <div class="move-up-on-hover text-danger" style="cursor:pointer;" onclick="deleteApi('${response.result[i].id}', '${response.result[i].name}')">Delete</div>
                 </form>
                 </td>
             </tr>`
