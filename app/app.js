@@ -64,7 +64,7 @@ app.get('/', function (req, res) {
     if (req.user.type == "dev"){
       res.redirect('/dev')
     } else {
-      res.redirect('/error')
+      res.redirect(`/p/${req.user.project_id}`)
     }
   }
 })

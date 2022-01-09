@@ -1626,6 +1626,13 @@ const emailMotives = {
         fields : [
             "dev_name", "name", "domain", "project_name"
         ]
+    },
+    new_message_support : {
+        subject : "New message from {sender_name} | DBF",
+        file_content : "new_message_support.html",
+        fields : [
+            "sender_name", "name", "other_side", "domain", "path"
+        ]
     }
 }
 

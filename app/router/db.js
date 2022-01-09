@@ -1327,10 +1327,25 @@ router.post('/dev/add/chat/:user_id', function (req, res){
             console.log(err)
             res.redirect("/error/500")
         } else {
+            db.getXbyY("client", "id", req.params.user_id, (err, result) => {
+                if (result.length > 0){
+                    if (result[0].last_sign_in < getCurrentTime() - (60* 60 * 24 * 3) || process.env.ENV == "dev") {
+                        let email = result[0].email
+                        mail.sendMail(email, "new_message_support", {
+                            name: result[0].name,
+                            sender_name : req.user.name,
+                            other_side : "user",
+                            domain: process.env.DOMAIN,
+                            path: `/p/${result[0].project_id}/login`
+                        })
+                    }
+                }
+            })
             res.redirect(`/dev/users/view/${req.params.user_id}`)
         }
     })
 })
+
 router.get('/client/get/chat/:dev_id', function (req, res){
     let n = req.query.n ? req.query.n : 20
     let offset = req.query.offset ? req.query.offset : 0
@@ -1361,6 +1376,20 @@ router.post('/client/add/chat/:project_uid/:dev_id', function (req, res){
             console.log(err)
             res.redirect("/error/500")
         } else {
+            db.getXbyY("dev", "id", req.params.dev_id, (err, result) => {
+                if (result.length > 0){
+                    if (result[0].last_sign_in < getCurrentTime() - (60* 60 * 24 * 3) || process.env.ENV == "dev") {
+                        let email = result[0].email
+                        mail.sendMail(email, "new_message_support", {
+                            name: result[0].name,
+                            sender_name : req.user.name,
+                            other_side : "user",
+                            domain: process.env.DOMAIN,
+                            path: `/account/login`
+                        })
+                    }
+                }
+            })
             res.redirect(`/p/${req.params.project_uid}/home`)
         }
     })
