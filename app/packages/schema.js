@@ -340,6 +340,33 @@ var planPriceStripeSchema = {
     content : "",
     time_created : 0
 }
+/**
+ * Store data of custom field spec
+ */
+ var customFieldSpecSchema = {
+    id: "",
+    project_id: "",
+    dev_id : "",
+    name : "",
+    type : "",
+    options : "",
+    required : false
+}
+/**
+ * Store data of custom field
+ */
+ var customFieldSchema = {
+    field_id: "",
+    client_id: "",
+    value : "",
+    last_modified : 0
+}
+/**
+ * Store data of custom field
+ */
+ var onboardedClientSchema = {
+    client_id: ""
+}
 
  module.exports= {
     userPwSchema,
@@ -372,5 +399,8 @@ var planPriceStripeSchema = {
     defaultPathParameterSchema, 
     itemPathParameterSchema, 
     batchPathParameterSchema,
-    clientSupportChatSchema
+    clientSupportChatSchema,
+    customFieldSpecSchema,
+    customFieldSchema,
+    onboardedClientSchema
  }

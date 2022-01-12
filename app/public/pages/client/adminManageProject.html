@@ -65,7 +65,7 @@
                                 # Of users
                               </th>
                               <th>
-                                Price
+                                Price <small>(Monthly)</small>
                               </th>
                               <th>
                                 View / Modify
@@ -184,39 +184,6 @@
           </div>
         </div>
       </div>
-        <div class="row">
-          <div class="col-12 grid-margin stretch-card">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">Users</h4>
-                
-                  <div class="table-responsive">
-                    <table class="table table-striped">
-                      <thead>
-                        <tr>
-                          <th class="pl-0  pb-2 border-bottom">ID</th>
-                          <th class="border-bottom pb-2">Email</th>
-                          <th class="border-bottom pb-2">Name</th>
-                          <th class="border-bottom pb-2">Plan</th>
-                          <th class="border-bottom pb-2">Time Joined</th>
-                          <th class="border-bottom pb-2">View</th>
-                        </tr>
-                      </thead>
-                      <tbody id="users-list">
-                        <tr>
-                          <td></td>
-                          <td></td>
-                          <td class="text-danger">No Users</td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-              </div>
-            </div>
-        </div>
-      </div>
         </div>
         <footer class="footer" include-html="/static/pages/frame/footer.html">
         </footer>
@@ -249,10 +216,10 @@
     const admin = isAdmin("<%=dev_id%>", "<%=user_id%>")
   </script>
   <script src="/static/pages/client/fillNav.js"></script>
-  <script src="/static/pages/client/fillUsersAndPlansInProject.js"></script>
+  <script src="/static/pages/client/fillPlans.js"></script>
   <script>
     fillNav("<%=uid%>")
-    fillUsersAndPlansInProject("<%=uid%>")
+    fillPlansInProject("<%=uid%>")
   </script>
 
   <!--INTROJS-->

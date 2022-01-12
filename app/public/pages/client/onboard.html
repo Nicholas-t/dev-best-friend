@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Onboarding</title>
+  <link rel="stylesheet" href="/static/vendors/feather/feather.css">
+  <link rel="stylesheet" href="/static/vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="/static/vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="/static/css/vertical-layout-light/style.css">
+  <link rel="shortcut icon" href="/static/images/favicon.png" />
+  <link rel="stylesheet" href="/static/vendors/mdi/css/materialdesignicons.min.css">
+</head>
+
+<body>
+  <div class="container-scroller">
+    <div class="container-fluid page-body-wrapper full-page-wrapper">
+      <div class="content-wrapper d-flex align-items-center auth px-0">
+        <div class="row w-100 mx-0">
+          <div class="col-lg-4 mx-auto">
+            <div class="auth-form-light text-l eft py-5 px-4 px-sm-5">
+                <div style="font-size: 80px;margin-top: 30px;margin-bottom: 50px;text-align:center;" class="col-md-12">
+                  <img class="project_logo" src="">  
+                </div>
+                <h4>Welcome to <%=name%>!</h4>
+                <h6 class="font-weight-light">Before starting, We would like to ask you several informations</h6>
+                <form class="pt-3" action="/db/client/onboard/<%=uid%>" method="POST" id="custom-field">
+                </form>
+                <br>
+                <small>These fields can be modified later in your 'Account Settings'</small>
+              </div>
+          </div>
+        </div>
+      </div>
+      <!-- content-wrapper ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="/static/vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="/static/js/off-canvas.js"></script>
+  <script src="/static/js/hoverable-collapse.js"></script>
+  <script src="/static/js/template.js"></script>
+  <script src="/static/js/settings.js"></script>
+  <script src="/static/js/todolist.js"></script>
+
+  <script src="/static/pages/client/getProjectLogo.js"></script>
+  <script>
+    getProjectLogo("<%=uid%>")
+  </script>
+  
+  <!--TOASTR-->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+  <script src="/static/js/createMessage.js"></script>
+  <script>
+    createMessage("<%=message%>", "<%=messageType%>")
+  </script>
+  <!-- endinject -->
+
+  
+  <script src="/static/pages/client/fillOnboardingForm.js"></script>
+  <script>
+    fillOnboardingForm("<%=uid%>")
+  </script>
+
+</body>
+
+</html>

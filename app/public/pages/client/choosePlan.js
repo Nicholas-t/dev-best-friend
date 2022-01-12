@@ -69,13 +69,13 @@ function choosePlan(planId, planPrice){
                         return data.json()
                     }).then((response) => {
                         if (response.ok){
-                            window.location = `/p/${uid}`
+                            window.location = `/p/${uid}/home`
                         } else {
                             createMessage("Unable to update plan", "error")
                         }
                     })
                 } else {
-                    window.location = `/p/${uid}`
+                    window.location = `/p/${uid}/home`
                 }
             } else {
                 createMessage("Unsuccesful to subscribe to the plan", "error")

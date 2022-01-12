@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>(Admin) CRM Project</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="/static/vendors/feather/feather.css">
+  <link rel="stylesheet" href="/static/vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="/static/vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="/static/css/vertical-layout-light/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="/static/images/favicon.png" />
+</head>
+
+<body>
+  <div class="container-scroller">
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <a class="navbar-brand brand-logo mr-5" target="_blank" href="https://dev-bf.umso.co/"><img src="" class="project_logo mr-2" alt="logo"/></a>
+
+        <a class="navbar-brand brand-logo-mini" target="_blank" href="https://dev-bf.umso.co/"><img src="" class="project_logo" alt="logo"/></a>
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="icon-menu"></span>
+        </button>
+        <ul class="navbar-nav navbar-nav-right" include-html="/static/pages/frame/navbar-right.html">
+          
+        </ul>
+        
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+          <span class="icon-menu"></span>
+        </button>
+      </div>
+    </nav>
+    <div class="container-fluid page-body-wrapper">
+      <nav class="sidebar sidebar-offcanvas">
+        <ul class="nav"  id="sidebar">
+
+        </ul>
+      </nav>
+      <div class="main-panel">
+        <div class="content-wrapper">
+            <!--Content here-->
+            <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <h4 class="card-title mb-0 col-2">Users</h4>
+                                <div class="form-group col-5">
+                                    <div class="input-group">
+                                        <input type="text" id="name_q" class="form-control" placeholder="Search user's by name, or email">
+                                        <div class="input-group-append">
+                                            <button onclick="(() => {window.location = `/p/<%=uid%>/crm?q=${document.getElementById('name_q').value}`})()" class="btn btn-sm btn-primary" type="button">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th class="pl-0  pb-2 border-bottom">ID</th>
+                                        <th class="border-bottom pb-2">Email</th>
+                                        <th class="border-bottom pb-2">Name</th>
+                                        <th class="border-bottom pb-2">Plan</th>
+                                        <th class="border-bottom pb-2">Time Joined</th>
+                                        <th class="border-bottom pb-2">View</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="users-list">
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-danger">No Users</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <h4 class="card-title">Custom fields</h4> &nbsp;&nbsp;&nbsp; (<a class="move-up-on-hover" href="/p/<%=uid%>/crm/create">Create new</a>)
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th class="border-bottom pb-2">Name</th>
+                                            <th class="border-bottom pb-2">Type</th>
+                                            <th class="border-bottom pb-2">Required</th>
+                                            <th class="border-bottom pb-2">View</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="custom-field-list">
+                                        <tr>
+                                            <td></td>
+                                            <td class="text-danger">No custom field defined</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer" include-html="/static/pages/frame/footer.html">
+        </footer>
+      </div>
+    </div>
+  </div>
+  
+  <script src="/static/pages/client/fillIconPage.js"></script>
+  <script src="/static/vendors/js/vendor.bundle.base.js"></script>
+  <script src="/static/js/off-canvas.js"></script>
+  <script src="/static/js/hoverable-collapse.js"></script>
+  <script src="/static/js/template.js"></script>
+  <script src="/static/js/settings.js"></script>
+  <script src="/static/js/todolist.js"></script>
+  <script src="/static/pages/client/refreshPath.js"></script>
+  <script>
+      //for refreshing path
+      const uid = "<%=uid%>"
+  </script>
+  <script src="/static/pages/client/getProjectLogo.js"></script>
+  <script>
+    getProjectLogo("<%=uid%>")
+  </script>
+
+  <script src="/static/js/includeHtml.js"></script>
+  <script src="/static/pages/client/isAdmin.js"></script>
+  <script>
+    const admin = isAdmin("<%=dev_id%>", "<%=user_id%>")
+  </script>
+  <script src="/static/pages/client/fillNav.js"></script>
+  <script src="/static/pages/client/fillUsersInProject.js"></script>
+  <script src="/static/pages/client/fillCustomFieldInProject.js"></script>
+  <script>
+    fillNav("<%=uid%>")
+    fillUsersInProject("<%=uid%>")
+    fillCustomFieldInProject("<%=uid%>")
+  </script>
+
+  <!--INTROJS-->
+  <link rel="stylesheet" href="/static/vendors/introjs/introjs.min.css">
+  <script src="/static/js/intro.min.js"></script>
+  <script src="/static/js/tour.js"></script>
+  <script>
+    if (admin) {
+      startTour("dev")
+    }
+  </script>
+  
+  <!--TOASTR-->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+  <script src="/static/js/createMessage.js"></script>
+  <script>
+    createMessage("<%=message%>", "<%=messageType%>")
+  </script>
+</body>
+
+</html>

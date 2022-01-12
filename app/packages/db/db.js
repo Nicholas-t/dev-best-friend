@@ -1,3 +1,4 @@
+const e = require('express');
 var mysql = require('mysql');
 
 var {
@@ -31,7 +32,10 @@ var {
     createBatchPathParametersTable,
     createItemPathParameterTable,
     createDefaultPathParameterTable,
-    createClientSupportChatTable
+    createClientSupportChatTable,
+    createCustomFieldSpecTable,
+    createCustomFieldTable,
+    createOnboardedClientTable
 } = require('./queries.js');
 
 class databaseHandler {
@@ -93,6 +97,9 @@ class databaseHandler {
         this.createTable(createItemPathParameterTable, "item_path_parameter");
         this.createTable(createDefaultPathParameterTable, "default_path_parameter");   
         this.createTable(createClientSupportChatTable, "client_support_chat");   
+        this.createTable(createCustomFieldSpecTable, "custom_field_spec");
+        this.createTable(createCustomFieldTable, "custom_field");
+        this.createTable(createOnboardedClientTable, "onboarded_client");
         return true
     }
 
@@ -545,7 +552,7 @@ class databaseHandler {
         this.con.query(query, cb);
     }
 
-    getUsersOfProject(id, cb){
+    getUsersOfProject(id, q = "", cb){
         let query = `SELECT
                 client.id as client_id,
                 client.name as client_name,
@@ -556,7 +563,19 @@ class databaseHandler {
                 project.icon as project_icon
             FROM client
             LEFT JOIN project ON client.project_id = project.uid
-            WHERE client.project_id = '${id}';`
+            WHERE client.project_id = '${id}'
+            ${q !== ""
+            ? ` AND (
+               LOWER(client.name) LIKE '%${q.toLowerCase()}%' 
+                OR 
+               LOWER(client.email) LIKE '%${q.toLowerCase()}%' 
+                   OR 
+               LOWER(client.id) LIKE '%${q.toLowerCase()}%' 
+                   OR
+               LOWER(project.name) LIKE '%${q.toLowerCase()}%' 
+               )
+            `
+            : ""};`
         this.con.query(query, cb);
     }
 

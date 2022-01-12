@@ -1502,7 +1502,8 @@ const messages = {
         create_batch : "Unable to upload batch, please contact the developer.",
         not_activated : "Sorry, your account has not yet been activated. Please wait while our team activates your profile.",
         increment_user_credit : "Sorry, unable to add credits to this user.",
-        token_expired : "Token has expired, please request a new link"
+        token_expired : "Token has expired, please request a new link.",
+        onboard : "Unable to save your details."
     },
     success : {
         login : "Log in succesful. Welcome back.",
@@ -1531,8 +1532,12 @@ const messages = {
         resend_activation : "A new activation link has been sent to your email. If you have not received it, please contact our team",
         reset_password : "A reset password link has been sent to your email. If you have not received it, please contact our team",
         reset_password_done : "Succesfully changed the password.",
-        sample_upload : "Succesfully uploaded a sample file",
-        sample_remove : "Sample file removed"
+        sample_upload : "Succesfully uploaded a sample file.",
+        sample_remove : "Sample file removed.",
+        onboard : "Account details saved succesfully.",
+        account_edit : "Account details saved.",
+        add_custom_field : "Custom field added succesfully.",
+        edit_custom_field : "Custom field modified succesfully."
     },
     info : {
         logout : "Logged out",
@@ -1542,7 +1547,7 @@ const messages = {
 }
 
 const whiteListedProjectPath = [
-    "login", "home", "register", "admin", "manage", "choose-plan", "forgot-password", "reset-password"
+    "login", "home", "register", "admin", "manage", "choose-plan", "forgot-password", "reset-password", "crm", "settings"
 ]
 
 const batchStatus = {

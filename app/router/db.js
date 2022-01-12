@@ -26,7 +26,9 @@ const {
     pathParameterSchema,
     itemPathParameterSchema,
     batchPathParameterSchema,
-    clientSupportChatSchema
+    clientSupportChatSchema,
+    customFieldSchema,
+    customFieldSpecSchema
   } = require('../packages/schema')
   
 const {
@@ -216,6 +218,73 @@ router.post('/dev/edit/plan/:project_uid', function (req, res){
                     res.redirect(`/p/${req.params.project_uid}/manage?success=modify_plan`)
                 }
             })
+        }
+    })
+})
+
+router.get('/dev/get/custom-field/:project_uid', function (req, res){
+    db.getXbyY("custom_field_spec", "project_id", req.params.project_uid, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
+
+router.get('/dev/get/custom-field/:project_uid/:user_id', function (req, res){
+    db.getXbyY("custom_field", "client_id", req.params.user_id, (err, result) => {
+        if (err){
+            res.json({
+                error : err
+            })
+        } else {
+            res.json({
+                result
+            })
+        }
+    })
+})
+
+router.post('/dev/add/custom-field/:project_uid', function (req, res){
+    const customFieldSpec = copySchema(customFieldSpecSchema)
+    customFieldSpec.id = uuidv4()
+    customFieldSpec.project_id = req.params.project_uid
+    customFieldSpec.dev_id = req.user.id
+    customFieldSpec.name = req.body.name
+    customFieldSpec.type = req.body.type
+    customFieldSpec.options = req.body.type === 'picklist' ? req.body.options : ""
+    customFieldSpec.required = req.body.required === 'on'
+    db.add("custom_field_spec", customFieldSpec, (err, result) => {
+        if (err){
+            console.error(err)
+            res.redirect('/error/500?error=internal_error')
+        } else {
+            res.redirect(`/p/${req.params.project_uid}/crm?success=add_custom_field`)
+        }
+    })
+})
+
+router.post('/dev/edit/custom-field/:project_uid', function (req, res){
+    const customFieldSpec = copySchema(customFieldSpecSchema)
+    customFieldSpec.id = req.body.id
+    customFieldSpec.project_id = req.params.project_uid
+    customFieldSpec.dev_id = req.user.id
+    customFieldSpec.name = req.body.name
+    customFieldSpec.type = req.body.type
+    customFieldSpec.options = req.body.type === 'picklist' ? req.body.options : ""
+    customFieldSpec.required = req.body.required === 'on'
+    db.modify("custom_field_spec", customFieldSpec, "id", customFieldSpec.id, (err, result) => {
+        if (err){
+            console.error(err)
+            res.redirect('/error/500?error=internal_error')
+        } else {
+            res.redirect(`/p/${req.params.project_uid}/crm?success=edit_custom_field`)
         }
     })
 })
@@ -566,6 +635,46 @@ router.post('/client/edit/plan', function (req, res){
                 }
             })
         }
+    })
+})
+
+router.post('/client/onboard/:project_uid', function (req, res){
+    let fieldIds = Object.keys(req.body)
+    let currentTime = getCurrentTime()
+    fieldIds.forEach((fieldId) => {
+        let customField = copySchema(customFieldSchema)
+        customField.field_id = fieldId
+        customField.client_id = req.user.id
+        customField.value = req.body[fieldId]
+        customField.last_modified = currentTime
+        db.add('custom_field', customField)
+    })
+    db.add('onboarded_client', {client_id : req.user.id}, (err, result) => {
+        if (err){
+            res.redirect(`/p/${req.params.project_uid}/home?error=onboard`)
+        } else {
+            res.redirect(`/p/${req.params.project_uid}/home?success=onboard`)
+        }
+    })
+})
+
+router.post('/client/edit/account/:project_uid', function (req, res){
+    let fieldIds = Object.keys(req.body)
+    let currentTime = getCurrentTime()
+    db.remove("custom_field", "client_id", req.user.id, async (err, result) => {
+        for (let i = 0; i < fieldIds.length ; i++){
+            let _fieldId = fieldIds[i]
+            if (_fieldId.includes("custom_")){
+                let fieldId = _fieldId.replace("custom_", "")
+                let customField = copySchema(customFieldSchema)
+                customField.field_id = fieldId
+                customField.client_id = req.user.id
+                customField.value = req.body[_fieldId]
+                customField.last_modified = currentTime
+                await db.add('custom_field', customField)
+            }
+        }
+        res.redirect(`/p/${req.params.project_uid}/settings?success=account_edit`)
     })
 })
 
@@ -1514,7 +1623,7 @@ router.get('/dev/get/users-summary/:project_uid', function (req, res){
 })
 
 router.get('/dev/get/users/:project_uid', function (req, res){
-    db.getUsersOfProject(req.params.project_uid, (err, result) => {
+    db.getUsersOfProject(req.params.project_uid, req.query.q, (err, result) => {
         if (err){
             res.json({
                 error : err

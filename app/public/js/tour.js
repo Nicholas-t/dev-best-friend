@@ -38,7 +38,7 @@ const firstDevVisit = (() => {
                     <ul>
                         <li>Viewing your user's API usage.</li>
                         <li>Manually add credits for a user.</li>
-                        <li>Chat directly with your users. (New)</li>
+                        <li>Chat directly with your users.</li>
                     </ul>`
             },
             {
@@ -185,7 +185,7 @@ const firstDevAdminSection = (() => {
             },
             {
                 element: document.querySelector('#sidebar > li:nth-child(2)'),
-                title: `Manage Pages`,
+                title: `Project Pages`,
                 intro : `The <strong>"Manage Pages"</strong> section is where you can create, view, and manage all pages that are accessible by your user.
                 <br><br>
                 This includes:
@@ -197,6 +197,18 @@ const firstDevAdminSection = (() => {
             },
             {
                 element: document.querySelector('#sidebar > li:nth-child(3)'),
+                title: `CRM`,
+                intro : `The <strong>"CRM"</strong> section is where you can manage your users.
+                <br><br>
+                This includes:
+                <ul>
+                    <li>Searching your users.</li>
+                    <li>Adding custom fields.</li>
+                    <li>Visualization (Coming Soon).</li>
+                </ul>`
+            },
+            {
+                element: document.querySelector('#sidebar > li:nth-child(4)'),
                 title: `Manage Project`,
                 intro : `The <strong>"Manage Project"</strong> section is where you can manage your pages configuration.
                 <br><br>
@@ -210,11 +222,11 @@ const firstDevAdminSection = (() => {
                 </ul>`
             },
             {
-                element: document.querySelector('#sidebar > li:nth-child(4) a'),
+                element: document.querySelector('#sidebar > li:nth-child(5) a'),
                 intro : `You can also go back to your developer's dashboard by clicking here.`
             },
             {
-                element: document.querySelector('#sidebar > li:nth-child(3)'),
+                element: document.querySelector('#sidebar > li:nth-child(4)'),
                 title: `First step`,
                 intro : `The first step is to create the available plans for your project which you can do in here.`
             }
@@ -262,11 +274,6 @@ const firstDevManageSection = (() => {
                 position : "left"
             },
             {
-                element: document.querySelector('body > div.container-scroller > div > div > div > div:nth-child(4) > div > div'),
-                title: `Your users`,
-                intro : `And finally here, you can see the list of all your that is registered in this project and their corresponding plan`
-            },
-            {
                 element: document.querySelector('body > div.container-scroller > div > div > div > div:nth-child(1) > div > div > div > h4 > a'),
                 title: `Create a plan`,
                 intro : `As mentioned, let's create your first plan. You can do it here.`
@@ -274,6 +281,36 @@ const firstDevManageSection = (() => {
         ]
     }
 })
+
+const firstDevCrmSection = (() => {
+    return {
+        steps : [
+            {
+                title: `CRM Section`,
+                intro : `Welcome to the CRM section of your project 😀
+                    <br><br>
+                    Here you can have an in-depth look at your user database.`
+            },
+            {
+                element: document.querySelector('body > div > div > div > div > div:nth-child(1) > div'),
+                title: `Your users`,
+                intro : `Here, you can see the list of all your that is registered in this project and their corresponding plan`
+            },
+            {
+                element: document.querySelector('body > div > div > div > div > div:nth-child(2) > div'),
+                title: `Custom Field`,
+                intro : `Here, you can see the custom fields you have defined for your CRM.`
+            },
+            {
+                element: document.querySelector('body > div > div > div > div > div:nth-child(2) > div > div > div > div > a'),
+                title: `Create a Custom Field`,
+                intro : `Let's create a custom field!`
+            }
+        ]
+    }
+})
+
+
 
 const firstDevModifyPlanSection = (() => {
     return {
@@ -412,12 +449,17 @@ const firstClientVisit = (() => {
                 intro : `You can always visit your user's space by clicking here.`
             },
             {
+                element: document.querySelector('#sidebar > li:nth-child(3) > a'),
+                title: `Account Settings`,
+                intro : `You can modify or view your account settings here.`
+            },
+            {
                 element: document.querySelector('#plan_name'),
                 title: `Your plan`,
                 intro : `In here, you can see the plan you are in.`
             },
             {
-                element: document.querySelector('body > div.container-scroller > div > div > div > div > div.col-md-7.grid-margin.stretch-card > div > div > div.row > div:nth-child(1) > div:nth-child(1) > p > a'),
+                element: document.querySelector('body > div > div > div > div > div > div:nth-child(1) > div > div > div.row > div:nth-child(2) > div:nth-child(1) > p > a'),
                 title: `Change your plan`,
                 intro : `In here, you can also change your plan.`
             },
@@ -427,7 +469,7 @@ const firstClientVisit = (() => {
                 intro : `In here, you can see all the usable credits you have left.`
             },
             {
-                element: document.querySelector('body > div > div > div > div > div > div.col-md-7.grid-margin.stretch-card > div > div > div.row > div:nth-child(2)'),
+                element: document.querySelector('body > div > div > div > div > div > div:nth-child(1) > div > div > div.row > div:nth-child(1)'),
                 title: `API Usage`,
                 intro : `In here, you can see your API usage.`
             },
@@ -481,6 +523,10 @@ const devTours = {
         options : firstDevManageSection,
         url: /\/p\/(.*)\/manage$/g
     },
+    first_dev_crm_section_tour : {
+        options : firstDevCrmSection,
+        url: /\/p\/(.*)\/crm$/g
+    },
     first_dev_modify_plan_section_tour : {
         options : firstDevModifyPlanSection,
         url: /\/p\/(.*)\/manage\/modify\/plan/g
@@ -516,7 +562,10 @@ async function startTour(type){
     let keys = Object.keys(tours)
     var url = window.location.href;
     var domain = url.replace('http://','').replace('https://','').split("?")[0];
-    const path = "/" + domain.split("/").slice(1).join("/")
+    let path = "/" + domain.split("/").slice(1).join("/")
+    if (path.endsWith("/")){
+        path = path.slice(0, path.length - 1)
+    }
     for (let i = 0 ; i < keys.length ; i ++){
         if(localStorage.getItem(keys[i]) === null){
             if (path.match(tours[keys[i]].url)){
@@ -538,7 +587,10 @@ async function manualRunTour(type){
     let keys = Object.keys(tours)
     var url = window.location.href;
     var domain = url.replace('http://','').replace('https://','').split("?")[0];
-    const path = "/" + domain.split("/").slice(1).join("/")
+    let path = "/" + domain.split("/").slice(1).join("/")
+    if (path.endsWith("/")){
+        path = path.slice(0, path.length - 1)
+    }
     for (let i = 0 ; i < keys.length ; i ++){
         if (path.match(tours[keys[i]].url)){
             await sleep(1000).then(async () => {

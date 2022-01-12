@@ -6,24 +6,30 @@ function fillNav(projectUid){
         sideBar += `
             <li class="nav-item">
                 <a class="nav-link">
-                    <span class="menu-title"><u>Admin Area</u></span>
+                    <span class="menu-title"><u>Admin Area</u></span> <br>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/p/${projectUid}/admin">
-                    <i class="icon-cog menu-icon"></i>
-                    <span class="menu-title">Manage Pages <br><small>(Create, Modify, Delete)</small></span>
+                    <i class="icon-layout menu-icon"></i>
+                    <span class="menu-title">Project Pages <br><small>(Create, Modify, Delete)</small></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/p/${projectUid}/crm">
+                    <i class="icon-head menu-icon"></i>
+                    <span class="menu-title">CRM<br><small>(Users, Custom fields)</small></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/p/${projectUid}/manage">
-                    <i class="icon-cog menu-icon"></i>
-                    <span class="menu-title">Manage Project<br><small>(Users, Plans, Project)</small></span>
+                    <i class="icon-columns menu-icon"></i>
+                    <span class="menu-title">Manage Project<br><small>(Plans, Project)</small></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/dev/">
-                    <i class="icon-cog menu-icon"></i>
+                    <i class="icon-arrow-left menu-icon"></i>
                     <span class="menu-title">Return to Dashboard</span>
                 </a>
                 <hr>
@@ -37,8 +43,14 @@ function fillNav(projectUid){
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/p/${projectUid}/home">
-                <i class="icon-cog menu-icon"></i>
+                <i class="icon-head menu-icon"></i>
                 <span class="menu-title">My Space</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/p/${projectUid}/settings">
+                <i class="icon-cog menu-icon"></i>
+                <span class="menu-title">Account Setings</span>
             </a>
             <hr>
         </li>

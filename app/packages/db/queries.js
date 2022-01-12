@@ -364,16 +364,50 @@ CREATE TABLE IF NOT EXISTS batch_process (
  /**
   * Store data of the chat messages
   */
- var createClientSupportChatTable = `
- CREATE TABLE IF NOT EXISTS client_support_chat (
-      id varchar(100) NOT NULL PRIMARY KEY,
-      client_id  varchar(100) NOT NULL,
-      dev_id  varchar(100) NOT NULL,
-      from_client  BOOLEAN NOT NULL,
-      unread  BOOLEAN NOT NULL,
-      content TEXT NOT NULL,
-      time_created int(11) NOT NULL
- )`;
+  var createClientSupportChatTable = `
+  CREATE TABLE IF NOT EXISTS client_support_chat (
+       id varchar(100) NOT NULL PRIMARY KEY,
+       client_id  varchar(100) NOT NULL,
+       dev_id  varchar(100) NOT NULL,
+       from_client  BOOLEAN NOT NULL,
+       unread  BOOLEAN NOT NULL,
+       content TEXT NOT NULL,
+       time_created int(11) NOT NULL
+  )`;
+
+
+/**
+ * Store data of the custom fields specification
+ */
+var createCustomFieldSpecTable = `
+CREATE TABLE IF NOT EXISTS custom_field_spec (
+    id varchar(100) NOT NULL PRIMARY KEY,
+    project_id  varchar(100) NOT NULL,
+    dev_id  varchar(100) NOT NULL,
+    name  varchar(100) NOT NULL,
+    type  varchar(100) NOT NULL,
+    options TEXT NOT NULL,
+    required  BOOLEAN NOT NULL
+)`;
+
+/**
+ * Store data of the custom fields
+ */
+var createCustomFieldTable = `
+CREATE TABLE IF NOT EXISTS custom_field (
+    field_id varchar(100) NOT NULL,
+    client_id  varchar(100) NOT NULL,
+    value  TEXT NOT NULL,
+    last_modified int(11) NOT NULL
+)`;
+
+/**
+ * Store data of onboarded user id
+ */
+var createOnboardedClientTable = `
+CREATE TABLE IF NOT EXISTS onboarded_client (
+    client_id  varchar(100) NOT NULL
+)`;
   
 
 
@@ -408,5 +442,8 @@ module.exports = {
     createBatchPathParametersTable,
     createItemPathParameterTable,
     createDefaultPathParameterTable,
-    createClientSupportChatTable
+    createClientSupportChatTable,
+    createCustomFieldSpecTable,
+    createCustomFieldTable,
+    createOnboardedClientTable
 }

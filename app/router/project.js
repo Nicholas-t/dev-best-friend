@@ -44,34 +44,61 @@ router.use('/', function (req, res, next){
         }
     } else {
         if (!res.locals.project && path[2] !== ""){
-            let toChoosePlan = false
-            if (req.user) {
-                if (req.user.type == "client"){
-                    toChoosePlan = req.user.plan_id == "" && path[3] !== "choose-plan"
+            db.getXbyY("project", "uid", path[2], (err, result) => {
+                if (result.length == 0){
+                    res.redirect("/error?error=internal_error")
+                } else {
+                    res.locals.project = result[0]
+                    next()
                 }
-            }
-            if (toChoosePlan) {
-                res.redirect(`/p/${path[2]}/choose-plan?info=choose_plan`)
-            } else {
-                db.getXbyY("project", "uid", path[2], (err, result) => {
-                    if (result.length == 0){
-                        res.redirect("/error?error=internal_error")
-                    } else {
-                        res.locals.project = result[0]
-                        next()
-                    }
-                })
-            }
+            })
         } else {
             next()
         }
     }
 })
 
+// Check if a user needs to be redirected to choosing plan
+router.use('/', function (req, res, next){
+    let path = req.originalUrl.split("?")[0].split("/")
+    let toChoosePlan = false
+    if (req.user && req.user.type == "client") {
+        toChoosePlan = req.user.plan_id == "" && path[3] !== "choose-plan"
+    }
+    if (toChoosePlan) {
+        res.redirect(`/p/${path[2]}/choose-plan?info=choose_plan`)
+    } else {
+        next()
+    }
+})
+
+// Check if a user needs to be onboarded
+router.use('/', function (req, res, next){
+    let path = req.originalUrl.split("?")[0].split("/")
+    if (req.user && req.user.type === "client" && path[2] !== "" && path[2] && path[3] !== "onboard" && path[3] !== "choose-plan"){
+        db.getXbyY("custom_field_spec", "project_id", path[2], (err, result) => {
+            // If there is a custom field
+            if (result.length !== 0){
+                db.getXbyY("onboarded_client", "client_id", req.user.id, (err, result) => {
+                    // If a user is not yet onboarded
+                    if (result.length === 0){
+                        res.redirect(`/p/${path[2]}/onboard`)
+                    } else {
+                        next()
+                    }
+                })
+            } else {
+                next()
+            }
+        })
+    } else {
+        next()
+    }
+})
 
 router.get('/:project_uid', function (req, res){
     if (req.user){
-        db.getXbyY("page", "project_id", req.params.project_uid, (err, result) => {
+        db.getXbyY("project", "uid", req.params.project_uid, (err, result) => {
             if (result.length == 0) {
                 res.redirect(`/error/500?error=internal_error`)
             } else {
@@ -297,6 +324,76 @@ router.get('/:project_uid/admin/modify/:page_id/batch-sample/remove', function (
     }
 })
 
+
+router.get('/:project_uid/crm', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        toSend.user_id = req.user.id
+        res.render(dir + 'adminCrm.html', toSend)
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
+router.get('/:project_uid/crm/create', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        toSend.user_id = req.user.id
+        res.render(dir + 'adminCreateCustomField.html', toSend)
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
+
+router.get('/:project_uid/crm/modify/:spec_id', function (req, res){
+    if (res.locals.project.dev_id == req.user.id){
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        toSend.user_id = req.user.id
+        db.getXbyY("custom_field_spec", "id", req.params.spec_id, (err, result) => {
+            if (err || result.length == 0){
+                res.redirect("/error/500")
+            } else {
+                toSend.spec_id = req.params.spec_id
+                toSend.spec_name = result[0].name
+                toSend.spec_type = result[0].type
+                toSend.spec_options = result[0].options
+                toSend.spec_required = result[0].required
+                res.render(dir + 'adminModifyCustomField.html', toSend)
+            }
+        })
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/home?error=unauthorized`)
+    }
+})
+
+router.get('/:project_uid/onboard', function (req, res){
+    if (res.locals.project.dev_id !== req.user.id){
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        toSend.user_id = req.user.id
+        res.render(dir + 'onboard.html', toSend)
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/admin?error=unauthorized`)
+    }
+})
+
+router.get('/:project_uid/settings', function (req, res){
+    if (res.locals.project.dev_id !== req.user.id){
+        let toSend = copySchema(res.locals.project)
+        toSend = createMessage(req.query, toSend)
+        toSend.user_id = req.user.id
+        toSend.user_name = req.user.name
+        toSend.user_email = req.user.email
+        res.render(dir + 'settings.html', toSend)
+    } else {
+        res.redirect(`/p/${req.params.project_uid}/admin?error=unauthorized`)
+    }
+})
+
 router.get('/:project_uid/:path', function (req, res){
     db.getXbyY("page", "project_id", res.locals.project.uid, (err, result) => {
         if (result.length == 0){
@@ -351,5 +448,6 @@ router.get('/:project_uid/:path/batch/:process_id', function (req, res){
     toSend.process_id = req.params.process_id
     res.render(dir + 'batchView.html', toSend)
 })
+
 
 module.exports = router

@@ -16,7 +16,12 @@ router.use('/', function (req, res, next){
         if (req.user.type === "dev"){
             next()
         } else {
-            res.redirect(`/error/404`)
+            let path = req.originalUrl.split("?")[0].split("/")
+            if (path[3] === "create-request"){
+                next()
+            } else {
+                res.redirect(`/error/404`)
+            }
         }
     }
 })

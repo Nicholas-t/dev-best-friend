@@ -1,4 +1,4 @@
-function fillUsersAndPlansInProject(projectUid){
+function fillPlansInProject(projectUid){
     fetch(`/db/dev/get/plan/${projectUid}`).then((data) => {
         return data.json()
     }).then((response) => {
@@ -32,31 +32,7 @@ function fillUsersAndPlansInProject(projectUid){
             return data.json()
         }).then((response) => {
             const users = response.result
-            if (users.length !== 0) {
-                document.getElementById("users-list").innerHTML = ''
-            }
             for (let i = 0 ; i < users.length ; i ++){
-                document.getElementById("users-list").innerHTML += `
-                <tr>
-                    <td class="pl-0">
-                        ${users[i].client_id.slice(0, 5)}....
-                    </td>
-                    <td class="pl-0">
-                        ${users[i].client_email}
-                    </td>
-                    <td class="pl-0">
-                        ${users[i].client_name}
-                    </td>
-                    <td class="pl-0">
-                        ${planDetail[users[i].client_plan_id].name}
-                    </td>
-                    <td class="pl-0">
-                        ${(new Date(users[i].client_time_created * 1000)).toISOString()}
-                    </td>
-                    <td class="pl-0">
-                        <a class="move-up-on-hover" href="/dev/users/view/${users[i].client_id}">View</a>
-                    </td>
-                </tr>`
                 planDetail[users[i].client_plan_id].nUser += 1
             }
             let keys = Object.keys(planDetail)
