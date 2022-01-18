@@ -19,6 +19,7 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "express-session": "^1.17.2",
+    "js-yaml": "^4.1.0",
     "json-2-csv": "^3.14.4",
     "mysql": "^2.18.1",
     "node-schedule": "^2.1.0",
@@ -27,6 +28,7 @@
     "passport": "^0.5.0",
     "passport-local": "^1.0.0",
     "stripe": "^8.190.0",
+    "swagger-parser": "^10.0.3",
     "uuid": "^8.3.2"
   }
 }

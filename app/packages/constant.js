@@ -1503,7 +1503,8 @@ const messages = {
         not_activated : "Sorry, your account has not yet been activated. Please wait while our team activates your profile.",
         increment_user_credit : "Sorry, unable to add credits to this user.",
         token_expired : "Token has expired, please request a new link.",
-        onboard : "Unable to save your details."
+        onboard : "Unable to save your details.",
+        open_api_config : "Open API (Swagger) config is not correct."
     },
     success : {
         login : "Log in succesful. Welcome back.",
@@ -1537,12 +1538,14 @@ const messages = {
         onboard : "Account details saved succesfully.",
         account_edit : "Account details saved.",
         add_custom_field : "Custom field added succesfully.",
-        edit_custom_field : "Custom field modified succesfully."
+        edit_custom_field : "Custom field modified succesfully.",
+        batch_upload_api : "API uploaded succesfully"
     },
     info : {
         logout : "Logged out",
         choose_plan : "Choose a plan",
-        no_plan_selected : "No plan has been selected."
+        no_plan_selected : "No plan has been selected.",
+        select_api : "Please select API to be uploaded."
     }
 }
 

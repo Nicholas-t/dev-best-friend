@@ -23,6 +23,7 @@ function viewUser(userId){
             ? "Not Set Up" 
             : user.plan_id
         document.getElementById("project").innerHTML = `Project : /p/<strong>${user.project_id}</strong>`
+        fillCustomField(user.project_id, userId, "dev")
         document.getElementById("time_created").value = (new Date(user.time_created * 1000)).toISOString()
         if (user.plan_id !== ""){
             let planId = user.plan_id

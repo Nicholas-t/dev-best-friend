@@ -20,7 +20,7 @@ function fillPlansInProject(projectUid){
                     ${plans[i].price == 0 ? "Freemium" : `${plans[i].price} €`}
                 </td>
                 <td class="pl-0">
-                    <a href="/p/${projectUid}/manage/modify/plan/${plans[i].id}">View / Modify</a>
+                    <a class="btn-sm btn-info move-up-on-hover" href="/p/${projectUid}/manage/modify/plan/${plans[i].id}">View / Modify</a>
                 </td>
             </tr>`
             planDetail[plans[i].id] = {

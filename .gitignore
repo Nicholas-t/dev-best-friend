@@ -2,6 +2,7 @@
 /app/template
 /app/.env
 /app/logos/*.png
+/app/packages/swaggerHandler/swaggerDump/*.json
 /app/batch/uploads/*.csv
 /app/batch/result/*.csv
 /app/batch/sample/*.csv

@@ -21,7 +21,7 @@ function fillLog(){
                 <td class="pl-0">
                     ${(new Date(response.result[i].time_created * 1000)).toISOString() }
                 </td>
-                <td><p class="mb-0 move-up-on-hover"><a href="/p/${response.result[i].uid}/admin">Admin View</a></p></td>
+                <td><p class="mb-0 move-up-on-hover"><a class="btn-sm btn-info" href="/p/${response.result[i].uid}/admin"><i class="mdi mdi-account-key"></i> Admin View</a></p></td>
             </tr>`
             ids.push(response.result[i].id)
         }

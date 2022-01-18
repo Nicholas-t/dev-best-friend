@@ -2,6 +2,9 @@ require('dotenv').config();
 var axios = require('axios')
 const querystring = require('querystring');
 var path = require('path');
+const yaml = require('js-yaml');
+const swaggerHandler = require('../packages/swaggerHandler/swaggerHandler');
+const swagger = new swaggerHandler()
 
 const {
     apiSchema,
@@ -41,6 +44,7 @@ const { v4: uuidv4 } = require('uuid');
 const mdDir = __dirname + `/../public/pages/client/md/`
 const resultBatchDir = __dirname + `/../batch/result/`
 const sampleBatchDir = __dirname + `/../batch/sample/`
+const swaggerDumpDir = __dirname + `/../packages/swaggerHandler/swaggerDump/`
 const batchHandler = require('../packages/batchHandler/batchHandler')
 const bh = new batchHandler()
 
@@ -111,6 +115,83 @@ router.post('/dev/add/api', function (req, res){
             res.redirect('/dev/api?success=create_api')
         }
     })
+})
+
+router.post('/dev/add/api/batch/submit', async function (req, res){
+    let data = JSON.parse(req.body.data)
+    for (let i = 0 ; i < data.length ; i++){
+        let api = copySchema(apiSchema)
+        let apiId = uuidv4()
+        api.id = apiId
+        api.name = data[i].name
+        api.endpoint = data[i].endpoint
+        api.dev_id = req.user.id
+        api.method = data[i].method
+        api.output_type = "JSON"
+        await db.add("api", api)
+        for (let j = 0 ; j < data[i].input.length ; j++){
+            let input = copySchema(defaultInputSchema)
+            input.api_id = apiId
+            input.name = data[i].input[j].name
+            input.label = data[i].input[j].label
+            input.type = data[i].input[j].type ? data[i].input[j].type : "string"
+            await db.add("default_input", input, () => {})
+        }
+        for (let j = 0 ; j < data[i].header.length ; j++){
+            let header = copySchema(defaultHeadersSchema)
+            header.api_id = apiId
+            header.key_header = data[i].header[j].key_header
+            await db.add("default_headers", header, () => {})
+        }
+        for (let j = 0 ; j < data[i].pathParam.length ; j++){
+            let pathParameter = copySchema(defaultPathParameterSchema)
+            pathParameter.api_id = apiId
+            pathParameter.name =  data[i].pathParam[j].name
+            pathParameter.label = data[i].pathParam[j].label
+            await db.add("default_path_parameter", pathParameter, () => {})
+        }
+    }
+    res.redirect('/dev/api?success=batch_upload_api')
+})
+
+router.post('/dev/add/api/batch', function (req, res){
+    if (!req.files.file){
+        res.redirect(`/error/500`)
+    } else {
+        let data = null
+        if (req.files.file.name.includes('.json')){
+            data = JSON.parse(req.files.file.data.toString())
+        } else if (req.files.file.name.includes('.yaml') || req.files.file.name.includes('.yml')){
+            data = yaml.load(req.files.file.data.toString())
+        }
+        if (!data){
+            res.redirect(`/error/500?error=internal_error`)
+        } else {
+            let cleanEndpoints = null
+            if (data.openapi) {
+                cleanEndpoints = swagger.parseSwagger3_0(data)
+            } else if (data.swagger) {
+                cleanEndpoints = swagger.parseSwagger2_0(data)
+            }
+            if (!cleanEndpoints) {
+                res.redirect(`/error/500?error=open_api_config`)
+            } else {
+                fs.writeFileSync(`${swaggerDumpDir}${req.user.id}.json`, JSON.stringify(cleanEndpoints, null, 4))
+                res.redirect(`/dev/api/swagger?success=select_api`)
+            }
+        }
+    }
+})
+
+router.get('/dev/get/api/batch', function (req, res){
+    if (!fs.existsSync(`${swaggerDumpDir}${req.user.id}.json`)){
+        res.json({
+            error : "Not Exist"
+        })
+    } else {
+        const data = fs.readFileSync(`${swaggerDumpDir}${req.user.id}.json`)
+        res.json(JSON.parse(data))
+    }
 })
 
 router.post('/dev/add/log', function (req, res){

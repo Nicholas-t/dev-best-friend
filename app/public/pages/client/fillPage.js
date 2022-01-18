@@ -22,12 +22,12 @@ function fillPage(projectUid){
                 </td>
                 <td>
                     <p class="move-up-on-hover mb-0">
-                        <a href="/p/${projectUid}/admin/modify/${response.result[i].id}">Modify</a>
+                        <a class="btn-sm btn-info" href="/p/${projectUid}/admin/modify/${response.result[i].id}">Modify</a>
                     </p>
                 </td>
                 <td class="pl-0">
                     <form id="delete-${response.result[i].id}" action="/db/dev/delete/page/${projectUid}/${response.result[i].id}" method="POST">
-                        <div class="move-up-on-hover text-danger" style="cursor:pointer;" onclick="deleteApi('${response.result[i].id}', '${response.result[i].name}')">Delete</div>
+                        <div class="move-up-on-hover" style="cursor:pointer;" onclick="deleteApi('${response.result[i].id}', '${response.result[i].name}')"><a class="btn-sm btn-danger">Delete</a></div>
                     </form>
                 </td>
             </tr>`

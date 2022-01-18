@@ -404,11 +404,10 @@ CREATE TABLE IF NOT EXISTS custom_field (
 /**
  * Store data of onboarded user id
  */
-var createOnboardedClientTable = `
-CREATE TABLE IF NOT EXISTS onboarded_client (
-    client_id  varchar(100) NOT NULL
-)`;
-  
+ var createOnboardedClientTable = `
+ CREATE TABLE IF NOT EXISTS onboarded_client (
+     client_id  varchar(100) NOT NULL
+ )`;
 
 
 module.exports = {

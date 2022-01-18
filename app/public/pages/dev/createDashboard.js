@@ -237,7 +237,11 @@ function fillProjectList(){
                         <div class="row">
                             <div class="col-md-12 col-xl-12 d-flex flex-column justify-content-start">
                                 <div class="ml-xl-4 mt-3">
-                                    <p>Path : <strong>/p/${project.uid}</strong>  <small class="move-up-on-hover">(<a href="/p/${project.uid}/admin">Admin View</a>)</small></p>
+                                    <p>Path : <strong>/p/${project.uid}</strong> &nbsp;&nbsp;&nbsp;
+                                    <small class="move-up-on-hover">
+                                    <a class="btn-sm btn-info" href="/p/${project.uid}/admin"><i class="mdi mdi-account-key"></i> Admin View</a>
+                                    </small>
+                                    </p>
                                     <h1 class="text-primary">${project.name}</h1>
                                     <h3 class="font-weight-500 mb-xl-4 text-primary" id="n-user-${project.uid}"></h3>
                                     <p class="mb-2 mb-xl-0">${project.description}</p>
@@ -279,7 +283,7 @@ function fillProjectList(){
                                             ${users[i].client_email}
                                         </td>
                                         <td><h5 class="font-weight-bold mb-0" id="${users[i].client_id}-log-n">${users[i].count}</h5></td>
-                                        <td><a class="move-up-on-hover" href="/dev/users/view/${users[i].client_id}">View</a></td>
+                                        <td><a class="move-up-on-hover btn-sm btn-info" alt="View User" href="/dev/users/view/${users[i].client_id}">View</a></td>
                                     </tr>`
                                 }
                             }

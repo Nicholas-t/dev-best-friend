@@ -1,14 +1,14 @@
 require('dotenv').config();
 var axios = require('axios')
-const querystring = require('querystring');
-const {clientSchema} = require("../packages/schema")
+const fs = require('fs');
 var express = require('express');
 var router = express.Router()
 
 const {
-    createMessage, copySchema, createRequest
+    createMessage, createRequest
 } = require("../packages/util")
 const dir = __dirname + '/../public/pages/dev/api/'
+const swaggerDumpDir = __dirname + `/../packages/swaggerHandler/swaggerDump/`
 
 router.get('/', function (req, res){
     const toSend = createMessage(req.query)
@@ -26,6 +26,18 @@ router.get('/view/:api_id', function (req, res){
     }
     toSend = createMessage(req.query, toSend)
     res.render(dir + 'view.html', toSend)
+})
+
+router.get('/swagger', function (req, res){
+    if (fs.existsSync(`${swaggerDumpDir}${req.user.id}.json`)){
+        let toSend = {
+            user_id : req.user.dir
+        }
+        toSend = createMessage(req.query, toSend)
+        res.render(dir + 'swagger.html', toSend)
+    } else {
+        res.redirect('/dev/api')
+    }
 })
 
 

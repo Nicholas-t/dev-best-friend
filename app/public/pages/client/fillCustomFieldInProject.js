@@ -19,7 +19,7 @@ function fillCustomFieldInProject(projectUid){
                 ? `<td class="font-weight-medium"><div class="badge badge-info">Required</div></td>`
                 : `<td class="font-weight-medium"><div class="badge badge-primary">Not Required</div></td>`}
                 <td class="pl-0">
-                    <a class="move-up-on-hover" href="/p/${projectUid}/crm/modify/${customField[i].id}">View</a>
+                    <a class="move-up-on-hover btn-sm btn-info" href="/p/${projectUid}/crm/modify/${customField[i].id}">View</a>
                 </td>
             </tr>`
         }

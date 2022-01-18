@@ -5,7 +5,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>My API</title>
+  <title>View User - <%=client_id%></title>
   <!-- plugins:css -->
   <link rel="stylesheet" href="/static/vendors/feather/feather.css">
   <link rel="stylesheet" href="/static/vendors/ti-icons/css/themify-icons.css">
@@ -122,6 +122,8 @@
                                 <input  readonly="readonly" required id="activated" name="activated" type="text" class="form-control">
                             </div>
                         </div>
+                        <div id="custom-field">
+                        </div>
                     </form>
                   </div>
                 </div>
@@ -178,6 +180,7 @@
   <script src="/static/js/tableHandler.js"></script>
   <script src="/static/js/chartHandler.js"></script>
   <script src="/static/pages/dev/users/viewUser.js"></script>
+  <script src="/static/pages/client/fillCustomField.js"></script>
   <script>
     const userId = "<%=client_id%>"
     const projectUid = ""

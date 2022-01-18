@@ -131,7 +131,7 @@ function addNewDefaultPathParameter(pathParameter){
             </div>
             <div class="form-group col-5">
                 <label>Label</label>
-                <input ${pathParameter ? `value="${pathParameter.name}"` : ""} 
+                <input ${pathParameter ? `value="${pathParameter.label}"` : ""} 
                 name="default-path-parameter-label-${default_m}" required type="text" class="form-control" id="default-path-parameter-label-${default_m}" placeholder="Label">
             </div>
             <div style="margin-top: 20px;" class="form-group col-2">

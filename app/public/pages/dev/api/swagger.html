@@ -5,7 +5,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>My API</title>
+  <title>Batch Upload API By Swagger</title>
   <!-- plugins:css -->
   <link rel="stylesheet" href="/static/vendors/feather/feather.css">
   <link rel="stylesheet" href="/static/vendors/ti-icons/css/themify-icons.css">
@@ -49,61 +49,68 @@
       <div class="main-panel">
         <div class="content-wrapper">
             <!--Content here-->
-            <div class="row">
-                <div class="col-md-12 stretch-card grid-margin">
-                    <div class="card">
-                    <div class="card-body">
-                        <p class="card-title mb-0">My API 
-                          &nbsp;&nbsp;&nbsp; <a class="move-up-on-hover btn btn-info" href="/dev/api/create"><i class="mdi mdi-plus-circle-outline"></i> Create new</a>
-                          &nbsp;&nbsp;&nbsp; <label for="file-upload" class="move-up-on-hover file-upload-browse move-up-on-hover btn btn-primary" type="button"><i class="mdi mdi-plus-circle-multiple-outline"></i> Upload Swagger Config <small>(.json, .yaml, .yml)</small></label>
-                        </p>
-                        <form enctype="multipart/form-data" method="POST" id="upload-batch" action="/db/dev/add/api/batch">
-                          <input onchange="document.getElementById('upload-batch').submit()" id="file-upload" type="file" name="file" accept=".json, .yml, .yaml" hidden>
-                          </form>
-                        <div class="table-responsive">
-                          <table class="table table-borderless">
-                              <thead>
-                              <tr>
-                                  <th class="pl-0  pb-2 border-bottom">API Name</th>
-                                  <th class="border-bottom pb-2">Endpoint</th>
-                                  <th class="border-bottom pb-2">Method</th>
-                                  <th class="border-bottom pb-2">Calls</th>
-                                  <th class="border-bottom pb-2">Modify</th>
-                                  <th class="border-bottom pb-2">Delete</th>
-                              </tr>
-                              </thead>
-                              <tbody id="api-list">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Batch Upload API
+                        &nbsp;&nbsp;&nbsp; <a class="move-up-on-hover btn btn-warning" href="/dev/api"><i class="mdi mdi-keyboard-backspace"></i> Back</a>
+                        &nbsp;&nbsp;&nbsp; <a onclick="addSelectedApi()" class="move-up-on-hover btn btn-success"><i class="mdi mdi-library-plus"></i> Add Selected API</a>
+                    </h4>
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <thead>
                                 <tr>
-                                  <td></td>
-                                  <td></td>
-                                  <td class="text-danger">No API</td>
-                                  <td></td>
-                                  <td></td>
-                                  <td></td>
+                                    <th class="pl-0  pb-2 border-bottom">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <input id="selectAll" onchange="selectAll()" type="checkbox"></input></th>
+                                    <th class="pb-2 border-bottom">API Name</th>
+                                    <th class="border-bottom pb-2">Endpoint</th>
+                                    <th class="border-bottom pb-2">Method</th>
+                                    <th class="border-bottom pb-2">Details</th>
                                 </tr>
-                              </tbody>
-                          </table>
-                        </div>
-                    </div>
-                    </div>
+                            </thead>
+                            <tbody id="api-list">
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="text-danger">No Data Found</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <form id="swaggerForm" action="/db/dev/add/api/batch/submit" method="POST">
+                            <textarea id="apiToAdd" name="data" style="display:none;"></textarea>
+                        </form>
+                      </div>
+                  </div>
                 </div>
             </div>
         </div>
+        
         <footer class="footer" include-html="/static/pages/frame/footer.html">
         </footer>
       </div>
     </div>
   </div>
+  <script src="/static/vendors/chart.js/Chart.min.js"></script>
   <script src="/static/vendors/js/vendor.bundle.base.js"></script>
   <script src="/static/js/off-canvas.js"></script>
   <script src="/static/js/hoverable-collapse.js"></script>
   <script src="/static/js/template.js"></script>
   <script src="/static/js/settings.js"></script>
   <script src="/static/js/todolist.js"></script>
+  
   <script src="/static/js/includeHtml.js"></script>
+  <script src="/static/js/tableHandler.js"></script>
+  <script src="/static/js/chartHandler.js"></script>
 
-  <script src="/static/pages/dev/api/fillUserApi.js"></script>
-
+  
+  <script src="/static/pages/dev/api/viewSwaggerContent.js"></script>
+  <script>
+      viewSwaggerContent("<%=user_id%>")
+  </script>
+  
   <!--INTROJS-->
   <link rel="stylesheet" href="/static/vendors/introjs/introjs.min.css">
   <script src="/static/js/intro.min.js"></script>
@@ -120,7 +127,6 @@
   <script>
     createMessage("<%=message%>", "<%=messageType%>")
   </script>
-
 </body>
 
 </html>
