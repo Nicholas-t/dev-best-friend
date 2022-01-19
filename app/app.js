@@ -6,6 +6,7 @@ const passport = require('passport');
 const session =  require('express-session');
 const fileUpload = require('express-fileupload');
 var fs = require('fs');
+var path = require('path');
 
 
 const {
@@ -87,6 +88,24 @@ app.get('/check-is-logo-exist/:project_id', function (req, res) {
   res.json({
       exist : fs.existsSync(`./logos/${req.params.project_id}.png`)
   })
+})
+
+app.get('/download/swagger-2-sample/:format', function (req, res){
+  const filePath = path.resolve(`./packages/swaggerHandler/sample-2-0.${req.params.format}`) 
+  if (fs.existsSync(filePath)){
+      res.sendFile(filePath)
+  } else {
+      res.redirect('/error/404')
+  }
+})
+
+app.get('/download/swagger-3-sample/:format', function (req, res){
+  const filePath = path.resolve(`./packages/swaggerHandler/sample-3-0.${req.params.format}`)
+  if (fs.existsSync(filePath)){
+      res.sendFile(filePath)
+  } else {
+      res.redirect('/error/404')
+  }
 })
 
 app.get('*', function(req, res){

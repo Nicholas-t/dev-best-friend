@@ -55,7 +55,7 @@
                     <div class="card-body">
                         <p class="card-title mb-0">My API 
                           &nbsp;&nbsp;&nbsp; <a class="move-up-on-hover btn btn-info" href="/dev/api/create"><i class="mdi mdi-plus-circle-outline"></i> Create new</a>
-                          &nbsp;&nbsp;&nbsp; <label for="file-upload" class="move-up-on-hover file-upload-browse move-up-on-hover btn btn-primary" type="button"><i class="mdi mdi-plus-circle-multiple-outline"></i> Upload Swagger Config <small>(.json, .yaml, .yml)</small></label>
+                          &nbsp;&nbsp;&nbsp; <label for="file-upload" class="move-up-on-hover file-upload-browse move-up-on-hover btn btn-primary" type="button"><i class="mdi mdi mdi-code-braces"></i> Upload OAS <small>(2.0 / 3.0)</small></label> <a href="https://dev-bf.umso.co/batch-upload-with-open-api" target="_blank" title="More Information"><i class="mdi mdi-information-outline"></i></a>
                         </p>
                         <form enctype="multipart/form-data" method="POST" id="upload-batch" action="/db/dev/add/api/batch">
                           <input onchange="document.getElementById('upload-batch').submit()" id="file-upload" type="file" name="file" accept=".json, .yml, .yaml" hidden>
